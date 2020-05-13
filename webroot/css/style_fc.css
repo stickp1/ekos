@@ -1,0 +1,32 @@
+#deck{min-height:350px;list-style:none;margin:15px auto;padding:0;position:relative;text-align:center;width:100%;}
+.card{-webkit-perspective:1600;perspective:1600;color:#222;display:none;font-size:30px;min-height:350px;position:relative;width:100%}
+.card:first-child{display:block}
+.side_one,.side_two{-webkit-backface-visibility:hidden;backface-visibility:hidden;-webkit-transition:all 0.4s ease-in-out;-moz-transition:all 0.4s ease-in-out;-ms-transition:all 0.4s ease-in-out;-o-transition:all 0.4s ease-in-out;transition:all 0.4s ease-in-out;background-color:#fff;height:inherit;position:absolute;width:inherit; border-radius: 10px; border: 1px solid #152335; color: #152335;}
+.side_one span, .side_two span {font-size: 10pt; position: absolute; left: 5px; padding:15px}
+
+
+.side_one{-webkit-transform:rotateX(0deg);transform:rotateX(0deg);-webkit-transform-style:preserve-3d;transform-style:preserve-3d;z-index:900}
+.flip .side_one{-webkit-transform:rotateX(180deg);transform:rotateX(180deg)}
+.side_two{-webkit-transform:rotateX(-180deg);transform:rotateX(-180deg);-webkit-transform-style:preserve-3d;transform-style:preserve-3d;z-index:800}
+.flip .side_two{-webkit-transform:rotateX(0deg);transform:rotateX(0deg);z-index:1000}
+.card p{display:table-cell;height:350px;vertical-align:middle; padding: 20px}
+@media (min-width: 992px) { 
+
+.card p{padding: 50px}
+
+}
+
+
+#nav_deck{color:#fff;position:relative}
+.icon{cursor:pointer}
+.icon:before{content:attr(data-icon);font-family:'Flash Cards';visibility:visible}
+.visuallyhidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}
+#prev:before,#next:before,#flipper:before{font-size:30px;padding:10px;position:absolute;width:40px}
+#prev:before{left:0}#next:before{right:0}#flipper:before{left:50%;margin-left:-30px}
+#keyboard_shortcuts{background:#000;display:none;left:0;padding:20px;position:absolute;bottom:0;z-index:99999}
+#keyboard_shortcuts h1{text-align:center}#keyboard_shortcuts td{padding:15px;text-align:left;width:350px}
+#keyboard_shortcuts td:first-child{text-align:right}.or{color:#222;padding:0 10px}
+#keyboard_shortcuts_toggle{cursor:pointer;position:absolute;right:25px;top:25px}
+#keyboard_shortcuts_toggle:before{-webkit-border-radius:20px;-moz-border-radius:20px;-ms-border-radius:20px;-o-border-radius:20px;border-radius:20px;-webkit-background-clip:padding;-moz-background-clip:padding;background-clip:padding-box;background:#0080ff;border:1px solid #fff;color:#fff;font-size:25px;height:20px;padding:5px;width:20px}
+.no-csstransforms3d .flip .side_one,.no-csstransforms3d .side_two{-webkit-transition:all 0.4s ease-in-out;-moz-transition:all 0.4s ease-in-out;-ms-transition:all 0.4s ease-in-out;-o-transition:all 0.4s ease-in-out;transition:all 0.4s ease-in-out;opacity:0}
+.no-csstransforms3d .flip .side_two{-webkit-transition:all 0.4s ease-in-out;-moz-transition:all 0.4s ease-in-out;-ms-transition:all 0.4s ease-in-out;-o-transition:all 0.4s ease-in-out;transition:all 0.4s ease-in-out;opacity:1}

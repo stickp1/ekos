@@ -1,0 +1,35 @@
+
+/bin/*
+/vendor/*
+/webroot/bower_components/*
+
+/config/app.php
+
+#webroot stuff content sensitive
+/webroot/img/invoices/*
+/webroot/img/pics/*
+/webroot/img/questions/*
+/webroot/img/receipts/*
+/webroot/img/uploads/*
+/webroot/bower_components/*
+
+
+/tmp/cache/models/*
+!/tmp/cache/models/empty
+/tmp/cache/persistent/*
+!/tmp/cache/persistent/empty
+/tmp/cache/views/*
+!/tmp/cache/views/empty
+/tmp/sessions/*
+!/tmp/sessions/empty
+/tmp/tests/*
+!/tmp/tests/empty
+/tmp/ttfontdata/*
+
+/logs/*
+!/logs/empty
+
+#other files in public_html root
+/.well-known/**/*
+/tmp/debug_kit.sqlite
+/tmp/cache/myapp_cake_routes_route_collection
