@@ -104,7 +104,7 @@ if($flash): ?>
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header page-scroll">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span> <i class="fa fa-bars"></i>
+                    <span class="sr-only">Toggle navigation</span> <i id="toggle-icon" class="fa fa-bars"></i>
                 </button>
                 <a class="page-scroll" href="<?= $url ?>"><img src='<?= $url?>/img/logo.png' class='logo' /></a>
             </div>
@@ -436,6 +436,24 @@ if($flash): ?>
         window.location.href= "<?= $this->Url->build([ "controller" => 'frontend', 'action' => 'city'], true)?>"+"/"+$(this).val();
     });
 
+    $('.navbar-toggle').on('click', function(){
+        if($('#bs-example-navbar-collapse-1').is(':visible'))
+            $('#toggle-icon').removeClass("fa-close").addClass("fa-bars");
+        else 
+            $('#toggle-icon').removeClass("fa-bars").addClass("fa-close");
+    })
+
+    $('.navbar-toggle').blur(function(){
+        var screenWidth = window.innerWidth;
+        if (screenWidth < 900){
+            console.log(screenWidth);
+            $('#bs-example-navbar-collapse-1').collapse('hide');
+            $('#toggle-icon').removeClass("fa-close").addClass("fa-bars");
+        }
+    })
+
+
+
 <?php if(@$_GET['e'] == 1): ?>
     $("#login").modal();
 <?php endif ;?>
@@ -459,6 +477,12 @@ $("#city").modal();
 </script>
 
 <style>
+
+.fa-close{
+    font-size: 1.3em;
+    -webkit-text-stroke: 1.6px white;
+    color: #FEB000;
+}
 
 .control {
     color:#000;
