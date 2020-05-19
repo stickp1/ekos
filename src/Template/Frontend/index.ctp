@@ -48,7 +48,7 @@
 
 <section class='text-sm-left text-center no-gutters about'>
     <div class="row is-flex">
-        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/sub_banner1.jpg");    justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%; max'>
+        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/sub_banner1.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
            
         </div>
         <div class="col-sm-6 bibliography_box">
