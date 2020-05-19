@@ -117,7 +117,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                         <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "cursos"]) ?>" <?= $this->request->params['action'] == 'cursos' ? "class='active'" : ""?> >Cursos</a>
                     </li>
                     <li class="dropdown-toggle" data-toggle="dropdown">
-                        <a href='#' <?= $this->request->params['action'] == 'informacoes' ? "class='active'" : ""?> onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes"]) ?>'" >Informações</a>
+                        <a href=# value="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes"]) ?>" <?= $this->request->params['action'] == 'informacoes' ? "class='active'" : ""?>  >Informações</a>
                          <ul class="dropdown-menu" role="menu">
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes"]) ?>'" href='#' class="dropdown-item">Inscrições</a></li>
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "exame"]) ?>'" href='#' class="dropdown-item">Exame</a></li>
@@ -129,7 +129,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                         <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "banco"]) ?>" <?= $this->request->params['action'] == 'perguntas' ? "class='active'" : ""?> >Perguntas & Flashcards</a>
                     </li>
                     <li class="dropdown-toggle">
-                        <a class="page-scroll" href="#" data-toggle="modal" data-target="#login" <?= isset($Auth['id']) ? "onClick=\"window.location.href='".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."'\"" : "" ?> >Área Reservada</a>
+                        <a class="page-scroll" href="#" data-toggle="modal" data-target="#login" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?> >Área Reservada</a>
                         <?php if(isset($Auth['id'])): ?>
                         <ul class="dropdown-menu">
                           <!-- The user image in the menu -->
@@ -178,10 +178,10 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                         </p>
                 </div>
                 <div class="col-md-3 col-sm-6">
-    <!--
+                    <!--
                             <h5>NMS|FCM</h5>
                             <p>NOVA Medical School <br> Campo Mártires da Pátria 130, <br> 1169-056 Lisboa </p>
-    -->
+                    -->
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <div class='row'>
@@ -389,9 +389,24 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
 
 
     $('.dropdown-toggle').hover(function(){
-        $(this).addClass('open');
-    }, function(){
-        $(this).removeClass('open');
+        var screenWidth = window.innerWidth;
+        if(screenWidth > 900)
+            $(this).addClass('open');
+        }, function(){
+            var screenWidth = window.innerWidth;
+            if(screenWidth > 900)
+                $(this).removeClass('open');
+    });
+
+    $('.dropdown-toggle a').click(function(event){
+        var screenWidth = window.innerWidth;
+        var dropdown = $(this).parent();
+        if(screenWidth <= 900){
+            if(dropdown.hasClass('open'))
+                window.location.href = $(this).attr('value');
+            else if ($(this).attr('value'))
+                dropdown.addClass('open');
+        }
     });
 
     // Closes the Responsive Menu on Menu Item Click
@@ -429,14 +444,13 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
             $('#toggle-icon').removeClass("fa-bars").addClass("fa-close");
     })
 
-    $('.navbar a').mousedown(function(event){
+    $('.navbar a, .navbar .btn').mousedown(function(event){
         event.preventDefault();
     })
 
-    $('.navbar a').click(function(event){
-        console.log("...");
+    $('.navbar a, .navbar .btn').click(function(event){
         document.activeElement = false;
-        this.click();
+        $(this).click();
     })
 
     $('.navbar-toggle').blur(function(event){
@@ -467,7 +481,6 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
     <?php endif; ?>
 
     })(jQuery);
-
 </script>
 
 <style>
@@ -544,6 +557,15 @@ div#main_container {
     padding-right: 0 !important;
     margin: 10px;
 }
+.navbar-nav>li.dropdown-toggle li{
+    text-align:center;
+}  
+@media (max-width:768px) {
+    .navbar-nav .open .dropdown-menu > li > a {
+    padding-left: 15px;
+    }
+}
+
 </style>
 </body>
 

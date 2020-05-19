@@ -391,7 +391,7 @@ fieldset[disabled] .btn-xl.active {
     line-height: 20px;
     }
   .navbar-nav .open .dropdown-menu > li > a {
-    padding: 5px 15px 5px 25px;
+    padding: 5px 15px 5px 15px;
     }
 
 }
@@ -1328,6 +1328,7 @@ table.courses-list ul.nav-tabs li a {
 	    right: inherit;
 	    left: inherit;
 	}
+
 }
 input::-webkit-inner-spin-button,
 input::-webkit-outer-spin-button {
