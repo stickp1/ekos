@@ -226,9 +226,7 @@ class UsersController extends AppController
             if($this->Users->find('all', ['conditions' => ['reset_char' => $char]])->first()) {
                 $this->set(compact('char'));
             }
-        }
-
-        
+        }    
     }
     
 

@@ -87,10 +87,11 @@ class FrontendController extends AppController
     }
 
 
-    private function sort($a, $b) {
-                if ($a['min_date'] == $b['min_date']) return 0;
-                return ($a['min_date'] > $b['min_date']) ? 1 : -1;
-            }
+    private function sort($a, $b) 
+    {
+      if ($a['min_date'] == $b['min_date']) return 0;
+      return ($a['min_date'] > $b['min_date']) ? 1 : -1;
+    }
 
     public function sobre()
     {
@@ -198,12 +199,12 @@ class FrontendController extends AppController
                         $email->to('geral@ekos.pt')
                             ->emailFormat('html')
                             ->subject('EKOS - NOVO CONTACTO')
-                            ->send("<p>Olá,</p><p>Foi submetido uma nova mensagem geral através do site da EKOS, com o seguinte conteúdo: </p>
+                            ->send("<p>Olá,</p><p>Foi submetida uma nova mensagem geral através do site da EKOS, com o seguinte conteúdo: </p>
                               <p><b>Nome:</b>".$this->request->getData('nome')."</p>
                               <p><b>Contacto:</b>".$this->request->getData('contacto')."</p>
                               <p><b>Mensagem:</b>".nl2br($this->request->getData('message'))."</p>
                               ");
-          
+            
           $contact2 = 'success';
           $this->set(compact('contact2'));
 
@@ -219,72 +220,73 @@ class FrontendController extends AppController
        $this->set(compact('contact'));
     }
 
-     public function soon(){
-      $this->layout = 'ajax';
-     }
+     public function soon()
+    {
+        $this->layout = 'ajax';
+    }
 
-     public function feedback($id = null){
+     public function feedback($id = null)
+     {
 
-      $survey = $this->loadModel('Feed_user_surveys')->find('all', ['conditions' => ['code' => $id], 'contain' => ['Lectures' => ['Groups' => ['Courses'], 'Users']]]);
-      if($survey->count() == 0){
-        $this->Flash->error(__('Questionário não encontrado.'));
-        return $this->redirect(['controller' => '/']);
-      } else {
-        $survey = $survey->first();
-        if($survey['answered'] == 1){
-          $this->Flash->error(__('Questionário já preenchido.'));
+        $survey = $this->loadModel('Feed_user_surveys')->find('all', ['conditions' => ['code' => $id], 'contain' => ['Lectures' => ['Groups' => ['Courses'], 'Users']]]);
+        if($survey->count() == 0){
+          $this->Flash->error(__('Questionário não encontrado.'));
           return $this->redirect(['controller' => '/']);
-        }
+        } else {
+          $survey = $survey->first();
+          if($survey['answered'] == 1){
+            $this->Flash->error(__('Questionário já preenchido.'));
+            return $this->redirect(['controller' => '/']);
+          }
 
-        if ($this->request->is('post')) {
+          if ($this->request->is('post')) {
 
-          $data = $this->request->data();
+            $data = $this->request->data();
 
-          //COMEÇA A INSERIR AS RESPOSTAS GERAIS E DE CURSO
-          foreach ($data['q'] as $key => $q) {
-            $question = $this->loadModel('Feed_answers')->newEntity();
-            $question['question_id'] = $key;
-            $question['value'] = $q;
+            //COMEÇA A INSERIR AS RESPOSTAS GERAIS E DE CURSO
+            foreach ($data['q'] as $key => $q) {
+              $question = $this->loadModel('Feed_answers')->newEntity();
+              $question['question_id'] = $key;
+              $question['value'] = $q;
+              $question['lecture_id'] = $survey['lecture']['id'];
+              $question['teacher_id'] = $survey['lecture']['teacher'];
+              $question['year'] = $survey['year'];
+              $question['course_id'] = $survey['course_id'];
+              $question = $this->loadModel('Feed_answers')->save($question);
+            }
+
+            //INSERE OS COMENTÁRIOS
+            if($data['comments'] != ''):
+            $question = $this->loadModel('Answers'.$survey['year'])->newEntity();
+            $question['question_id'] = 0;
+            $question['long_value'] = $data['comments'];
             $question['lecture_id'] = $survey['lecture']['id'];
             $question['teacher_id'] = $survey['lecture']['teacher'];
             $question['year'] = $survey['year'];
             $question['course_id'] = $survey['course_id'];
             $question = $this->loadModel('Feed_answers')->save($question);
+            endif;
+
+            //Atualiza o estado do questionário e redireciona
+            $survey['answered'] = 1;
+            if($this->loadModel('Feed_user_surveys')->save($survey)){
+              $this->Flash->success('Resposta submetida com sucesso.');
+            }
+
+            $this->redirect(['controller' => '/']);
+
           }
 
-          //INSERE OS COMENTÁRIOS
-          if($data['comments'] != ''):
-          $question = $this->loadModel('Answers'.$survey['year'])->newEntity();
-          $question['question_id'] = 0;
-          $question['long_value'] = $data['comments'];
-          $question['lecture_id'] = $survey['lecture']['id'];
-          $question['teacher_id'] = $survey['lecture']['teacher'];
-          $question['year'] = $survey['year'];
-          $question['course_id'] = $survey['course_id'];
-          $question = $this->loadModel('Feed_answers')->save($question);
-          endif;
 
-          //Atualiza o estado do questionário e redireciona
-          $survey['answered'] = 1;
-          if($this->loadModel('Feed_user_surveys')->save($survey)){
-            $this->Flash->success('Resposta submetida com sucesso.');
-          }
-
-          $this->redirect(['controller' => '/']);
-
+          $themes = explode(',', $survey['lecture']['themes']);
+          $themes = $this->loadModel('Themes')->find('list', ['conditions' => ['id in' => $themes]])->toArray();
         }
+        
 
+        $questions = $this->loadModel('Feed_questions')->find('all', ['conditions' => ['deleted' => 0, 'status' => 1]])->toArray();
+    
 
-        $themes = explode(',', $survey['lecture']['themes']);
-        $themes = $this->loadModel('Themes')->find('list', ['conditions' => ['id in' => $themes]])->toArray();
-      }
-      
-
-      $questions = $this->loadModel('Feed_questions')->find('all', ['conditions' => ['deleted' => 0, 'status' => 1]])->toArray();
-  
-
-      $this->set(compact('questions', 'survey', 'themes'));
-
+        $this->set(compact('questions', 'survey', 'themes'));
      }
 
      public function city ($id = null)
@@ -294,7 +296,41 @@ class FrontendController extends AppController
       ]);
 
       return $this->redirect( Router::url( $this->referer(), true ) );
+    }
 
+    public function report($contact = null)
+    {
+      
+      if ($this->request->is('post')) {
+
+          $http = new Client();
+          $response = $http->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => '6LdAL20UAAAAAO08rksDD8JnYgEMQBgqdA0py0zk',
+            'response' => $this->request->getData('g-recaptcha-response')
+          ]);
+
+          if($response->json['success'] == true){ 
+
+            $email = new Email('default');
+            
+            $email->to('geral@ekos.pt')
+                  ->emailFormat('html')
+                  ->subject('EKOS - Bug Report')
+                  ->send("<p>Olá,</p><p>Foi submetido um novo report de erro ou sugestão de funcionalidade através do site da EKOS, com o seguinte conteúdo:
+                          </p>
+                          <p><b>Url: </b>".$this->request->getData('report-url')."</p>
+                          <p><b>Mensagem: </b>".nl2br($this->request->getData('report-message'))."</p>".((empty($this->request->getData('report-contact'))) ? "" : "<p><b>Contacto: </b>").$this->request->getData('report-contact')."</p>"
+                  );
+                        
+            $this->Flash->success(__('A mensagem foi enviada com sucesso. Obrigado pelo feedback!'));
+          }
+          else {
+            $report = $this->request->getData();
+            $this->Flash->error(__('Não foi possível confirmar que não és um robô, e a tua mensagem não foi enviada. Por favor, tenta novamente.'));
+            $this->set(compact('report'));
+          } 
+      }
+      return $this->redirect($this->referer());
     }
 
    

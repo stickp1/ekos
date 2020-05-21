@@ -67,6 +67,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
     <script src="<?= $url; ?>/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="<?= $url; ?>/js/validate.min.js"></script>
     <script src="<?= $url; ?>/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 
     <?php $flash = $this->Flash->render();
     if($flash): ?>
@@ -166,7 +167,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
 
     <section class='footer'>
         <div class='container'>
-            <div class='row text-sm-left text-center'>
+            <div class='row text-center'>
                 <div class="col-md-3 col-sm-6">
                     <h5>ACESSO RÁPIDO</h5>
                         <p> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "sobre"]) ?>"> Formadores </a><br> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "cursos"]) ?>"> Inscrições </a><br> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "matriz"]) ?>"> Matriz & Bibliografia </a>
@@ -177,23 +178,29 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                         <p>Faculdade de Medicina de Lisboa <br> Av. Professor Egas Moniz, <br> 1649-028 Lisboa 
                         </p>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <!--
+                <!--<div class="col-md-3 col-sm-6">
+                    
                             <h5>NMS|FCM</h5>
-                            <p>NOVA Medical School <br> Campo Mártires da Pátria 130, <br> 1169-056 Lisboa </p>
-                    -->
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class='row'>
-                        <div class="col-md-8 col-md-offset-4">
+                            <p>NOVA Medical School <br> Campo Mártires da Pátria 130, <br> 1169-056 Lisboa </p>     
+                </div>-->
+                <div class="col-md-3 col-sm-6" id="contactDiv">
                             <h5><a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "contactos"]) ?>" <?= $this->request->params['action'] == 'contactos' ? "class='active'" : ""?>>Contactos</a></h5>
                             <p>geral@ekos.pt <br> 
                                 <a href='https://www.facebook.com/EKOSFormarParaAEspecialidade/' target="_blank"><i class="fa fa-facebook"></i></a>  
                                 <a href='https://www.instagram.com/ekos_especialidade/' target="_blank"><i class="fa fa-instagram"></i></a>
                             </p>
-                        </div>
-                    </div>
                 </div>
+                <div class="col-md-3 col-sm-6" id="reportDiv">
+                    <a class="page-scroll" href="#" data-toggle="modal" data-target="#report" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?>>
+                        <i class="fa fa-lightbulb-o"></i>
+                    </a>
+                    <p>
+                        Clica aqui para reportar um bug e/ou sugerir novas funcionalidades
+                        <br>
+                    </p>
+                </div>
+
+
             </div>
         </div>
     </section>
@@ -201,10 +208,10 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
     <footer>
         <div class="container">
             <div class="row">
-                <div class="col-sm-6 text-sm-left">
+                <div class="col-md-6 col-xs-6 text-sm-left">
                     <span class="copyright">&copy; EKOS - Formar para a Especialidade 2018</span>
                 </div>
-                <div class="col-sm-6 text-sm-right">
+                <div class="col-md-3 col-md-offset-3 col-xs-6 text-sm-center">
                     <ul class="list-inline quicklinks">
                         <li><a href="/privacy_policy.pdf">Política de Privacidade</a>
                         </li>
@@ -306,9 +313,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                         </button>
                         <br>
                         <h1>Registar</h1>
-                        
-                        <?= $this->Form->create('Form', [ 'url' => ['controller' => 'users', 'action' => 'register'], 'id' => 'register_form' ]) ?>
-                        
+                        <?= $this->Form->create('Form', [ 'url' => ['controller' => 'users', 'action' => 'register'], 'id' => 'register_form' ]) ?> 
                         <fieldset>
                             <?php if(@$_GET['e'] == 2): ?>
                             <div class="alert alert-danger" role="alert"> <?= $this->Session->read('error') ?> </div>
@@ -318,54 +323,45 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                                 <input type="text" class="form-control" placeholder="Inserir nome" name='first_name' data-minlength="3" data-error="O nome inserido não é válido."  required />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div class="form-group">
                                 <div class="label">Apelido(s)</div>
                                 <input type="text" class="form-control" placeholder="Inserir apelido(s)" name='last_name' data-minlength="3" data-error="O nome inserido não é válido."  required />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div class="form-group">
                                 <div class="label">Email</div>
                                 <input type="email" class="form-control" placeholder="Inserir email" name='email' id='email1' data-error="O email inserido não é válido."  required />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div class="form-group">
                                 <div class="label">Confirmar email</div>
                                 <input type="text" class="form-control" placeholder="Confirmar email" id='email2' data-match="#email1"data-match-error="Os emails inseridos não são iguais." required />
                                 <div class="help-block with-errors"></div>
                             </div>
-                                
                             <div class="form-group">
                                 <div class="label">Password</div>
                                 <input type="password" class="form-control" placeholder="Inserir password" name='password' id='password1' data-minlength="6" data-error="Mínimo de 6 caracteres." required />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div class="form-group">
                                 <div class="label">Confirmar Password</div>
                                 <input type="password" class="form-control" placeholder="Confirmar password" id='password2' data-match="#password1" data-match-error="As passwords inseridas não são iguais." required />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div class="form-group">
                                 <div class="label">Telemóvel</div>
                                 <input type="number" class="form-control" placeholder="Inserir telemóvel (facultativo)" data-minlength="O número inserido não é válido" data-minlength='8' name='phone_number' />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div class="form-group">
                                 <div class="label">Número de Identificação Fiscal</div>
                                 <input type="text" class="form-control" placeholder="Inserir NIF" data-error="O NIF inserido não é válido. Insere 999999990, caso não desejes facultar NIF" data-remote='<?= $url;?>/users/validaNIF/' name='vat_number' required />
                                 <div class="help-block with-errors"></div>
                             </div>
-
                             <div align="center">
                                 <button class="btn btn-black" type='submit'>CRIAR UTILIZADOR</button>
                             </div>
                         </fieldset>    
-
                         <?= $this->Form->end() ?>
                         <br>
                         <p>Já tens conta?</p>
@@ -380,7 +376,55 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         </div>
     <?php endif;?>
 
+        <div class="modal fade" id="report">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h1 class="modal-title text-center">Erro/Sugestão</h1>
+                    </div>
+                    <div class="modal-body">
+                        <?= $this->Form->create('Form', ['url' => ['controller' => 'frontend', 'action' => 'report'], 'id' => 'report-form']) ?>
+                            <div id="textDiv">
+                                <input type="hidden" class="form-control"name="report-url" value=<?php echo $this->request->here; ?>/>
+                                <textarea class="form-control" id="report-message" name="report-message" rows="5" placeholder="Escreve aqui o erro/sugestão" required></textarea>
+                                <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
+                            </div>
+                            <div class="modal-footer row">
+                                <div id="report-captcha" class="g-recaptcha col-xs-6" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='margin-top:15px; display: none'>
+                                </div>
+                                <div class="col-xs-6 col-xs-offset-6">
+                                    <button type="submit" class="btn btn-black">Submeter</button>
+                                </div> 
+                            </div>
+                        <?= $this->Form->end() ?>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
 
+        <div class="modal fade" id="suc">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <br>
+                        <div style='padding: 100px 0'>
+                            <h1>A mensagem foi enviada com sucesso.</h1>
+                            <p>Receberás uma resposta assim que possível.</p>
+                          </div>
+                        <div align="center" style='margin-bottom:30px'>
+                            <button type="button" class="btn btn-black" data-dismiss="modal">COMPREENDI</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 <script>
@@ -462,6 +506,21 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         }
     })
 
+    $('#report-form').on('valid.bs.validator', function(event){
+        if(event.relatedTarget.id == 'report-message') {
+            $('.modal-footer .col-xs-6').removeClass('col-xs-offset-6').addClass('captcha-push');
+            $('#report-captcha').slideDown();
+    }
+
+    $(".modal form").submit(function(event) {
+        var recaptcha = $(".modal #g-recaptcha-response").val();
+        if (recaptcha === "") {
+            event.preventDefault();
+            alert("Por favor, confirma que não és um robô.");
+        }
+    });    
+})
+
     <?php if(@$_GET['e'] == 1): ?>
         $("#login").modal();
     <?php endif ;?>
@@ -470,7 +529,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         $("#register").modal();
     <?php endif ;?>
 
-    <?php if(@$contact2 == 'success'): ?>
+    <?php if(@$contact2 == 'success' || @$report2 == 'success'): ?>
     $("#suc").modal();
 
     <?php endif; ?>
@@ -481,6 +540,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
     <?php endif; ?>
 
     })(jQuery);
+
 </script>
 
 <style>
@@ -553,7 +613,7 @@ div#main_container {
 }
 <?php endif; ?>
 
-#login{
+.modal{
     padding-right: 0 !important;
     margin: 10px;
 }
@@ -565,9 +625,44 @@ div#main_container {
     padding-left: 15px;
     }
 }
+@media (max-width:991px) {
+    .footer #contactDiv{
+        margin-top: 30px;
+    }
+}
+
+    /* STYLING FOR REPORT MODAL (move to style.css...?) */
+
+#reportDiv .fa-lightbulb-o{
+    font-size: 6em;
+    color: #FEB000;
+    margin-bottom: 10px;
+}
+#report textarea{
+    width: 100%;
+    margin: 30px 0 20px 0;
+    resize: none;
+}
+#report .modal-footer .btn-black{
+    margin-top: 0;
+}
+
+#report #textDiv{
+    margin-left: 15px;
+    margin-right: 15px;
+}
+#report .modal-header{
+    padding-left: 45px;
+    padding-right: 45px;
+}
+#report .modal-footer .row{
+}
+#report .modal-footer .captcha-push{
+    float: none;
+    display: table-cell;
+    vertical-align: bottom;
+}
 
 </style>
 </body>
-
-
 </html>
