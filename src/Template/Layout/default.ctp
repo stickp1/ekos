@@ -393,9 +393,9 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                                 <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
                             </div>
                             <div class="modal-footer row">
-                                <div id="report-captcha" class="g-recaptcha col-xs-6" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='margin-top:15px; display: none'>
+                                <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
                                 </div>
-                                <div class="col-xs-6 col-xs-offset-6">
+                                <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
                                     <button type="submit" class="btn btn-black">Submeter</button>
                                 </div> 
                             </div>
@@ -486,16 +486,16 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
             $('#toggle-icon').removeClass("fa-close").addClass("fa-bars");
         else 
             $('#toggle-icon').removeClass("fa-bars").addClass("fa-close");
-    })
+    });
 
     $('.navbar a, .navbar .btn').mousedown(function(event){
         event.preventDefault();
-    })
+    });
 
     $('.navbar a, .navbar .btn').click(function(event){
         document.activeElement = false;
         $(this).click();
-    })
+    });
 
     $('.navbar-toggle').blur(function(event){
         var screenWidth = window.innerWidth;
@@ -504,13 +504,15 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
             $('#bs-example-navbar-collapse-1').collapse('hide');
             $('#toggle-icon').removeClass("fa-close").addClass("fa-bars");
         }
-    })
+    });
 
     $('#report-form').on('valid.bs.validator', function(event){
+        var screenWidth = window.innerWidth;
         if(event.relatedTarget.id == 'report-message') {
-            $('.modal-footer .col-xs-6').removeClass('col-xs-offset-6').addClass('captcha-push');
+            $('.modal-footer .col-sm-6').addClass('captcha-push');
             $('#report-captcha').slideDown();
-    }
+        }
+    });
 
     $(".modal form").submit(function(event) {
         var recaptcha = $(".modal #g-recaptcha-response").val();
@@ -519,7 +521,6 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
             alert("Por favor, confirma que não és um robô.");
         }
     });    
-})
 
     <?php if(@$_GET['e'] == 1): ?>
         $("#login").modal();
@@ -529,7 +530,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         $("#register").modal();
     <?php endif ;?>
 
-    <?php if(@$contact2 == 'success' || @$report2 == 'success'): ?>
+    <?php if(@$contact2 == 'success'): ?>
     $("#suc").modal();
 
     <?php endif; ?>
@@ -539,7 +540,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
 
     <?php endif; ?>
 
-    })(jQuery);
+})(jQuery);
 
 </script>
 
@@ -646,7 +647,6 @@ div#main_container {
 #report .modal-footer .btn-black{
     margin-top: 0;
 }
-
 #report #textDiv{
     margin-left: 15px;
     margin-right: 15px;
@@ -655,12 +655,32 @@ div#main_container {
     padding-left: 45px;
     padding-right: 45px;
 }
-#report .modal-footer .row{
+#report .g-recaptcha iframe{
+    padding-left: 0;
+    padding-right: 0;
 }
-#report .modal-footer .captcha-push{
-    float: none;
-    display: table-cell;
-    vertical-align: bottom;
+@media (min-width: 768px){
+    #report .modal-footer .captcha-push{
+        float: none;
+        display: table-cell;
+        vertical-align: bottom;
+    }
+}
+@media (max-width: 767px){
+    #report .modal-footer{
+        padding: 0;
+    }
+    #report .modal-footer .col-sm-offset-6{
+        margin-top: 10px;
+    }
+    #report .modal-footer .g-recaptcha{
+        margin-top:15px;
+        padding: 0;
+    }
+    #report .modal-footer .g-recaptcha div{
+        margin: auto;
+        margin-bottom: 15px;
+    }
 }
 
 </style>
