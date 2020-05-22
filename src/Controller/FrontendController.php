@@ -305,7 +305,7 @@ class FrontendController extends AppController
 
           $http = new Client();
           $response = $http->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => '6LdAL20UAAAAAO08rksDD8JnYgEMQBgqdA0py0zk',
+            'secret' => '6LciqvoUAAAAAE9FSoRVT_ln_q8Rlj4lpKuNPJiE',
             'response' => $this->request->getData('g-recaptcha-response')
           ]);
 

@@ -393,7 +393,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                                 <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
                             </div>
                             <div class="modal-footer row">
-                                <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
+                                <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LciqvoUAAAAANAzl6QIzMvVVdcwsqrHiYtPcMlU" style='display: none'>
                                 </div>
                                 <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
                                     <button type="submit" class="btn btn-black">Submeter</button>
@@ -514,7 +514,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         }
     });
 
-    $(".modal form").submit(function(event) {
+    $("#report form").submit(function(event) {
         var recaptcha = $(".modal #g-recaptcha-response").val();
         if (recaptcha === "") {
             event.preventDefault();
