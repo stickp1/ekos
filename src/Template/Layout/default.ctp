@@ -445,12 +445,22 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
     $('.dropdown-toggle a').click(function(event){
         var screenWidth = window.innerWidth;
         var dropdown = $(this).parent();
+        if($(this).attr('value')){
+            if(screenWidth > 900 || dropdown.hasClass('open'))
+                window.location.href = $(this).attr('value');
+            else
+                dropdown.addClass('open');
+        }
+
+    /*
         if(screenWidth <= 900){
             if(dropdown.hasClass('open'))
                 window.location.href = $(this).attr('value');
             else if ($(this).attr('value'))
                 dropdown.addClass('open');
         }
+        if(screenWidth > 900 && $(this).attr('value'))
+            window.location.href = $(this).attr('value');*/
     });
 
     // Closes the Responsive Menu on Menu Item Click

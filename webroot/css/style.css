@@ -396,7 +396,7 @@ fieldset[disabled] .btn-xl.active {
 
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
 
   .navbar-custom {
     background-color: white;
@@ -988,7 +988,8 @@ div.message.success {
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
     color: #152335;
     cursor: default;
-    background-color: #fff;
+    /*background-color: #fff;*/
+    background-color: transparent;
     border: 0;
     border-bottom: 2px solid #FEB000;
     font-weight: 600;
@@ -1000,16 +1001,39 @@ div.message.success {
     background: transparent;
 }
 
+#services .panel-heading{
+  position: relative;
+  width: 100vw;
+  margin-left: -50vw;
+  left: 50%;
+  padding-left: 0;
+  padding-right: 0;
+  }
+
+#submenu::-webkit-scrollbar{
+  display:none;
+}
+#submenu{
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
 #submenu::after {
     content: " ";
     display: block;
-    position: relative;
+    position: absolute;
     height: 2px;
     background: #F1EFF0;
     width: 4000px;
-    top: -2px;
+    bottom: 10px;
     z-index: -1;
+    overflow-x: hidden;
     left: -1500px;
+}
+@media (max-width:767px){
+  #submenu{
+    box-shadow: inset 22px 0px 10px -20px #FEB000, inset -22px 0px 10px -20px #FEB000;
+  }
 }
 
 .tab-content {
@@ -1021,7 +1045,7 @@ div.message.success {
 }
 
 
-@media (min-width: 900px){
+@media (min-width: 901px){
     .navbar-nav>li>.dropdown-menu {
         -webkit-transition: all 0.3s;
         -moz-transition: all 0.3s;
