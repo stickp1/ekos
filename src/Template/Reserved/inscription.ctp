@@ -3,7 +3,7 @@
       <div class="container">
 
         <div class="row" style='position:relative'>
-          <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -1'></div>
+          <div class="reserved-background"></div>
           <div class="col-md-10 col-md-offset-1"><form method='post'>
             <br>
             <h2>Confirmar Inscrição</h2>

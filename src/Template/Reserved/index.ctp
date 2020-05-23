@@ -14,12 +14,11 @@
                               <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>
                           </ul>
                   </div>
-                  <div class="panel-body" style="padding-top: 50px"></div>
               </div>
             </div>
         </div>
-        <div class="row" style='position:relative;'>
-            <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
+        <div class="row" style='position:relative'>
+            <div class="reserved-background"></div>
             <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
                 <h1>Olá <?= $Auth['first_name']; ?>!</h1>
                 <p><label> a frequentar</label><br>
