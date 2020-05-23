@@ -14,7 +14,6 @@
                               <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>
                           </ul>
                   </div>
-                  <div class="panel-body" style="padding-top: 50px"></div>
               </div>
             </div>
         </div>
