@@ -191,6 +191,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                             </p>
                 </div>
                 <div class="col-md-3 col-sm-6" id="reportDiv">
+                    <h5>SUGESTÕES</h5>
                     <a class="page-scroll" href="#" data-toggle="modal" data-target="#report" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?>>
                         <i class="fa fa-lightbulb-o"></i>
                     </a>
@@ -648,6 +649,9 @@ div#main_container {
     font-size: 6em;
     color: #FEB000;
     margin-bottom: 10px;
+    border: 1px solid #FEB000;
+    padding: 10px;
+    border-radius: 15px;
 }
 #report textarea{
     width: 100%;
