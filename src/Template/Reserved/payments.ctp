@@ -19,7 +19,7 @@
         </div>
 
         <div class="row" style='position:relative;'>
-          <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
+          <div class="reserved-background"></div>
           <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
             <h1>Olá <?= $Auth['first_name']; ?>!</h1>
           </div>

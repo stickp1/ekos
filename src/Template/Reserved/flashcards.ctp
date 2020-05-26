@@ -93,9 +93,8 @@ a.navi:hover{
 
 
 
-    <section id="services" class="text-center ">
-      <div class="container">
-
+<section id="services" class="text-center ">
+    <div class="container">
         <div class="row">
           <div class="col-md-20">
             <div class="panel with-nav-tabs panel-default" style='background:transparent'>
@@ -105,39 +104,33 @@ a.navi:hover{
                             <li <?=  @$this->request->params['action'] == 'qbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "qbank"]) ?>">Perguntas</a></li>
                             <li <?=  @$this->request->params['action'] == 'fbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "fbank"]) ?>">Flashcards</a></li>
                             <?php if(in_array(16, $courses) || in_array(15, $courses)): ?> <li <?=  @$this->request->params['action'] == 'ebank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "ebank"]) ?>">Exames</a></li> <?php endif; ?>
-                            <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>
-                            
+                            <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>                     
                         </ul>
                 </div>
               </div>
           </div>
         </div>
 
+        <?php if(empty($flashcards)): ?>
 
-<?php if(empty($flashcards)): ?>
-
-
-  <div class="row" style='position:relative;'>
-          <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
-          <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
-            <h1>Olá <?= $Auth['first_name']; ?>!</h1>
-            <p>Infelizmente, não encontrámos flashcards para os temas selecionados.</p><p> Estamos continuamente a aumentar a nossa base de dados, podes tentar novamente outro dia. Até lá, experimenta selecionar outros temas.</p><p><b>Bom estudo!</b></p><br>
-          <button class='btn-black btn' onClick='window.location.href="<?= $this->Url->build(["action" => "fbank"])?>"'> NOVA PESQUISA </button> 
-          </div>
+        <div class="row" style='position:relative;'>
+            <div class="reserved-background"></div>
+            <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
+                <h1>Olá <?= $Auth['first_name']; ?>!</h1>
+                <p>Infelizmente, não encontrámos flashcards para os temas selecionados.</p><p> Estamos continuamente a aumentar a nossa base de dados, podes tentar novamente outro dia. Até lá, experimenta selecionar outros temas.</p><p><b>Bom estudo!</b></p><br>
+                <button class='btn-black btn' onClick='window.location.href="<?= $this->Url->build(["action" => "fbank"])?>"'> NOVA PESQUISA </button> 
+            </div>
         </div>
+    </div>
+</section>
 
-      </div>
-    </section>
+        <?php else: ?>
 
-<?php else: ?>
-
-  <div class="row" style='position:relative;'>
-           <div style='background-color: #2C3949; left: -300px; top: -31px; right:-300px; min-height:50px; position: absolute; z-index: 2; text-align: center; padding-top:6px; color: white; font-size:12pt'>
-           
-           <div class="col-md-4 col-md-offset-4">
-                  <a href='#' class='navi' onClick="$('#deck').cycle('prev');"><i class="fa fa-angle-left"></i></a>
-
-                  <input type="number" id="selector" style="
+<div class="row" style='position:relative;'>
+    <div class="reserved-background">       
+        <div class="col-md-4 col-md-offset-4">
+            <a href='#' class='navi' onClick="$('#deck').cycle('prev');"><i class="fa fa-angle-left"></i></a>
+                <input type="number" id="selector" style="
                       text-align: center;
                       width: 50px;
                       color: white;
@@ -147,81 +140,62 @@ a.navi:hover{
                       border-radius: 8px;
                 "> <span style='color: #929dab; font-size:17pt'> / </span> <?= count($flashcards) ?> 
 
-         <a href='#' class='navi' onClick="$('#deck').cycle('next');"><i class="fa fa-angle-right"></i></a>
-           </div>
-           <div class="col-md-1" style='font-size:18pt; padding-top: 1px; color: #929dab'>
-  <i class="fa fa-star" id="favsel" onClick='favorite()'></i>   
+            <a href='#' class='navi' onClick="$('#deck').cycle('next');"><i class="fa fa-angle-right"></i></a>
+        </div>
+        <div class="col-md-1" style='font-size:18pt; padding-top: 1px; color: #929dab'>
+            <i class="fa fa-star" id="favsel" onClick='favorite()'></i>   
+        </div>
+    </div>
 </div>
 
-         </div>
-  </div>
+<div class="row" style='position:relative;'>
+    <div class="reserved-background"></div>
+    <div class="col-md-4 col-md-offset-4">
+        <div class="panel panel-default" style='background:transparent'>
+            <div class="panel-heading text-left">
+                <br>
+                <?php  /* foreach ($flashcards as $key => $value) { $i = $key + 1;
+                if($key == 0){$class=" active";} else {$class = '';}
+                ?>
+                <a href="#" class='number <?= $class ?>' id='n<?= $key ?>' onClick='jump(event,<?= $key ?>)'><?= $i ?></a>
+                <?php }; */
+                ?>                 
+            </div>
+        </div>
+    </div>
+</div>
 
-        <div class="row" style='position:relative;'>
-           <div style='background-color: #f5f5f5; left: -300px; top:20px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
-          <div class="col-md-4 col-md-offset-4">
-            <div class="panel panel-default" style='background:transparent'>
-                <div class="panel-heading text-left">
-                  <br>
-                  <?php  /* foreach ($flashcards as $key => $value) { $i = $key + 1;
-                    if($key == 0){$class=" active";} else {$class = '';}
-                    ?>
-                    <a href="#" class='number <?= $class ?>' id='n<?= $key ?>' onClick='jump(event,<?= $key ?>)'><?= $i ?></a>
-                  <?php }; */?>
-                  </ul>
-                  
+<div class="row"  style='position:relative;'>
+    <div class="reserved-background" id='loaderr'>          
+        <img src='<?= $url?>/img/spiner.gif' style='position: absolute; top: 35%; left: 47%; width:100px'/>
+    </div>
+    <div class="reserved-background"></div>
+    <div class="col-md-10 col-md-offset-1">       
+        <ul id="deck">
+            <?php foreach ($flashcards as $key => $value) { $i = $key + 1; ?>
+            <li class="card" style='background-color: #f5f5f5' data-id='<?= $key ?>'>
+                <div class="side_one">
+                    <span><b>FRENTE</b></span>
+                    <span style='ddisplay:block;left: auto;right: 5px;background: #fff;border-radius:5px'><b><?= $value['theme']['name']?></b></span>
+                    <p><?= $value['front']?></p>
                 </div>
-              </div>
-          </div>
-        </div>
-
-
-        <div class="row"  style='position:relative;'>
-
-          <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: 10000' id='loaderr'>
-          
-          <img src='<?= $url?>/img/spiner.gif' style='position: absolute; top: 35%; left: 47%; width:100px'/>
-
-          </div>
-
-
-            <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
-            <div class="col-md-10 col-md-offset-1">
-               
-                  
-                    <ul id="deck">
-                     <?php foreach ($flashcards as $key => $value) { $i = $key + 1; ?>
-                      <li class="card" style='background-color: #f5f5f5' data-id='<?= $key ?>'>
-                        <div class="side_one">
-                          <span><b>FRENTE</b></span>
-                          <span style='ddisplay:block;left: auto;right: 5px;background: #fff;border-radius:5px'><b><?= $value['theme']['name']?></b></span>
-                          <p><?= $value['front']?></p>
-                        </div>
-                        <div class="side_two">
-                          <span><b>VERSO</b></span>
-                          <p><?= $value['verse']?></p>
-                        </div>
-                      </li>
-                      <?php } ?>
-                  </ul>
-                  
-                  <span class="fa-stack fa-3x button" onClick='correct()'>
-                    <i class="fa fa-circle fa-stack-2x text-primary right"></i>
-                    <i class="fa fa-check fa-stack-1x fa-inverse"></i>
-                  </span>
-
-                  <span class="fa-stack fa-3x button" onClick='wrong()'>
-                    <i class="fa fa-circle fa-stack-2x text-primary wrong" ></i>
-                    <i class="fa fa-times fa-stack-1x fa-inverse"></i>
-                  </span>
-                
-
-            
-          </div>
-        </div>
-      </div>
-
-
-    </section>
+                <div class="side_two">
+                    <span><b>VERSO</b></span>
+                    <p><?= $value['verse']?></p>
+                </div>
+            </li>
+            <?php } ?>
+        </ul>
+        <span class="fa-stack fa-3x button" onClick='correct()'>
+            <i class="fa fa-circle fa-stack-2x text-primary right"></i>
+            <i class="fa fa-check fa-stack-1x fa-inverse"></i>
+        </span>
+        <span class="fa-stack fa-3x button" onClick='wrong()'>
+            <i class="fa fa-circle fa-stack-2x text-primary wrong" ></i>
+            <i class="fa fa-times fa-stack-1x fa-inverse"></i>
+        </span>               
+    </div>
+</div>
 
 <script> var fav = []; 
 <?php foreach ($flashcards as $key => $value) { 

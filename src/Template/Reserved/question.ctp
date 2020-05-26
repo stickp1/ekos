@@ -119,7 +119,7 @@ a.navi:hover{
 
 
   <div class="row" style='position:relative;'>
-          <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
+          <div class="reserved-background"></div>
           <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
             <h1>Olá <?= $Auth['first_name']; ?>!</h1>
             <p>Infelizmente, não encontrámos perguntas para os temas selecionados.</p><p> Estamos continuamente a aumentar a nossa base de dados de perguntas, podes tentar novamente outro dia. Até lá, experimenta selecionar outros temas.</p><p><b>Bom estudo!</b></p><br>
@@ -176,7 +176,7 @@ if($tot > 50):  $corr = $question['a'.$question['correct']] / $tot; ?>
   </div>
 
         <div class="row" style='position:relative;'>
-           <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
+           <div class="reserved-background"></div>
           <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default" style='background:transparent'>
                 <div class="panel-heading text-left" >
@@ -190,7 +190,7 @@ if($tot > 50):  $corr = $question['a'.$question['correct']] / $tot; ?>
         </div>
 
         <div class="row"  style='position:relative;'>
-            <div style='background-color: #f5f5f5; left: -300px; top:-30px; right:-300px; bottom:-100px; position: absolute; z-index: -2'></div>
+            <div class="reserved-background"></div>
             <div class="col-md-10 col-md-offset-1">
 
 
