@@ -32,7 +32,7 @@ Com vista a atingir melhores resultados, acreditamos que é preciso reformular o
 Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. </p>
 <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
 
-<p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px', 'value' => $scity, 'id' => 'city_selector'])?></p>
+<p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?></p>
           </div>
         </div>
         <div class='row'>
@@ -167,7 +167,7 @@ Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecime
         </div>
       </div>
     </section>
-
+    <!--             
    <section id="recruting" class='bg-light text-center'>
       <div class="container">
         <div class="row">
@@ -175,13 +175,13 @@ Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecime
             <h1>Banco de Perguntas e Flashcards.</h1>
             <p>Não podes assistir aos nossos cursos presenciais, mas gostarias de ter acesso ao nosso Banco de Perguntas e Flashcards? Agora já é possível!</p>
 
-		<?php if (!isset($Auth['id'])): echo '<button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>'; else: ?> <button class="btn btn-black" onClick="window.open('https://ekos.pt/reserved/inscription/1')" >INSCREVER</button> <?php endif; ?>
+		<?php if (!isset($Auth['id'])): echo '<button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>'; else: ?> <button class="btn btn-black" onClick="window.open('https://ekos.pt/reserved/inscription/128')" >INSCREVER</button> <?php endif; ?>
 		
           </div>
         </div>
       </div>
     </section>
-    
+
     <section id="recruting" class='text-center'>
       <div class="container">
         <div class="row">
@@ -194,7 +194,7 @@ Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecime
         </div>
       </div>
     </section>
-    
+        -->
 
 
 

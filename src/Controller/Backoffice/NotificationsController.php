@@ -206,8 +206,6 @@ class NotificationsController extends AppController
                 array_push($emails, $user['email']);
             }
         }
-                 
-        $emails = ['andre.afernandes811@gmail.com', 'david.berhanu@outlook.com'];
 
         $body = $this->email_template('', $notification['value']);
 
