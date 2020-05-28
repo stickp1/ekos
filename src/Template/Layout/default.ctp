@@ -126,8 +126,13 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "faq"]) ?>'" href='#' class="dropdown-item">FAQs</a></li>
                         </ul>
                     </li>
+                    <!--
                     <li>
-                        <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "certificacao"]) ?>" <?= $this->request->params['action'] == 'certificacao' ? "class='active'" : ""?> >Formação Profissional</a>
+                        <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "banco"]) ?>" <?= $this->request->params['action'] == 'perguntas' ? "class='active'" : ""?> >Perguntas & Flashcards</a>
+                    </li>
+                    -->
+                    <li>
+                        <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "formacao-profssional"]) ?>" <?= $this->request->params['action'] == 'certificacao' ? "class='active'" : ""?> >Formação Professional</a>
                     </li>
                     <li class="dropdown-toggle">
                         <a class="page-scroll" href="#" data-toggle="modal" data-target="#login" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?> >Área Reservada</a>
