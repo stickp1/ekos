@@ -23,7 +23,7 @@
           <div class="col-md-8 col-md-offset-2">
             <h1>A Equipa.</h1>
             <p>Juntámos uma equipa motivada e competente para te ajudar na preparação deste desafio. Vem conhecê-los!</p>
-            <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px', 'value' => $scity, 'id' => 'city_selector'])?></p>
+            <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?></p>
           </div>
         </div>
         <div class='row is-flex'>
@@ -40,7 +40,7 @@
 		              </div>
 	              <div class='row'>
 	              	<div class="col-sm-12 text-left user-block" style='padding: 20px 35px'>
-                    <span class="description"><?= implode(", ", $value['moderators']) ?></span>
+                    <span class="description" style="visibility: hidden;"><?= implode(", ", $value['moderators']) ?></span>
                     <span class="username"><?= $value['first_name']." ".$value['last_name'] ?></span>
                       
 	              	<p class='bio'><?= nl2br($value['description']) ?></p>
@@ -62,7 +62,7 @@
         <div class="row">
           <div class="col-md-8 col-md-offset-2">
             <h1>Junta-te à equipa.</h1>
-            <p>Identificas-te com o nosso projeto e gostas de ensinar? Acreditamos que ter pessoas motivadas a trabalhar connosco é a chave do sucesso. Se ficaste interessado e gostavas de ser formador na EKOS, entra em contacto connosco.</p>
+            <p>Identificas-te com o nosso projeto e gostas de ensinar? </br>Acreditamos que ter pessoas motivadas a trabalhar connosco é a chave do sucesso. Se ficaste interessado e gostavas de colaborar com a EKOS, entra em contacto connosco.</p>
 
             <button class="btn btn-black" onClick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfHBU2zk3cuiRP0xND33cyQKQIPQzOfZQJHmEOAIK522AK-FQ/viewform')" >CANDIDATAR-ME</button>
           </div>

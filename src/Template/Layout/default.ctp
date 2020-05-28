@@ -170,14 +170,20 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
             <div class='row text-center'>
                 <div class="col-md-3 col-sm-6">
                     <h5>ACESSO RÁPIDO</h5>
-                        <p> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "sobre"]) ?>"> Formadores </a><br> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "cursos"]) ?>"> Inscrições </a><br> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "matriz"]) ?>"> Matriz & Bibliografia </a>
+                        <p> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "sobre"]) ?>"> Equipa da EKOS </a><br> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes"]) ?>"> Inscrições </a><br> <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "matriz"]) ?>"> Matriz & Bibliografia </a>
                         </p>
                 </div>
+                <div class="col-md-3 col-sm-6">
+                    <h5><a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "contactos"]) ?>" <?= $this->request->params['action'] == 'contactos' ? "class='active'" : ""?>>INSTALAÇÕES</a></h5>
+                        <p>Direção e Atendimento Geral <br> Rua Jorge Colaço 16, <br> 1700-253 Lisboa 
+                        </p>
+                </div>
+                <!--</div>
                 <div class="col-md-3 col-sm-6">
                     <h5>FMUL</h5>
                         <p>Faculdade de Medicina de Lisboa <br> Av. Professor Egas Moniz, <br> 1649-028 Lisboa 
                         </p>
-                </div>
+                </div>-->
                 <!--<div class="col-md-3 col-sm-6">
                     
                             <h5>NMS|FCM</h5>
