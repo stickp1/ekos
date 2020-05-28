@@ -48,10 +48,10 @@
 
 <section class='text-sm-left text-center no-gutters about'>
     <div class="row is-flex">
-        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/sub_banner1.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
+        <div class="col-sm-3" style='background-image: url("<?= $url?>/img/sub_banner1.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
            
         </div>
-        <div class="col-sm-6 bibliography_box">
+        <div class="col-sm-9 bibliography_box">
             <h2>Análise Prova-Piloto.</h2>
             <p>A EKOS preparou para ti a análise da prova-piloto, para te ajudar a orientar o estudo!</p>
             <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'analise-pp.pdf']); ?>"'>VER ANÁLISE</button>
@@ -70,8 +70,13 @@
               </p>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
+        <div class="row hidden-sm">
+            <div class="col-sm-4"><h2>Cursos anuais</h2></div>
+            <div class="col-sm-4"><h2>Cursos de Verão</h2></div>
+            <div class="col-sm-4"><h2>Cursos de Gestão de Tarefas</h2></div>
+        </div>
+        <div class="row hidden-sm">
+            <!--<div class="col-md-10 col-md-offset-1">
               <table class='courses-list' style='margin-top:35px'>
                 <?php 
                 foreach ($courses as $key => $value) { 
@@ -85,8 +90,118 @@
                 </tr>
                 <?php } ?>
               </table>
+            </div>-->
+            <div class="col-sm-4">
+              <table class='courses-list' style='margin-top:35px'>
+                <?php 
+                $count = count($courses);
+                foreach ($courses as $key => $value) { 
+                if (--$count < 5) break;
+                ?>
+                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
+                    <td ><?= $value['name'] ?></td>
+                    <td width='50px'><i class="fa fa-arrow-right"></i></td>
+                </tr>
+                <?php } ?>
+              </table>
+            </div>
+            <div class="col-sm-4">
+              <table class='courses-list' style='margin-top:35px'>
+                <?php 
+                foreach ($courses2 as $key => $value) { 
+                ?>
+                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $key]) ?>"'>
+                    <td ><?= $value ?></td>
+                    <td width='50px'><i class="fa fa-arrow-right"></i></td>
+                </tr>
+                <?php } ?>
+              </table>
+            </div>
+            <div class="col-sm-4">
+              <table class='courses-list' style='margin-top:35px'>
+                <?php 
+                foreach ($courses3 as $key => $value) { 
+                ?>
+                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
+                    <td><?= $value ?></td>
+                    <td width='50px'><i class="fa fa-arrow-right"></i></td>
+                </tr>
+                <?php } ?>
+              </table>
             </div>
         </div>
+        <div id="accordion" class="visible-sm">
+            <div class="card">
+                <div class="card-header" id="headingOne" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                    <button class="btn btn-link">Cursos Anuais
+                    </button>
+                    <i class="fa fa-chevron-down" id='arrow_collapseOne' style='float:right; margin-right: 20px; margin-top:5px'>
+                    </i>
+                </div>
+                <div id="collapseOne" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="box-body table-responsive no-padding">
+                        <table class='courses-list' style='margin-top:35px'>
+                            <?php 
+                              $count = count($courses);
+                              foreach ($courses as $key => $value) { 
+                                if (--$count < 5) break;
+                              ?>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
+                                <td ><?= $value['name'] ?></td>
+                                <td><i class="fa fa-arrow-right"></i></td>
+                            </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingTwo" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
+                    <button class="btn btn-link">Cursos de Verão
+                    </button>
+                    <i class="fa fa-chevron-down" id='arrow_collapseTwo' style='float:right; margin-right: 20px; margin-top:5px'>
+                    </i>
+                </div>
+                <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div class="box-body table-responsive no-padding">
+                        <table class='courses-list' style='margin-top:35px'>
+                            <?php 
+                              foreach ($courses2 as $key => $value) { 
+                              ?>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $key]) ?>"'>
+                                <td ><?= $value?></td>
+                                <td><i class="fa fa-arrow-right"></i></td>
+                            </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingThree" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree" >
+                    <button class="btn btn-link">Cursos de Gestão de Tempo
+                    </button>
+                    <i class="fa fa-chevron-down" id='arrow_collapseThree' style='float:right; margin-right: 20px; margin-top:5px'>
+                    </i>
+                </div>
+                <div id="collapseThree" class="collapse " aria-labelledby="headingThree" data-parent="#accordion">
+                    <div class="box-body table-responsive no-padding">
+                        <table class='courses-list' style='margin-top:35px'>
+                            <?php 
+                              foreach ($courses3 as $key => $value) { 
+                            ?>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $key]) ?>"'>
+                                <td ><?= $value?></td>
+                                <td><i class="fa fa-arrow-right"></i></td>
+                            </tr>
+                          <?php } ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
     </div>
 </section>
    
@@ -139,6 +254,13 @@ section#contacts p{
     padding-left:15px;
     padding-right: 15px;
   }
+}
+#accordion table{
+  border-bottom: 0;
+}
+table.courses-list td i{
+  text-align: right;
+  margin-right: 5px;
 }
 </style>
 

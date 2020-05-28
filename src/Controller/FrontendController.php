@@ -333,5 +333,75 @@ class FrontendController extends AppController
       return $this->redirect($this->referer());
     }
 
+    public function certificacao()
+    {
+      $scity = $this->request->getCookie('city');
+      if($scity) $city_id = $scity; else $city_id = 1;
+       
+      $courses = $this->loadModel('Courses')->find('all', [
+        'order' => 'name', 
+        'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']]
+        ])->toArray();
+
+      foreach ($courses as $key => $value) { 
+
+            $min_date = new \DateTime('2040-12-31');
+            $max_date = new \DateTime('1994-12-31');
+            $e = 1;
+
+            foreach ($value['groups'] as $key2 => $group) {
+                      
+                      foreach ($group['lectures'] as $lecture) { 
+            if($lecture['datetime']):
+                        if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) { 
+                          $min_date = $lecture['datetime'];
+                        }
+
+                        if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d")) { 
+                          $max_date = $lecture['datetime'];
+                        }
+
+                        $e = 2;
+            endif;
+                      }
+                     
+            } 
+
+            if($e == 2):
+
+            $courses[$key]['min_date'] = $min_date;
+            $courses[$key]['max_date'] = $max_date;
+
+            else:
+
+            $courses[$key]['min_date'] = $min_date;
+
+            endif;
+
+            $courses[$key]['e'] = $e;
+      }
+
+      $courses =  (array) $courses;
+
+      $courses2 = [
+        1 => "Medicina", 
+        2 => "Cirurgia", 
+        3 => "Pediatria", 
+        4 => "Ginecologia/Obstetrícia", 
+        5 => "Psiquiatria"
+      ];
+
+      $courses3 = [
+        1 => "Medicina", 
+        2 => "Cirurgia", 
+        3 => "Pediatria", 
+        4 => "Ginecologia/Obstetrícia", 
+        5 => "Psiquiatria"
+      ];
+
+      usort( $courses, array( $this, 'sort' ) );
+
+      $this->set(compact('courses', 'courses2', 'courses3'));
+    }
    
 }

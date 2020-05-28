@@ -60,6 +60,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/banco/', ['controller' => 'Frontend', 'action' => 'perguntas']);
     $routes->connect('/informacoes/:param', ['controller' => 'Frontend', 'action' => 'informacoes']);
     $routes->connect('/contactos/', ['controller' => 'Frontend', 'action' => 'contactos']);
+    $routes->connect('/certificacao/', ['controller' => 'Frontend', 'action' => 'certificacao']);
     $routes->connect('/backoffice/', ['prefix' => 'backoffice', 'controller' => 'uploader', 'action' => 'index']);
     $routes->connect('/soon/', ['controller' => 'Frontend', 'action' => 'soon']);
 
