@@ -40,10 +40,10 @@
 		              </div>
 	              <div class='row'>
 	              	<div class="col-sm-12 text-left user-block" style='padding: 20px 35px'>
-                    <span class="description" style="visibility: hidden;"><?= implode(", ", $value['moderators']) ?></span>
+                    <span class="description" style="display:none;"><?= implode(", ", $value['moderators']) ?></span>
                     <span class="username"><?= $value['first_name']." ".$value['last_name'] ?></span>
                       
-	              	<p class='bio'><?= nl2br($value['description']) ?></p>
+	              	<p class='bio' style="display: none;"><?= nl2br($value['description']) ?></p>
 	              	</div>
                   </div>
                 </div>

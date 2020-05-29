@@ -333,7 +333,7 @@ class FrontendController extends AppController
       return $this->redirect($this->referer());
     }
 
-    public function certificacao()
+    public function formacao()
     {
       $scity = $this->request->getCookie('city');
       if($scity) $city_id = $scity; else $city_id = 1;
@@ -384,19 +384,19 @@ class FrontendController extends AppController
       $courses =  (array) $courses;
 
       $courses2 = [
-        1 => "Medicina", 
-        2 => "Cirurgia", 
-        3 => "Pediatria", 
-        4 => "Ginecologia/Obstetrícia", 
-        5 => "Psiquiatria"
+        1 => "Patologia Médica", 
+        2 => "Patologia Cirúrgica", 
+        3 => "Patologia Pediátrica", 
+        4 => "Patologia Ginecológica/Obstétrica", 
+        5 => "Patologia Psiquiátrica"
       ];
 
       $courses3 = [
-        1 => "Medicina", 
-        2 => "Cirurgia", 
-        3 => "Pediatria", 
-        4 => "Ginecologia/Obstetrícia", 
-        5 => "Psiquiatria"
+        1 => "Gestão do Trabalho", 
+        2 => "Planificação de Tarefas", 
+        3 => "Desperdiçadores e Economizadores de Tempo", 
+        4 => "Definição de Objetivos", 
+        5 => "Aplicação de Exercício Prático"
       ];
 
       usort( $courses, array( $this, 'sort' ) );
