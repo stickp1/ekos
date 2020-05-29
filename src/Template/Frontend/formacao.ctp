@@ -48,10 +48,10 @@
 
 <section class='text-sm-left text-center no-gutters about'>
     <div class="row is-flex">
-        <div class="col-sm-3" style='background-image: url("<?= $url?>/img/sub_banner1.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
+        <div class="col-sm-4" style='background-image: url("<?= $url?>/img/sub_banner1.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
            
         </div>
-        <div class="col-sm-9 bibliography_box">
+        <div class="col-sm-8 bibliography_box">
             <h2>Missão.</h2>
             <p>A EKOS tem como missão desenvolver competências médicas e conhecimento clínico úteis para a formação profissional de estudantes de medicina e profissionais de saúde.</p>
             </br></br></br>
@@ -67,44 +67,29 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
               <h1>Os nossos cursos.</h1>
-              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!
-              </br> </br><strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020</br>(informações adicionais serão divulgadas em setembro)</span>
-              </br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
-              </br> <strong>Curso de Gestão de Tarefas e Tempo | </strong><span style='font-size: 16px'>inscrições em breve </span>
+              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br><br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
+              <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
+              <br> <strong>Curso de Gestão de Tarefas e Tempo | </strong><span style='font-size: 16px'>inscrições em breve </span>
               </p>
               <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden', 'value' => $scity, 'id' => 'city_selector'])?>
               </p>
             </div>
         </div>
-        <div class="row hidden-sm">
+        <div class="row hidden-sm hidden-xs">
             <div class="col-sm-4">
-              <h2><span style='font-size:20px;'>Preparação para a PNA</span></br>Curso Anual</h2>
+              <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso Anual</h2>
               <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
             <div class="col-sm-4">
-              <h2><span style='font-size:20px;'>Preparação para a PNA</span></br>Curso de Verão</h2>
+              <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso de Verão</h2>
               <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
             <div class="col-sm-4">
-              <h2>Curso de Gestão </br>de Tarefas e de Tempo</h2>
+              <h2>Curso de Gestão <br>de Tarefas e de Tempo</h2>
               <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
-        <div class="row hidden-sm">
-            <!--<div class="col-md-10 col-md-offset-1">
-              <table class='courses-list' style='margin-top:35px'>
-                <?php 
-                foreach ($courses as $key => $value) { 
-                ?>
-                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
-                    <td ><?= $value['name'] ?></td>
-                    <td style='font-size:16px; padding-left:30px'><?php
-                    if($value['e'] != 1){
-                      echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');} ?> </td>
-                    <td width='50px'><i class="fa fa-arrow-right"></i></td>
-                </tr>
-                <?php } ?>
-              </table>
-            </div>-->
+        </div>
+        <div class="row hidden-sm hidden-xs">
             <div class="col-sm-4">
               <table class='courses-list' style='margin-top:35px'>
                 <?php 
@@ -144,10 +129,10 @@
               </table>
             </div>
         </div>
-        <div id="accordion" class="visible-sm">
+        <div id="accordion" class="visible-sm visible-xs">
             <div class="card">
                 <div class="card-header" id="headingOne" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
-                    <button class="btn btn-link">Cursos Anuais
+                    <button class="btn btn-link">Curso Anual
                     </button>
                     <i class="fa fa-chevron-down" id='arrow_collapseOne' style='float:right; margin-right: 20px; margin-top:5px'>
                     </i>
@@ -171,7 +156,7 @@
             </div>
             <div class="card">
                 <div class="card-header" id="headingTwo" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
-                    <button class="btn btn-link">Cursos de Verão
+                    <button class="btn btn-link">Curso de Verão
                     </button>
                     <i class="fa fa-chevron-down" id='arrow_collapseTwo' style='float:right; margin-right: 20px; margin-top:5px'>
                     </i>
@@ -193,7 +178,7 @@
             </div>
             <div class="card">
                 <div class="card-header" id="headingThree" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree" >
-                    <button class="btn btn-link">Cursos de Gestão de Tempo
+                    <button class="btn btn-link">Curso de Gestão de Tarefas e de Tempo
                     </button>
                     <i class="fa fa-chevron-down" id='arrow_collapseThree' style='float:right; margin-right: 20px; margin-top:5px'>
                     </i>
@@ -213,7 +198,6 @@
                     </div>
                 </div>
             </div>
-            
         </div>
         
     </div>
