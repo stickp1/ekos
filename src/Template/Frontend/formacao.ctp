@@ -95,7 +95,7 @@
                 <?php 
                 $count = count($courses);
                 foreach ($courses as $key => $value) { 
-                if (--$count < 6) break;
+                //if (--$count < 6) break;
                 ?>
                 <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                     <td ><?= $value['name'] ?></td>
@@ -143,7 +143,7 @@
                             <?php 
                               $count = count($courses);
                               foreach ($courses as $key => $value) { 
-                                if (--$count < 6) break;
+                                //if (--$count < 6) break;
                               ?>
                             <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                                 <td ><?= $value['name'] ?></td>

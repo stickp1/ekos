@@ -44,7 +44,7 @@
                 <table class='courses-list'>
                     <?php $aux = $coursesLen; ?>
                     <?php foreach ($courses as $key => $value) : ?>
-                        <?php if(--$aux < 5) break; ?>
+                        <?php //if(--$aux < 5) break; ?>
                         <tr class='primary' id="<?= $value['id']?>">
                             <td><?= $value['name'] ?></td>
                             <td>

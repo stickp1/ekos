@@ -34,56 +34,71 @@ class FrontendController extends AppController
        
        $courses = $this->loadModel('Courses')->find('all', [
           'order' => 'name', 
-          'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']]
+          'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']],
+          'conditions' => ['id >' => 1, 'id <' => 14]
         ])->toArray();
 
-       $courses2 = [
-        1 => "Patologia Médica", 
-        2 => "Patologia Cirúrgica", 
-        3 => "Patologia Pediátrica", 
-        4 => "Patologia Ginecológica/Obstétrica", 
-        5 => "Patologia Psiquiátrica"
+        $summer = $this->loadModel('Courses')->find('all', [
+        'order' => 'name', 
+        'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']], 
+        'conditions' => ['id' => 14]
+        ])->first();
+
+        $courses2 = [
+          1 => ['name' => 'Patologia Médica'],
+          2 => ['name' => 'Patologia Cirúrgica'],
+          3 => ['name' => 'Patologia Pediátrica'],
+          4 => ['name' => "Patologia Ginecológica/Obstétrica"],
+          5 => ['name' => 'Patologia Psiquiátrica']
         ];
-
-       foreach ($courses as $key => $value) { 
-
-            $min_date = new \DateTime('2040-12-31');
-            $max_date = new \DateTime('1994-12-31');
+        foreach ($courses as $key => $value) { 
+            $lim_date = [new \DateTime('2040-12-31'),
+                         new \DateTime('1994-12-31')];
             $e = 1;
+            foreach ($value['groups'] as $key2 => $group) {      
+                foreach ($group['lectures'] as $lecture) { 
+                    if($lecture['datetime']):
 
-            foreach ($value['groups'] as $key2 => $group) {
-                      
-                      foreach ($group['lectures'] as $lecture) { 
-            if($lecture['datetime']):
-                        if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) { 
-                          $min_date = $lecture['datetime'];
-                        }
-
-                        if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d")) { 
-                          $max_date = $lecture['datetime'];
-                        }
-
+                        if($lecture['datetime']->format("Y-m-d") < $lim_date[0]->format("Y-m-d"))
+                            $lim_date[0] = $lecture['datetime'];
+                        if($lecture['datetime']->format("Y-m-d") > $lim_date[1]->format("Y-m-d"))
+                            $lim_date[1] = $lecture['datetime'];
                         $e = 2;
-            endif;
-                      }
-                     
+                    endif;
+                }
             } 
-
             if($e == 2):
-
-            $courses[$key]['min_date'] = $min_date;
-            $courses[$key]['max_date'] = $max_date;
-
+              $courses[$key]['min_date'] = $lim_date[0];
+              $courses[$key]['max_date'] = $lim_date[1];
             else:
-
-            $courses[$key]['min_date'] = $min_date;
-
+              $courses[$key]['min_date'] = $lim_date[0];
             endif;
-
             $courses[$key]['e'] = $e;
-
-
-      }
+        }
+        foreach($courses2 as $key => $value){
+            $lim_date = [new \DateTime('2040-12-31'),
+                         new \DateTime('1994-12-31')];
+            $e = 1;
+            
+            foreach($summer['groups'] as $key2 => $group){
+                foreach($group['lectures'] as $lecture){
+                    if($lecture['datetime'] && $lecture['description'] == $value['name']){
+                      if($lecture['datetime']->format("Y-m-d") < $lim_date[0]->format("Y-m-d"))
+                            $lim_date[0] = $lecture['datetime'];
+                      if($lecture['datetime']->format("Y-m-d") > $lim_date[1]->format("Y-m-d"))
+                            $lim_date[1] = $lecture['datetime'];
+                      $e = 2;
+                    }
+                }
+            }
+            if($e == 2){
+              $courses2[$key]['min_date'] = $lim_date[0];
+              $courses2[$key]['max_date'] = $lim_date[1];
+            } else {
+              $courses2[$key]['min_date'] = $lim_date[0];
+            }
+            $courses2[$key]['e'] = $e;
+        }
 
       $courses =  (array) $courses;
 
@@ -154,13 +169,20 @@ class FrontendController extends AppController
        $courses = $this->loadModel('Courses')->find('all', [
           'order' => 'name', 
           'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
-          'conditions' => ['id >' => 1]
+          'conditions' => ['id >' => 1, 'id <' => 14]
         ]);
 
+       // Curso Verão -- Curso Clínico intensivo
        $summer = $this->loadModel('Courses')->find('all', [
-          'order' => 'name', 
           'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
-          'conditions' => ['id' => '14']])->first(); // Curso Verão -- Curso Clínico intensivo
+          'conditions' => ['id' => 14]
+        ])->first(); 
+
+       // Curso Gestão de Tarefas
+       $manage = $this->loadModel('Courses')->find('all', [
+          'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
+          'conditions' => ['id' => 18]
+        ])->first();
 
 
        $count_ = $this->loadModel('Products')->find('all', ['fields' => ['group_id', 'count' => 'count(id)'], 'group' => 'group_id'])->toArray();
@@ -183,7 +205,7 @@ class FrontendController extends AppController
        
        //$summer = $courses->toArray()[14];
 
-       $manage = $courses->toArray()[16];
+       //$manage = $courses->toArray()[16];
 
        $courses2 = [
         1 => "Patologia Médica", 
@@ -376,56 +398,50 @@ class FrontendController extends AppController
        
       $courses = $this->loadModel('Courses')->find('all', [
         'order' => 'name', 
-        'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']]
+        'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']], 
+        'conditions' => ['id >' => 1, 'id <' => 14]
         ])->toArray();
 
-      foreach ($courses as $key => $value) { 
-
-            $min_date = new \DateTime('2040-12-31');
-            $max_date = new \DateTime('1994-12-31');
-            $e = 1;
-
-            foreach ($value['groups'] as $key2 => $group) {
-                      
-                      foreach ($group['lectures'] as $lecture) { 
-            if($lecture['datetime']):
-                        if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) { 
-                          $min_date = $lecture['datetime'];
-                        }
-
-                        if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d")) { 
-                          $max_date = $lecture['datetime'];
-                        }
-
-                        $e = 2;
-            endif;
-                      }
-                     
-            } 
-
-            if($e == 2):
-
-            $courses[$key]['min_date'] = $min_date;
-            $courses[$key]['max_date'] = $max_date;
-
-            else:
-
-            $courses[$key]['min_date'] = $min_date;
-
-            endif;
-
-            $courses[$key]['e'] = $e;
-      }
-
-      $courses =  (array) $courses;
+      $summer = $this->loadModel('Courses')->find('all', [
+        'order' => 'name', 
+        'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']], 
+        'conditions' => ['id' => 14]
+        ])->first();
 
       $courses2 = [
-        1 => "Patologia Médica", 
-        2 => "Patologia Cirúrgica", 
-        3 => "Patologia Pediátrica", 
-        4 => "Patologia Ginecológica/Obstétrica", 
-        5 => "Patologia Psiquiátrica"
+        1 => 'Patologia Médica',
+        2 => 'Patologia Cirúrgica',
+        3 => 'Patologia Pediátrica',
+        4 => "Patologia Ginecológica/Obstétrica",
+        5 => 'Patologia Psiquiátrica'
       ];
+      foreach ($courses as $key => $value) { 
+          $lim_date = [new \DateTime('2040-12-31'),
+                       new \DateTime('1994-12-31')];
+          $e = 1;
+          foreach ($value['groups'] as $key2 => $group) {      
+              foreach ($group['lectures'] as $lecture) { 
+                  if($lecture['datetime']):
+                      if($lecture['datetime']->format("Y-m-d") < $lim_date[0]->format("Y-m-d"))
+                          $lim_date[0] = $lecture['datetime'];
+                      if($lecture['datetime']->format("Y-m-d") > $lim_date[1]->format("Y-m-d"))
+                          $lim_date[1] = $lecture['datetime'];
+                      $e = 2;
+                  endif;
+              }
+          } 
+          if($e == 2):
+            $courses[$key]['min_date'] = $lim_date[0];
+            $courses[$key]['max_date'] = $lim_date[1];
+          else:
+            $courses[$key]['min_date'] = $lim_date[0];
+          endif;
+            $courses[$key]['e'] = $e;
+      }
+      
+      $courses =  (array) $courses;
+      
+
 
       $courses3 = [
         1 => "Gestão do Trabalho", 
@@ -439,5 +455,4 @@ class FrontendController extends AppController
 
       $this->set(compact('courses', 'courses2', 'courses3'));
     }
-   
 }

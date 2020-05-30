@@ -117,7 +117,7 @@
               <table class='courses-list'>
                 <?php $count = count($courses); ?>
                 <?php foreach ($courses as $key => $value): ?> 
-                    <? if (--$count < 6) break; ?>
+                    <? //if (--$count < 6) break; ?>
                     <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                         <td ><?= $value['name'] ?></td>
                         <td class="date">
@@ -136,7 +136,12 @@
                 foreach ($courses2 as $key => $value) { 
                 ?>
                 <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>
-                    <td ><?= $value ?></td>
+                    <td ><?= $value['name'] ?></td>
+                    <td class="date">
+                          <?php if($value['e'] != 1)
+                              echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');
+                          ?> 
+                    </td>
                     <td width='50px'><i class="fa fa-arrow-right"></i></td>
                 </tr>
                 <?php } ?>
@@ -157,7 +162,7 @@
                             <?php 
                               $count = count($courses);
                               foreach ($courses as $key => $value) { 
-                                if (--$count < 6) break;
+                                //if (--$count < 6) break;
                               ?>
                             <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                                 <td ><?= $value['name'] ?></td>
