@@ -23,7 +23,7 @@
           <div class="col-md-8 col-md-offset-2">
             <h1>A Equipa.</h1>
             <p>Juntámos uma equipa motivada e competente para te ajudar na preparação deste desafio. Vem conhecê-los!</p>
-            <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?></p>
+            <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?></p>
           </div>
         </div>
         <div class='row is-flex'>

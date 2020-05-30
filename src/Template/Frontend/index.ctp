@@ -40,7 +40,7 @@
               <i class="fa fa-random fa-stack-1x fa-inverse"></i>
             </span>
             <h3>Integração de temas</h3>
-            <p class='small text-muted'>Os nossos cursos encontram-se organizados por sistemas de órgãos, e não por temas da matriz, de forma a melhor integrares os conhecimentos adquiridos.</p>
+            <p class='small text-muted'>Os nossos cursos de preparação para a PNA encontram-se organizados e estruturados por sistemas de órgão, e não por temas da matriz, de forma a melhor integrares os conhecimentos adquiridos.</p>
           </div>
         </div>
     </div>
@@ -52,13 +52,13 @@
            
         </div>
         <div class="col-sm-6 bibliography_box">
-            <h2>Análise Prova-Piloto.</h2>
-            <p>A EKOS preparou para ti a análise da prova-piloto, para te ajudar a orientar o estudo!</p>
-            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'analise-pp.pdf']); ?>"'>VER ANÁLISE</button>
+            <h2>Não sabes o que estudar?</h2>
+            <p>A EKOS preparou para ti uma cábula com toda a bibliografia oficial organizada por tema e capítulo para te ajudar a começar!</p>
+            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'matriz-ekos.pdf']); ?>"'>VER MATRIZ</button>
         </div>
     </div>
 </section>
-
+<!--
 <section id="courses" class='text-center'>
     <div class="container">
         <div class="row">
@@ -89,16 +89,17 @@
         </div>
     </div>
 </section>
-
+-->
 <section id="courses" class='text-center'>
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
               <h1>Os nossos cursos.</h1>
-              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br><br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
+              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br>
+              <br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
               <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
               </p>
-              <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden', 'value' => $scity, 'id' => 'city_selector'])?>
+              <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px;', 'value' => $scity, 'id' => 'city_selector'])?>
               </p>
             </div>
         </div>
@@ -199,7 +200,7 @@
         
     </div>
 </section>
-   
+ <!--  
 <section id="recruting" class='bg-light text-center'>
     <div class="container">
         <div class="row">
@@ -211,7 +212,7 @@
         </div>
     </div>
 </section>
-    
+ -->   
 <section id="contacts" class='bg-light text-sm-left text-center  no-gutters '>
     
       <div class="row is-flex">
@@ -224,7 +225,7 @@
             <h2>As nossas aulas.</h2>
             <p><b>Turmas</b><br>Existirá uma turma semanal e uma turma ao sábado</p>
             <p><b>Horário</b><br>Na turma da semana, as aulas terão, normalmente, lugar às 2ª/4ª/5ª entre as 18h e as 20h. Na turma do sábado, as aulas terão lugar entre as 8h30 e às 16h00 </p>
-            <p><b>Local</b><br>As aulas terão lugar na FMUL e/ou na NMS|FCM</p>
+            <p><b>Local</b><br>As aulas terão lugar na FMUL e/ou na FFUC</p>
         </div>
       </div>
     
