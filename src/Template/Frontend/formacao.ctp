@@ -13,7 +13,7 @@
         <div class="row">
           <div class="col-md-10 col-md-offset-1">
             <h1>Um projeto formativo para um novo exame.</h1>
-            <p>A nova Prova Nacional de Acesso baseia-se num novo paradigma que pretende, mais do que uma simples memorização, estimular o raciocínio clínico. A EKOS foi pensada desde início para este novo modelo de prova. Eis algumas das características que nos distinguem: </p>
+            <p>A EKOS ambiciona <b>contribuir para a formação médica em Portugal</b>, desenvolvendo um projeto formativo para estudantes e profissionais na área da medicina com o objetivo de transmitir <b>competências médicas e científicas</b> úteis para o seu percurso profissional e em particular para o <b>sucesso na prova nacional de acesso</b> à especialização médica. </p>
           </div>
         </div>
 
@@ -23,24 +23,24 @@
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
               <i class="fa fa-users fa-stack-1x fa-inverse"></i>
             </span>
-            <h3>Turmas pequenas</h3>
-            <p class='small text-muted'>Para um ambiente mais pedagógico e que estimule a interação, na EKOS todas as turmas são formadas por um máximo de 30 alunos.</p>
+            <h3>Objetivos formativos</h3>
+            <p class='small text-muted'>Ajudar os nossos alunos a adquirir conhecimentos e competências técnicas que valorizem o seu desenvolvimento pessoal e profissional e contribuam para o sucesso na prova nacional de acesso.</p>
           </div>
           <div class="col-md-4 animation-element">
             <span class="fa-stack fa-5x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
               <i class="fa fa-user-md fa-stack-1x fa-inverse"></i>
             </span>
-            <h3>Casos clínicos</h3>
-            <p class='small text-muted'>Todas as aulas da EKOS são baseadas na estimulação do raciocínio clínico através de casos práticos. No final de cada módulo, terás uma aula dedicada para reforçar esta aprendizagem e integrar conhecimentos.</p>
+            <h3>Metodologia pedagógica</h3>
+            <p class='small text-muted'>Aulas presenciais com o limite máximo de 30 alunos construídas de raiz para estimular técnicas de organização e raciocínio clínico através da utilização de casos práticos e interação entre formador e alunos.</p>
           </div>
           <div class="col-md-4 animation-element">
             <span class="fa-stack fa-5x">
               <i class="fa fa-circle fa-stack-2x text-primary"></i>
               <i class="fa fa-random fa-stack-1x fa-inverse"></i>
             </span>
-            <h3>Integração de temas</h3>
-            <p class='small text-muted'>Os nossos cursos encontram-se organizados por sistemas de órgãos, e não por temas da matriz, de forma a melhor integrares os conhecimentos adquiridos.</p>
+            <h3>Áreas de formação</h3>
+            <p class='small text-muted'>A EKOS oferece formação destinada à preparação e aprendizagem médica e ao desenvolvimento de competências pessoais, procurando capacitar os alunos para o seu sucesso profissional.</p>
           </div>
         </div>
     </div>
@@ -52,12 +52,9 @@
            
         </div>
         <div class="col-sm-8 bibliography_box">
-            <h2>Missão.</h2>
-            <p>A EKOS tem como missão desenvolver competências médicas e conhecimento clínico úteis para a formação profissional de estudantes de medicina e profissionais de saúde.</p>
-            </br></br></br>
             <h2>Visão.</h2>
-            <p>A EKOS ambiciona contribuir para o desenvolvimento da formação médica em Portugal, providenciando uma educação de excelência na área da medicina.</p>
-            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'analise-pp.pdf']); ?>"'>MANUAL?</button>
+            <p>Providenciar uma educação de excelência na área da medicina.</p>
+            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'informacoes']); ?>"'>SABE MAIS</button>
         </div>
     </div>
 </section>
@@ -67,7 +64,8 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
               <h1>Os nossos cursos.</h1>
-              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br><br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
+              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br>
+              <br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
               <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
               <br> <strong>Curso de Gestão de Tarefas e Tempo | </strong><span style='font-size: 16px'>inscrições em breve </span>
               </p>
@@ -224,11 +222,13 @@
         <div class="col-sm-6" style='background-image: url("<?= $url?>/img/mapa2.png");'>
         </div>
         <div class="col-sm-6 bibliography_box" style='background-color:#eee; color: #152335'>
-            <h2>As nossas regras de funcionamento.</h2>
+            <h2>Detalhes da nossa atividade formativa.</h2>
+            <!--
             <p><b>Metodologia</b><br>Existirá uma turma semanal e uma turma ao sábado</p>
             <p><b>Avaliação</b><br>Na turma da semana, as aulas terão, normalmente, lugar às 2ª/4ª/5ª entre as 18h e as 20h. Na turma do sábado, as aulas terão lugar entre as 8h30 e às 16h00 </p>
+            -->
             <p><b>Departamento de Formação</b><br><span style='font-size:16px;'>Gestor e Coordenador da Formação |</span><span style='font-size:14px;'> David Alves Berhanu</span><br><span style='font-size:16px;'>Responsável pelo Atendimento Diário |</span> <span style='font-size:14px;'> Ana Pereira Dagge</span></p>
-            <button class="btn btn-black" onClick="window.open('http://ekos.pt/reserved/exam')" >REGULAMENTO ATIVIDADE FORMATIVA</button>
+            <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'matriz-ekos.pdf']); ?>"' >REGULAMENTO ATIVIDADE FORMATIVA</button>
         </div>
       </div>
     

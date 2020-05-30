@@ -29,13 +29,15 @@
         <div class="row" style='margin-bottom:40px'>
             <div class="col-md-8 col-md-offset-2">
                 <h1>O nosso curso anual.</h1>
-                <p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
+                <!--<p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
+                </p>-->
+                <p>Organizado em <b>11 módulos</b> estruturados por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
                 </p>
                 <p class='small download'>
-                    <a href='/programa_integrado.pdf' target="_blank">    <i class="fa fa-download"></i> Temas do Curso Anual 
+                    <a href='/temas_modulos.pdf' target="_blank">    <i class="fa fa-download"></i> Organização Temática dos Módulos 
                     </a>
                 </p>
-                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?>
+                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
             </div>
         </div>
@@ -177,13 +179,13 @@
         <div class="row" style='margin-bottom:40px'>
             <div class="col-md-8 col-md-offset-2">
                 <h1>O nosso curso de verão.</h1>
-                <p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
+                <p>Um curso de <b>revisão intensiva</b> dos principais conceitos das 5 áreas da matriz, através de um <b>modelo assente em casos clínicos</b>, a partir dos quais se fará a desconstrução e apresentação de conteúdos. 
                 </p>
-                <p class='small download'>
+                <p class='small download' style='display:none;'>
                     <a href='/programa_integrado.pdf' target="_blank">    <i class="fa fa-download"></i> Temas do Curso de Verão 
                     </a>
                 </p>
-                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?>
+                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
             </div>
         </div>
@@ -322,18 +324,44 @@
     </div>
 </section>
 
+<section id="recruting" class='text-center'>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+            <h1>Perguntas Modelo.</h1>
+            <p>Não sabes que tipo de perguntas vão sair na nova prova? A EKOS preparou para ti 25 perguntas-tipo, baseadas no modelo de vinheta clínica, para que possas saber o que te espera.</p>
+
+            <button class="btn btn-black" onClick="window.open('http://ekos.pt/reserved/exam')" >COMEÇAR</button>
+          </div>
+        </div>
+      </div>
+</section> 
+
+<section class='text-sm-left text-center no-gutters about'>
+    <div class="row is-flex">
+        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/sub_banner1.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
+           
+        </div>
+        <div class="col-sm-6 bibliography_box">
+            <h2>Análise Prova-Piloto.</h2>
+            <p>A EKOS preparou para ti a análise da prova-piloto, para te ajudar a orientar o estudo!</p>
+            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'analise-pp.pdf']); ?>"'>VER ANÁLISE</button>
+        </div>
+    </div>
+</section>
+
 <section id="management" class="text-center">
     <div class="container">
         <div class="row" style='margin-bottom:40px'>
             <div class="col-md-8 col-md-offset-2">
-                <h1>O nosso curso de verão.</h1>
-                <p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
+                <h1>Desenvolvimento Pessoal.</h1>
+                <p>Um curso dirigido ao desenvolvimento de <b>competências e técnicas</b> úteis para a organização de tarefas e de tempo, que tem como objetivo <b>potenciar a gestão do teu estudo</b> e valorizar o teu percurso profissional. 
                 </p>
-                <p class='small download'>
+                <p class='small download' style='display:none;'>
                     <a href='/programa_integrado.pdf' target="_blank">    <i class="fa fa-download"></i> Temas do Curso de Verão 
                     </a>
                 </p>
-                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?>
+                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
             </div>
         </div>
