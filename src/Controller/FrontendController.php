@@ -37,6 +37,14 @@ class FrontendController extends AppController
           'contain' => ['Groups' => ['conditions' =>  ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures']]
         ])->toArray();
 
+       $courses2 = [
+        1 => "Patologia Médica", 
+        2 => "Patologia Cirúrgica", 
+        3 => "Patologia Pediátrica", 
+        4 => "Patologia Ginecológica/Obstétrica", 
+        5 => "Patologia Psiquiátrica"
+        ];
+
        foreach ($courses as $key => $value) { 
 
             $min_date = new \DateTime('2040-12-31');
@@ -140,7 +148,6 @@ class FrontendController extends AppController
 
     public function cursos()
     {
-    
        $scity = $this->request->getCookie('city');
        if($scity) $city_id = $scity; else $city_id = 1;
        
@@ -149,6 +156,12 @@ class FrontendController extends AppController
           'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
           'conditions' => ['id >' => 1]
         ]);
+
+       $summer = $this->loadModel('Courses')->find('all', [
+          'order' => 'name', 
+          'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
+          'conditions' => ['id' => '14']])->first(); // Curso Verão -- Curso Clínico intensivo
+
 
        $count_ = $this->loadModel('Products')->find('all', ['fields' => ['group_id', 'count' => 'count(id)'], 'group' => 'group_id'])->toArray();
        $count = array();
@@ -165,7 +178,30 @@ class FrontendController extends AppController
 
        $themes = $this->loadModel('Themes')->find('list')->toArray();
 
-       $this->set(compact('courses', 'themes', 'count'));
+       $coursesLen = $courses->count();
+
+       
+       //$summer = $courses->toArray()[14];
+
+       $manage = $courses->toArray()[16];
+
+       $courses2 = [
+        1 => "Patologia Médica", 
+        2 => "Patologia Cirúrgica", 
+        3 => "Patologia Pediátrica", 
+        4 => "Patologia Ginecológica/Obstétrica", 
+        5 => "Patologia Psiquiátrica"
+        ];
+
+       $courses3 = [
+        1 => "Gestão do Trabalho", 
+        2 => "Planificação de Tarefas", 
+        3 => "Desperdiçadores e Economizadores de Tempo", 
+        4 => "Definição de Objetivos", 
+        5 => "Aplicação de Exercício Prático"
+        ];
+
+       $this->set(compact('courses', 'themes', 'count', 'coursesLen', 'courses2', 'courses3', 'summer', 'manage'));
     }
 
     public function informacoes()

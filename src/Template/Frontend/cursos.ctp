@@ -8,11 +8,11 @@
 </header>
 
     
-<section id="services" class="text-center bg-light">
+<section id="intro" class="text-center bg-light">
     <div class="container">
         <div class="row" >
             <div class="col-md-8 col-md-offset-2">
-                <h1 style='text-align:center'>Um novo modelo.</h1>
+                <h1>Um novo modelo.</h1>
                 <p>Enfrentar uma prova com diferenças tão marcadas face ao anterior modelo e que exige domínio de conhecimento clínico, aumenta significativamente o nível de dificuldade e o desafio que é ser bem sucedido.
                 </p>
                 <p>Com vista a atingir melhores resultados, acreditamos que é preciso reformular o modelo de aulas de preparação, <b>passando do anfiteatro para a sala de aula.</b> 
@@ -24,14 +24,16 @@
     </div>
 </section>
 
-<section id="services" class="text-center">
+<section id="annual" class="text-center">
     <div class="container">
         <div class="row" style='margin-bottom:40px'>
             <div class="col-md-8 col-md-offset-2">
-                <h1 style='text-align:center'>O nosso curso anual.</h1>
+                <h1>O nosso curso anual.</h1>
                 <p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
                 </p>
-                <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Temas do Curso Anual </a>
+                <p class='small download'>
+                    <a href='/programa_integrado.pdf' target="_blank">    <i class="fa fa-download"></i> Temas do Curso Anual 
+                    </a>
                 </p>
                 <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
@@ -40,133 +42,463 @@
         <div class='row'>
             <div class='col-md-10 col-md-offset-1'>
                 <table class='courses-list'>
-                    <?php 
-                      foreach ($courses as $key => $value) { 
-                      if (--$count < 5) break;
-                    ?>
-                      <tr class='primary' id="<?= $value['id']?>">
-                          <td><?= $value['name'] ?></td>
-                          <td>
-                              <span class='small' style='color: #FEB000'>
-                              <?php 
-                                $e = '';
-                                foreach ($value['groups'] as $key2 => $group) {
-                                if(@in_array($group['id'], $inscriptions)) $e = "INSCRITO"; 
-                                elseif($group['inscriptions_open'] == 1) $e = 'Inscrições Abertas';
-                                }
-                                echo $e;
-                              ?></span>
-                          </td>
-                          <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value['id']?>'></i>
-                          </td>
-                      </tr>
-                      <tr>
-                          <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                          <div class='dependency d<?= $value['id']?> closed'>
-                              <!---VERIFICA SE EXISTEM TURMAS -->
-                              <?php if(count($value['groups']) > 0): ?>
-                              <div class="panel with-nav-tabs panel-default" style='background:transparent'>
-                                  <div>
-                                      <ul class="nav nav-tabs">
-                                          <?php foreach ($value['groups'] as $key2 => $group) { ?>
-                                          <li <?= $key2 == 0 ? "class='active'" : "" ?>><a href="#turma<?=$group['id']?>" data-toggle="tab"><?= $group['name']?></a></li>
-                                          <?php } ?>
-                                      </ul>
-                                  </div>
-                                  <div class="panel-body">
-                                      <div class="tab-content">
-                                          <?php foreach ($value['groups'] as $key2 => $group) {
-                                            $min_date = new DateTime('2040-12-31');
-                                            $max_date = new DateTime('1994-12-31');
-                                            foreach ($group['lectures'] as $lecture) { 
-      						                              if($lecture['datetime']):
-                                                if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) { 
-                                                    $min_date = $lecture['datetime'];
-                                                }
-                                                if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d")) { 
-                                                    $max_date = $lecture['datetime'];
-                                                }
-                                            endif;
-                                          } ?>
-                                            <div class="tab-pane fade in <?= $key2 == 0 ? "active" : "" ?>" id="turma<?=$group['id']?>">
-                                                <table style='width: 100%;'>
-                                                    <tr style='border-bottom: 1px solid #666; background-color: white'>
-                                                        <td valign='middle'>
-                                                            <span style='position: relative; top: 7px'><?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?></span> 
-                                                            <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> <?= $value['price'] ? $value['price']. " €" : ''?> </span> 
-                                                            <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
-                                                        </td>
-                                                        <td width='100px'> 
-                                                            <?php if (@in_array($group['id'], $inscriptions)) echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
-                                                              elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
-                                                                if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
-                                                              elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
-                                                              elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
-                                                              elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
-                                                            ?>  
-                                                        </td>
-                                                    </tr>
-                                                    <?php foreach ($group['lectures'] as $lecture) { ?>
-                                                        <tr class='class-list'>
-                                                            <td colspan='2'>
-                                                                <span class='class-name'> 
-                                                                    <?php 
-                                                                      $themes_ =  explode(',', $lecture['themes']);
-                                                                      if($lecture['themes'] != ''){
-                                      	                                foreach($themes_ as $key3 => $value2):
-                                      	                                $themes_[$key3] = $themes[$value2];
-                                      	                                endforeach;
-                                      	                                $lecture['description'] = implode(' | ', $themes_);
-                                                                      }         
-                                                                      echo $lecture['description']; ?>
-                                                                </span>
-                                                                <span style='margin-right: 25px'><?= $lecture->has('datetime') ?$lecture['datetime']->i18nFormat('dd.MM.yyyy') : '' ?>
-                                                                </span>
-                                                                <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
-                                                                </span>
-                                                                <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
-                                                                <?php if(in_array($value['id'], $inscriptions_courses)): ?>
-                                                                  <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
-                                                                <?php endif; ?>
-                                                            </td>
-                                                        </tr>
-                                                    <?php } ?>
-                                                </table>
-                                            </div>
-                                          <?php } ?>
-                                      </div>
-                                  </div>
-                              </div>
-                          </td>
-                      </tr>    <!---SE NÃO EXISTEM TURMAS -->
-                    <?php else: ?>
-              
-        		        <table style='width: 100%;'>
-                        <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666; background-color: white'>
-                            <td colspan='3' valign='middle' style='text-align: center'> <span style='font-weight: 600'> <?= $value['price'] ? $value['price']. " € | " : '' ?> </span> <span style='font-style: italic'><small>Datas a definir</small></span></td>
+                    <?php $aux = $coursesLen; ?>
+                    <?php foreach ($courses as $key => $value) : ?>
+                        <?php if(--$aux < 5) break; ?>
+                        <tr class='primary' id="<?= $value['id']?>">
+                            <td><?= $value['name'] ?></td>
+                            <td>
+                                <span class='small' style='color: #FEB000'>
+                                <?php 
+                                  $e = '';
+                                  foreach ($value['groups'] as $key2 => $group):
+                                    if(@in_array($group['id'], $inscriptions)) $e = "INSCRITO"; 
+                                    elseif($group['inscriptions_open'] == 1) $e = 'Inscrições Abertas';
+                                  endforeach;
+                                  echo $e;
+                                ?> 
+                                </span>
+                            </td>
+                            <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value['id']?>'></i>
+                            </td>
                         </tr>
-                        <?php foreach ($value['themes'] as $theme_) { ?>
-                            <tr class='class-list'>
-                                <td colspan='2'>
-                                    <span class='class-name'> 
-                                        <?= $theme_['name'] ?>
-                                    </span>
+                        <tr>
+                            <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                                <div class='dependency d<?= $value['id']?> closed'>
+                                <!---VERIFICA SE EXISTEM TURMAS -->
+                                <?php if(count($value['groups']) > 0): ?>
+                                <div class="panel with-nav-tabs panel-default" style='background:transparent'>
+                                    <div>
+                                        <ul class="nav nav-tabs">
+                                            <?php foreach ($value['groups'] as $key2 => $group): ?>
+                                            <li <?= $key2 == 0 ? "class='active'" : "" ?>><a href="#turma<?=$group['id']?>" data-toggle="tab"><?= $group['name']?></a></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="tab-content">
+                                            <?php foreach ($value['groups'] as $key2 => $group):
+                                              $min_date = new DateTime('2040-12-31');
+                                              $max_date = new DateTime('1994-12-31');
+                                              foreach ($group['lectures'] as $lecture): 
+        						                              if($lecture['datetime']):
+                                                    if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) 
+                                                      $min_date = $lecture['datetime'];
+                                                    if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d"))
+                                                      $max_date = $lecture['datetime'];
+                                                  endif;
+                                              endforeach; ?>
+                                              <div class="tab-pane fade in <?= $key2 == 0 ? "active" : "" ?>" id="turma<?=$group['id']?>">
+                                                  <table style='width: 100%;'>
+                                                      <tr style='border-bottom: 1px solid #666; background-color: white'>
+                                                          <td valign='middle'>
+                                                              <span style='position: relative; top: 7px'>
+                                                                  <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>    
+                                                              </span> 
+                                                              <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> 
+                                                                  <?= $value['price'] ? $value['price']. " €" : ''?> 
+                                                              </span> 
+                                                              <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
+                                                          </td>
+                                                          <td width='100px'> 
+                                                              <?php if (@in_array($group['id'], $inscriptions)) 
+                                                                  echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
+                                                                elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
+                                                                  if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
+                                                                elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
+                                                                elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
+                                                                elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
+                                                              ?>  
+                                                          </td>
+                                                      </tr>
+                                                      <?php foreach ($group['lectures'] as $lecture) { ?>
+                                                          <tr class='class-list'>
+                                                              <td colspan='2'>
+                                                                  <span class='class-name'> 
+                                                                      <?php 
+                                                                        $themes_ =  explode(',', $lecture['themes']);
+                                                                        if($lecture['themes'] != ''){
+                                        	                                foreach($themes_ as $key3 => $value2):
+                                        	                                $themes_[$key3] = $themes[$value2];
+                                        	                                endforeach;
+                                        	                                $lecture['description'] = implode(' | ', $themes_);
+                                                                        }         
+                                                                        echo $lecture['description']; ?>
+                                                                  </span>
+                                                                  <span style='margin-right: 25px'><?= $lecture->has('datetime') ?$lecture['datetime']->i18nFormat('dd.MM.yyyy') : '' ?>
+                                                                  </span>
+                                                                  <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
+                                                                  </span>
+                                                                  <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
+                                                                  <?php if(in_array($value['id'], $inscriptions_courses)): ?>
+                                                                    <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
+                                                                  <?php endif; ?>
+                                                              </td>
+                                                          </tr>
+                                                      <?php } ?>
+                                                  </table>
+                                              </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>    <!---SE NÃO EXISTEM TURMAS -->
+                    
+                                <?php else: ?>
+                  
+            		        <table style='width: 100%;'>
+                            <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666; background-color: white'>
+                                <td colspan='3' valign='middle' style='text-align: center'> 
+                                    <span style='font-weight: 600'> <?= $value['price'] ? $value['price']. " € | " : '' ?> </span> 
+                                    <span style='font-style: italic'><small>Datas a definir</small></span>
                                 </td>
                             </tr>
-                        <?php } ?>
-                    </table>
-                    <?php endif; ?>
-              
-                    </div>
-                    <?php } ?>
+                            <?php foreach ($value['themes'] as $theme_): ?>
+                                <tr class='class-list'>
+                                    <td colspan='2'>
+                                        <span class='class-name'> <?= $theme_['name'] ?></span>
+                                    </td>
+                                </tr>
+                            <?php endforeach ?>
+                        </table>
+                                <?php endif; ?>
+                  
+                        </div>
+                    <?php endforeach; ?>
                 </table>
-            
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="summer" class="text-center bg-light">
+    <div class="container">
+        <div class="row" style='margin-bottom:40px'>
+            <div class="col-md-8 col-md-offset-2">
+                <h1>O nosso curso de verão.</h1>
+                <p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
+                </p>
+                <p class='small download'>
+                    <a href='/programa_integrado.pdf' target="_blank">    <i class="fa fa-download"></i> Temas do Curso de Verão 
+                    </a>
+                </p>
+                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?>
+                </p>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-10 col-md-offset-1'>
+                <table class='courses-list'>
+                    <?php $aux = $coursesLen; ?>
+                    <?php foreach ($courses2 as $key => $value) : ?>
+                        <tr class='primary' id="s<?= $key?>">
+                            <td><?= $value ?></td>
+                            <td>
+                                <span class='small' style='color: #FEB000'>
+                                <?php 
+                                  $e = '';
+                                  foreach ($summer['groups'] as $key2 => $group):
+                                    if(@in_array($group['id'], $inscriptions)) $e = "INSCRITO"; 
+                                    elseif($group['inscriptions_open'] == 1) $e = 'Inscrições Abertas';
+                                  endforeach;
+                                  echo $e;
+                                ?> 
+                                </span>
+                            </td>
+                            <td width='50px'><i class="fa fa-chevron-down" id='arrow_s<?= $key?>'></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                                <div class='dependency ds<?= $key?> closed'>
+                                    <!---VERIFICA SE EXISTEM TURMAS -->
+                                    <?php if(count($summer['groups']) > 0): ?>
+                                    <div class="panel with-nav-tabs panel-default" style='background:transparent'>
+                                        <div>
+                                            <ul class="nav nav-tabs">
+                                                <?php foreach ($summer['groups'] as $key2 => $group): ?>
+                                                <li <?= $key2 == 0 ? "class='active'" : "" ?>><a href="#turma<?=$key.$group['id']?>" data-toggle="tab"><?= $group['name']?></a></li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="tab-content">
+                                                <?php foreach ($summer['groups'] as $key2 => $group): 
+                                                  $min_date = new DateTime('2040-12-31');
+                                                  $max_date = new DateTime('1994-12-31');
+                                                  foreach ($group['lectures'] as $lecture):
+                                                      if($lecture['datetime'] && $lecture['description'] == $value):
+                                                        if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) 
+                                                          $min_date = $lecture['datetime'];
+                                                        if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d"))
+                                                          $max_date = $lecture['datetime'];
+                                                      endif;
+                                                  endforeach; ?>
+                                                  <div class="tab-pane fade in <?= $key2 == 0 ? "active" : "" ?>" id="turma<?=$key.$group['id']?>">
+                                                      <table style='width: 100%;'>
+                                                          <tr style='border-bottom: 1px solid #666'>
+                                                              <td valign='middle'>
+                                                                  <span style='position: relative; top: 7px'>
+                                                                      <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>    
+                                                                  </span> 
+                                                                  <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> 
+                                                                      <?= $summer['price'] ? $summer['price']. " €" : ''?> 
+                                                                  </span> 
+                                                                  <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
+                                                              </td>
+                                                              <td width='100px'> 
+                                                                  <?php if (@in_array($group['id'], $inscriptions)) 
+                                                                      echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
+                                                                    elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
+                                                                      if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
+                                                                    elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
+                                                                    elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
+                                                                    elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
+                                                                  ?>  
+                                                              </td>
+                                                          </tr>
+                                                          <?php foreach ($group['lectures'] as $lecture): ?>
+                                                              <?php if ($lecture['description'] == $value): ?>
+                                                                  <tr class='class-list'>
+                                                                      <td colspan='2'>
+                                                                          <span class='class-name'> 
+                                                                              <?php 
+                                                                                $themes_ =  explode(',', $lecture['themes']);
+                                                                                if($lecture['themes'] != ''){
+                                                                                  foreach($themes_ as $key3 => $value2):
+                                                                                  $themes_[$key3] = $themes[$value2];
+                                                                                  endforeach;
+                                                                                  $lecture['description'] = implode(' | ', $themes_);
+                                                                                }
+                                                                                echo $lecture['description']; ?>
+                                                                          </span>
+                                                                          <span style='margin-right: 25px'><?= $lecture->has('datetime') ?$lecture['datetime']->i18nFormat('dd.MM.yyyy') : '' ?>
+                                                                          </span>
+                                                                          <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
+                                                                          </span>
+                                                                          <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
+                                                                          <?php if(in_array($summer['id'], $inscriptions_courses)): ?>
+                                                                            <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
+                                                                          <?php endif; ?>
+                                                                      </td>
+                                                                  </tr>
+                                                              <?php endif; ?>
+                                                          <?php endforeach;?>
+                                                      </table>
+                                                  </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>    
+                                    <!---SE NÃO EXISTEM TURMAS -->
+                                    <?php else: ?>
+                                        <table style='width: 100%;'>
+                                            <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666; background-color: white'>
+                                                <td colspan='3' valign='middle' style='text-align: center'> 
+                                                    <span style='font-weight: 600'> <?= $summer['price'] ? $summer['price']. " € | " : '' ?> </span> 
+                                                    <span style='font-style: italic'><small>Datas a definir</small></span>
+                                                </td>
+                                            </tr>
+                                            <?php foreach ($summer['themes'] as $theme_): ?>
+                                                <tr class='class-list'>
+                                                    <td colspan='2'>
+                                                        <span class='class-name'> <?= $theme_['name'] ?></span>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        </table>
+                                     
+                                    <?php endif; ?>
+                  
+                        </div>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="management" class="text-center">
+    <div class="container">
+        <div class="row" style='margin-bottom:40px'>
+            <div class="col-md-8 col-md-offset-2">
+                <h1>O nosso curso de verão.</h1>
+                <p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
+                </p>
+                <p class='small download'>
+                    <a href='/programa_integrado.pdf' target="_blank">    <i class="fa fa-download"></i> Temas do Curso de Verão 
+                    </a>
+                </p>
+                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden;', 'value' => $scity, 'id' => 'city_selector'])?>
+                </p>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-10 col-md-offset-1'>
+                <table class='courses-list'>
+                    <?php $aux = $coursesLen; ?>
+                    <?php foreach ($courses3 as $key => $value) : ?>
+                        <tr class='primary' id="t<?= $key?>">
+                            <td><?= $value ?></td>
+                            <td>
+                                <span class='small' style='color: #FEB000'>
+                                <?php 
+                                  $e = '';
+                                  foreach ($manage['groups'] as $key2 => $group):
+                                    if(@in_array($group['id'], $inscriptions)) $e = "INSCRITO"; 
+                                    elseif($group['inscriptions_open'] == 1) $e = 'Inscrições Abertas';
+                                  endforeach;
+                                  echo $e;
+                                ?> 
+                                </span>
+                            </td>
+                            <td width='50px'><i class="fa fa-chevron-down" id='arrow_t<?= $key?>'></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                                <div class='dependency dt<?= $key?> closed'>
+                                    <!---VERIFICA SE EXISTEM TURMAS -->
+                                    <?php if(count($manage['groups']) > 0): ?>
+                                    <div class="panel with-nav-tabs panel-default" style='background:transparent'>
+                                        <div>
+                                            <ul class="nav nav-tabs">
+                                                <?php foreach ($manage['groups'] as $key2 => $group): ?>
+                                                <li <?= $key2 == 0 ? "class='active'" : "" ?>><a href="#turma<?=$key.$group['id']?>" data-toggle="tab"><?= $group['name']?></a></li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="tab-content">
+                                                <?php foreach ($manage['groups'] as $key2 => $group): 
+                                                  $min_date = new DateTime('2040-12-31');
+                                                  $max_date = new DateTime('1994-12-31');
+                                                  foreach ($group['lectures'] as $lecture):
+                                                      if($lecture['datetime'] && $lecture['description'] == $value):
+                                                        if($lecture['datetime']->format("Y-m-d") < $min_date->format("Y-m-d")) 
+                                                          $min_date = $lecture['datetime'];
+                                                        if($lecture['datetime']->format("Y-m-d") > $max_date->format("Y-m-d"))
+                                                          $max_date = $lecture['datetime'];
+                                                      endif;
+                                                  endforeach; ?>
+                                                  <div class="tab-pane fade in <?= $key2 == 0 ? "active" : "" ?>" id="turma<?=$key.$group['id']?>">
+                                                      <table style='width: 100%;'>
+                                                          <tr style='border-bottom: 1px solid #666'>
+                                                              <td valign='middle'>
+                                                                  <span style='position: relative; top: 7px'>
+                                                                      <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>    
+                                                                  </span> 
+                                                                  <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> 
+                                                                      <?= $manage['price'] ? $manage['price']. " €" : ''?> 
+                                                                  </span> 
+                                                                  <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
+                                                              </td>
+                                                              <td width='100px'> 
+                                                                  <?php if (@in_array($group['id'], $inscriptions)) 
+                                                                      echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
+                                                                    elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
+                                                                      if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
+                                                                    elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
+                                                                    elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
+                                                                    elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
+                                                                  ?>  
+                                                              </td>
+                                                          </tr>
+                                                          <?php foreach ($group['lectures'] as $lecture): ?>
+                                                              <?php if ($lecture['description'] == $value): ?>
+                                                                  <tr class='class-list'>
+                                                                      <td colspan='2'>
+                                                                          <span class='class-name'> 
+                                                                              <?php 
+                                                                                $themes_ =  explode(',', $lecture['themes']);
+                                                                                if($lecture['themes'] != ''){
+                                                                                  foreach($themes_ as $key3 => $value2):
+                                                                                  $themes_[$key3] = $themes[$value2];
+                                                                                  endforeach;
+                                                                                  $lecture['description'] = implode(' | ', $themes_);
+                                                                                }
+                                                                                echo $lecture['description']; ?>
+                                                                          </span>
+                                                                          <span style='margin-right: 25px'><?= $lecture->has('datetime') ?$lecture['datetime']->i18nFormat('dd.MM.yyyy') : '' ?>
+                                                                          </span>
+                                                                          <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
+                                                                          </span>
+                                                                          <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
+                                                                          <?php if(in_array($summer['id'], $inscriptions_courses)): ?>
+                                                                            <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
+                                                                          <?php endif; ?>
+                                                                      </td>
+                                                                  </tr>
+                                                              <?php endif; ?>
+                                                          <?php endforeach;?>
+                                                      </table>
+                                                  </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>    
+                                    <!---SE NÃO EXISTEM TURMAS -->
+                                    <?php else: ?>
+                                        <table style='width: 100%;'>
+                                            <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666;'>
+                                                <td colspan='3' valign='middle' style='text-align: center'> 
+                                                    <span style='font-weight: 600'> <?= $manage['price'] ? $manage['price']. " € | " : '' ?> </span> 
+                                                    <span style='font-style: italic'><small>Datas a definir</small></span>
+                                                </td>
+                                            </tr>
+                                            <?php foreach ($manage['themes'] as $theme_): ?>
+                                                <tr class='class-list'>
+                                                    <td colspan='2'>
+                                                        <span class='class-name'> <?= $theme_['name'] ?></span>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        </table>
+                                     
+                                    <?php endif; ?>
+                  
+                        </div>
+                    <?php endforeach; ?>
+                </table>
             </div>
         </div>
     </div>
 </section>
 
 
+
+<style>
+  #intro h1{
+    text-align:center;
+  }
+  #services h1{
+    text-align:center;
+  }
+  .download{
+    margin-top: 30px;
+  }
+  #summer .dependency{
+    background-color: white;
+  }
+  #summer .panel tbody tr:first-child{
+    background-color: #F5F5F5;
+  }
+  #summer .panel .nav-tabs{
+    background-color: #F5F5F5;
+  }
+  #management .courses-list tr td .dependency{
+    background-color: #F5F5F5;
+  }
+
+
+</style>
 
 <script>
 $('.primary').on('click', function(){
@@ -176,6 +508,7 @@ $('.primary').on('click', function(){
     $('.fa-chevron-up').removeClass('fa-chevron-up').addClass('fa-chevron-down');
     $('.dependency.d'+id).removeClass('closed');
     $('#arrow_'+id).removeClass('fa-chevron-down').addClass('fa-chevron-up');
+    console.log("if there were........");
   } else {
     $('.dependency').addClass('closed');
     $('#arrow_'+id).removeClass('fa-chevron-up').addClass('fa-chevron-down');
@@ -184,12 +517,12 @@ $('.primary').on('click', function(){
 })
 
 <?php if(isset($_GET['c'])): ?>
-$('.dependency.d<?= $_GET['c'] ?>').removeClass('closed');
-$('#arrow_<?= $_GET['c'] ?>').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-$("#arrow_<?= $_GET['c']?>").get(0).scrollIntoView();
+  $('.dependency.d<?= $_GET['c'] ?>').removeClass('closed');
+  $('#arrow_<?= $_GET['c'] ?>').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+  $("#arrow_<?= $_GET['c']?>").get(0).scrollIntoView();
 
-setTimeout(function(){$('html, body').animate({
-                    scrollTop: $("#arrow_<?= $_GET['c']?>").offset().top-100
-                }, 500)}, 500);
+  setTimeout(function(){$('html, body').animate({
+                      scrollTop: $("#arrow_<?= $_GET['c']?>").offset().top-100
+                  }, 500)}, 500);
 <?php endif;?>
 </script>

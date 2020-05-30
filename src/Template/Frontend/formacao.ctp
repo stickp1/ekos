@@ -91,11 +91,11 @@
         </div>
         <div class="row hidden-sm hidden-xs">
             <div class="col-sm-4">
-              <table class='courses-list' style='margin-top:35px'>
+              <table class='courses-list'>
                 <?php 
                 $count = count($courses);
                 foreach ($courses as $key => $value) { 
-                if (--$count < 5) break;
+                if (--$count < 6) break;
                 ?>
                 <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                     <td ><?= $value['name'] ?></td>
@@ -105,11 +105,11 @@
               </table>
             </div>
             <div class="col-sm-4">
-              <table class='courses-list' style='margin-top:35px'>
+              <table class='courses-list'>
                 <?php 
                 foreach ($courses2 as $key => $value) { 
                 ?>
-                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $key]) ?>"'>
+                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>
                     <td ><?= $value ?></td>
                     <td width='50px'><i class="fa fa-arrow-right"></i></td>
                 </tr>
@@ -117,11 +117,11 @@
               </table>
             </div>
             <div class="col-sm-4">
-              <table class='courses-list' style='margin-top:35px'>
+              <table class='courses-list'>
                 <?php 
                 foreach ($courses3 as $key => $value) { 
                 ?>
-                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
+                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 't'.$key]) ?>"'>
                     <td><?= $value ?></td>
                     <td width='50px'><i class="fa fa-arrow-right"></i></td>
                 </tr>
@@ -139,11 +139,11 @@
                 </div>
                 <div id="collapseOne" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="box-body table-responsive no-padding">
-                        <table class='courses-list' style='margin-top:35px'>
+                        <table class='courses-list'>
                             <?php 
                               $count = count($courses);
                               foreach ($courses as $key => $value) { 
-                                if (--$count < 5) break;
+                                if (--$count < 6) break;
                               ?>
                             <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                                 <td ><?= $value['name'] ?></td>
@@ -163,11 +163,11 @@
                 </div>
                 <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordion">
                     <div class="box-body table-responsive no-padding">
-                        <table class='courses-list' style='margin-top:35px'>
+                        <table class='courses-list'>
                             <?php 
                               foreach ($courses2 as $key => $value) { 
-                              ?>
-                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $key]) ?>"'>
+                            ?>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>
                                 <td ><?= $value?></td>
                                 <td><i class="fa fa-arrow-right"></i></td>
                             </tr>
@@ -185,15 +185,15 @@
                 </div>
                 <div id="collapseThree" class="collapse " aria-labelledby="headingThree" data-parent="#accordion">
                     <div class="box-body table-responsive no-padding">
-                        <table class='courses-list' style='margin-top:35px'>
+                        <table class='courses-list'>
                             <?php 
                               foreach ($courses3 as $key => $value) { 
                             ?>
-                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $key]) ?>"'>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 't'.$key]) ?>"'>
                                 <td ><?= $value?></td>
                                 <td><i class="fa fa-arrow-right"></i></td>
                             </tr>
-                          <?php } ?>
+                            <?php } ?>
                         </table>
                     </div>
                 </div>
@@ -257,9 +257,21 @@ section#contacts p{
 #accordion table{
   border-bottom: 0;
 }
-table.courses-list td i{
+#accordion .table-responsive{
+  border: none;
+}
+table.courses-list td:last-child{
   text-align: right;
-  margin-right: 5px;
+  padding-right: 20px;
+}
+#accordion table tr{
+  margin-left: 5px;
+}
+#accordion table.courses-list tr.primary td{
+  padding-left: 10px;
+}
+.courses-list{
+  margin-top: 35px;
 }
 </style>
 

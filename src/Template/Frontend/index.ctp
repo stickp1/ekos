@@ -89,6 +89,116 @@
         </div>
     </div>
 </section>
+
+<section id="courses" class='text-center'>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+              <h1>Os nossos cursos.</h1>
+              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br><br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
+              <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
+              </p>
+              <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden', 'value' => $scity, 'id' => 'city_selector'])?>
+              </p>
+            </div>
+        </div>
+        <div class="row hidden-xs hidden-sm">
+            <div class="col-sm-6">
+              <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso Anual</h2>
+              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+            </div>
+            <div class="col-sm-6">
+              <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso de Verão</h2>
+              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+            </div>
+        </div>
+        <div class="row hidden-xs hidden-sm">
+            <div class="col-sm-6">
+              <table class='courses-list'>
+                <?php $count = count($courses); ?>
+                <?php foreach ($courses as $key => $value): ?> 
+                    <? if (--$count < 6) break; ?>
+                    <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
+                        <td ><?= $value['name'] ?></td>
+                        <td class="date">
+                          <?php if($value['e'] != 1)
+                              echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');
+                          ?> 
+                        </td>
+                        <td width='50px'><i class="fa fa-arrow-right"></i></td>
+                    </tr>
+                <?php endforeach; ?>
+              </table>
+            </div>
+            <div class="col-sm-6">
+              <table class='courses-list'>
+                <?php 
+                foreach ($courses2 as $key => $value) { 
+                ?>
+                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>
+                    <td ><?= $value ?></td>
+                    <td width='50px'><i class="fa fa-arrow-right"></i></td>
+                </tr>
+                <?php } ?>
+              </table>
+            </div>
+        </div>
+        <div id="accordion" class=" visible-xs visible-sm">
+            <div class="card">
+                <div class="card-header" id="headingOne" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" >
+                    <button class="btn btn-link">Curso Anual
+                    </button>
+                    <i class="fa fa-chevron-down" id='arrow_collapseOne' style='float:right; margin-right: 20px; margin-top:5px'>
+                    </i>
+                </div>
+                <div id="collapseOne" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="box-body table-responsive no-padding">
+                        <table class='courses-list'>
+                            <?php 
+                              $count = count($courses);
+                              foreach ($courses as $key => $value) { 
+                                if (--$count < 6) break;
+                              ?>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
+                                <td ><?= $value['name'] ?></td>
+                                <td class="date">
+                                    <?php if($value['e'] != 1)
+                                        echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');
+                                    ?> 
+                                </td>
+                                <td><i class="fa fa-arrow-right"></i></td>
+                            </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingTwo" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" >
+                    <button class="btn btn-link">Curso de Verão
+                    </button>
+                    <i class="fa fa-chevron-down" id='arrow_collapseTwo' style='float:right; margin-right: 20px; margin-top:5px'>
+                    </i>
+                </div>
+                <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div class="box-body table-responsive no-padding">
+                        <table class='courses-list'>
+                            <?php 
+                              foreach ($courses2 as $key => $value) { 
+                            ?>
+                            <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>
+                                <td ><?= $value?></td>
+                                <td><i class="fa fa-arrow-right"></i></td>
+                            </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</section>
    
 <section id="recruting" class='bg-light text-center'>
     <div class="container">
@@ -139,6 +249,29 @@ section#contacts p{
     padding-left:15px;
     padding-right: 15px;
   }
+}
+#accordion table{
+  border-bottom: 0;
+}
+#accordion .table-responsive{
+  border: none;
+}
+table.courses-list td:last-child{
+  text-align: right;
+  padding-right: 20px;
+}
+#accordion table tr{
+  margin-left: 5px;
+}
+#accordion table.courses-list tr.primary td{
+  padding-left: 10px;
+}
+.courses-list{
+  margin-top: 35px;
+}
+table.courses-list td.date{
+  font-size:16px; 
+  padding-left:30px;
 }
 </style>
 
