@@ -58,38 +58,7 @@
         </div>
     </div>
 </section>
-<!--
-<section id="courses" class='text-center'>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-              <h1>Os nossos cursos.</h1>
-              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!
-              </p>
-              <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px', 'value' => $scity, 'id' => 'city_selector'])?>
-              </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-              <table class='courses-list' style='margin-top:35px'>
-                <?php 
-                foreach ($courses as $key => $value) { 
-                ?>
-                <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
-                    <td ><?= $value['name'] ?></td>
-                    <td style='font-size:16px; padding-left:30px'><?php
-                    if($value['e'] != 1){
-                      echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');} ?> </td>
-                    <td width='50px'><i class="fa fa-arrow-right"></i></td>
-                </tr>
-                <?php } ?>
-              </table>
-            </div>
-        </div>
-    </div>
-</section>
--->
+
 <section id="courses" class='text-center'>
     <div class="container">
         <div class="row">
@@ -123,7 +92,7 @@
                         <td ><?= $value['name'] ?></td>
                         <td class="date">
                           <?php if($value['e'] != 1)
-                              echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');
+                              echo $value['min_date']->i18nFormat('dd.MM.yyyy')." ".$value['max_date']->i18nFormat('dd.MM.yyyy');
                           ?> 
                         </td>
                         <td width='50px'><i class="fa fa-arrow-right"></i></td>
@@ -140,7 +109,7 @@
                     <td ><?= $value['name'] ?></td>
                     <td class="date">
                           <?php if($value['e'] != 1)
-                              echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');
+                              echo $value['min_date']->i18nFormat('dd.MM.yyyy')." ".$value['max_date']->i18nFormat('dd.MM.yyyy');
                           ?> 
                     </td>
                     <td width='50px'><i class="fa fa-arrow-right"></i></td>
@@ -160,11 +129,7 @@
                 <div id="collapseOne" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="box-body table-responsive no-padding">
                         <table class='courses-list'>
-                            <?php 
-                              $count = count($courses);
-                              foreach ($courses as $key => $value) { 
-                                //if (--$count < 6) break;
-                              ?>
+                            <?php foreach ($courses as $key => $value): ?>
                             <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => $value['id']]) ?>"'>
                                 <td ><?= $value['name'] ?></td>
                                 <td class="date">
@@ -174,7 +139,7 @@
                                 </td>
                                 <td><i class="fa fa-arrow-right"></i></td>
                             </tr>
-                            <?php } ?>
+                            <?php endforeach; ?>
                         </table>
                     </div>
                 </div>
@@ -189,14 +154,17 @@
                 <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordion">
                     <div class="box-body table-responsive no-padding">
                         <table class='courses-list'>
-                            <?php 
-                              foreach ($courses2 as $key => $value) { 
-                            ?>
+                            <?php foreach ($courses2 as $key => $value): ?>
                             <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>
-                                <td ><?= $value?></td>
+                                <td ><?= $value['name']?></td>
+                                <td class="date">
+                                    <?php if($value['e'] != 1)
+                                        echo $value['min_date']->i18nFormat('dd.MM.yyyy')." - ".$value['max_date']->i18nFormat('dd.MM.yyyy');
+                                    ?> 
+                                </td>
                                 <td><i class="fa fa-arrow-right"></i></td>
                             </tr>
-                            <?php } ?>
+                            <?php endforeach; ?>
                         </table>
                     </div>
                 </div>
@@ -265,6 +233,7 @@ section#contacts p{
 table.courses-list td:last-child{
   text-align: right;
   padding-right: 20px;
+  width: 80px;
 }
 #accordion table tr{
   margin-left: 5px;
@@ -272,12 +241,20 @@ table.courses-list td:last-child{
 #accordion table.courses-list tr.primary td{
   padding-left: 10px;
 }
+#accordion .card-header{
+  position: relative;
+}
+#accordion .card-header .fa-chevron-down{
+  position: absolute;
+  right: 0px;
+}
 .courses-list{
   margin-top: 35px;
 }
 table.courses-list td.date{
   font-size:16px; 
   padding-left:30px;
+  text-align: right;
 }
 </style>
 

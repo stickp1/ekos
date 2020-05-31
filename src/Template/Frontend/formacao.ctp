@@ -53,7 +53,7 @@
         </div>
         <div class="col-sm-8 bibliography_box">
             <h2>Visão.</h2>
-            <p>Providenciar uma educação de excelência na área da medicina.</p>
+            <p>Uma educação de excelência na área da medicina.</p>
             <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'informacoes']); ?>"'>SABE MAIS</button>
         </div>
     </div>
@@ -219,7 +219,7 @@
         <!--<div class="col-sm-6" id="map">
           <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3111.7367055275845!2d-9.16313408465406!3d38.74680377959412!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd1932e2ab3ac5a9%3A0x2c08088081f9689c!2sFaculdade%20de%20Medicina%20da%20Universidade%20de%20Lisboa!5e0!3m2!1spt-PT!2spt!4v1589802423263!5m2!1spt-PT!2spt" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
         </div>-->
-        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/mapa2.png");'>
+        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/banner3.jpg");'>
         </div>
         <div class="col-sm-6 bibliography_box" style='background-color:#eee; color: #152335'>
             <h2>Detalhes da nossa atividade formativa.</h2>
@@ -269,6 +269,13 @@ table.courses-list td:last-child{
 }
 #accordion table.courses-list tr.primary td{
   padding-left: 10px;
+}
+#accordion .card-header{
+  position: relative;
+}
+#accordion .card-header .fa-chevron-down{
+  position: absolute;
+  right: 0px;
 }
 .courses-list{
   margin-top: 35px;
