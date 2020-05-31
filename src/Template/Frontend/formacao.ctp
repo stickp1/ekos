@@ -54,7 +54,7 @@
         <div class="col-sm-8 bibliography_box">
             <h2>Visão.</h2>
             <p>Uma educação de excelência na área da medicina.</p>
-            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'informacoes']); ?>"'>SABE MAIS</button>
+            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'courses']); ?>"'>SABE MAIS</button>
         </div>
     </div>
 </section>
@@ -64,7 +64,7 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
               <h1>Os nossos cursos.</h1>
-              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti módulos pensados à medida: organizados por aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br>
+              <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti cursos pensados à medida: organizados em módulos de aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br>
               <br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
               <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
               <br> <strong>Curso de Gestão de Tarefas e Tempo | </strong><span style='font-size: 16px'>inscrições em breve </span>
