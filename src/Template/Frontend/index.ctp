@@ -196,9 +196,9 @@
         </div>
         <div class="col-sm-6 bibliography_box" style='background-color:#eee; color: #152335'>
             <h2>As nossas aulas.</h2>
-            <p><b>Turmas</b><br>Existirá uma turma semanal e uma turma ao sábado</p>
-            <p><b>Horário</b><br>Na turma da semana, as aulas terão, normalmente, lugar às 2ª/4ª/5ª entre as 18h e as 20h. Na turma do sábado, as aulas terão lugar entre as 8h30 e às 16h00 </p>
-            <p><b>Local</b><br>As aulas terão lugar na FMUL e/ou na FFUC</p>
+            <p><b>Turmas</b><br>Existirá uma turma semanal e uma turma ao sábado.</p>
+            <p><b>Horário</b><br>Na turma da semana, as aulas terão, normalmente, lugar às 2ª/4ª/5ª entre as 18h e as 20h. Na turma do sábado, as aulas terão lugar entre as 8h30 e às 16h00. </p>
+            <p><b>Local</b><br>As aulas terão lugar na FMUL e/ou na FFUC.</p>
         </div>
       </div>
     
