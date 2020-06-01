@@ -83,7 +83,7 @@
               <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
             <div class="col-sm-4">
-              <h2>Curso de Gestão <br>de Tarefas e de Tempo</h2>
+              <h2>Curso de Gestão <br>de Tarefas e Tempo</h2>
               <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
         </div>
