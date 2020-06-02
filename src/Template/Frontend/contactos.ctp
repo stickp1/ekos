@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-sm-4 text-sm-left">
                 <p>Instalações da EKOS</p>
-                <p class='small' style='margin-bottom: 50px'>Direção e Atendimento Geral <br> Rua Jorge Colaço 16, <br> 1700-253 Lisboa <br> <br> Horário de Atendimento<br> 2ª a 6ª feira | 17h-21h<br><span style="font-size: 12px;">AVISO: Face às restrições <!--e medidas de segurança -->impostas pela epidemia COVID-19, o atendimento estará temporariamente sujeito a marcação prévia.</span></p>
+                <p class='small' style='margin-bottom: 50px'>Direção e Atendimento Geral <br> Rua Jorge Colaço 16-A, <br> 1700-253 Lisboa <br> <br> Horário de Atendimento<br> 2ª a 6ª feira | 17h-21h<br><span style="font-size: 12px;">AVISO: Face às restrições <!--e medidas de segurança -->impostas pela epidemia COVID-19, o atendimento estará temporariamente sujeito a marcação prévia.</span></p>
                 
                 <p>Locais da Formação</p>
                 <p class='small' style='margin-bottom: 50px'>Faculdade de Medicina de Lisboa <br> Avenida Professor Egas Moniz, <br> 1649-028 Lisboa <br> <span style="font-size: 12px;">Indicações específicas disponíveis na área reservada</span></br></br>Faculdade de Fármacia de Coimbra <br> Azinhaga de Santa Comba, <br> 3000-548 Coimbra <br> <span style="font-size: 12px;">Indicações específicas disponíveis na área reservada</span></p>

@@ -75,11 +75,11 @@
         <div class="row hidden-xs hidden-sm">
             <div class="col-sm-6">
               <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso Anual</h2>
-              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+              <p class='small' style='margin-top: 30px'><a href='/programa_curso_anual.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
             <div class="col-sm-6">
               <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso de Verão</h2>
-              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+              <p class='small' style='margin-top: 30px'><a href='/programa_curso_verao.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
         </div>
         <div class="row hidden-xs hidden-sm">
