@@ -54,7 +54,7 @@
         <div class="col-sm-8 bibliography_box">
             <h2>Visão.</h2>
             <p>Uma educação de excelência na área da medicina.</p>
-            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'courses']); ?>"'>SABE MAIS</button>
+            <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos']); ?>"'>SABE MAIS</button>
         </div>
     </div>
 </section>
@@ -136,6 +136,7 @@
                     </i>
                 </div>
                 <div id="collapseOne" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
+                    <p class='small'><a href='/programa_curso_anual.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
                     <div class="box-body table-responsive no-padding">
                         <table class='courses-list'>
                             <?php 
@@ -160,6 +161,7 @@
                     </i>
                 </div>
                 <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordion">
+                    <p class='small'><a href='/programa_curso_verao.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
                     <div class="box-body table-responsive no-padding">
                         <table class='courses-list'>
                             <?php 
@@ -219,9 +221,9 @@
         <!--<div class="col-sm-6" id="map">
           <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3111.7367055275845!2d-9.16313408465406!3d38.74680377959412!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd1932e2ab3ac5a9%3A0x2c08088081f9689c!2sFaculdade%20de%20Medicina%20da%20Universidade%20de%20Lisboa!5e0!3m2!1spt-PT!2spt!4v1589802423263!5m2!1spt-PT!2spt" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
         </div>-->
-        <div class="col-sm-6" style='background-image: url("<?= $url?>/img/banner3.jpg");'>
+        <div class="col-md-6 col-xs-12" style='background-image: url("<?= $url?>/img/banner3.jpg");'>
         </div>
-        <div class="col-sm-6 bibliography_box" style='background-color:#eee; color: #152335'>
+        <div class="col-md-6 col-xs-12 bibliography_box" style='background-color:#eee; color: #152335'>
             <h2>Detalhes da nossa atividade formativa.</h2>
             <!--
             <p><b>Metodologia</b><br>Existirá uma turma semanal e uma turma ao sábado</p>
