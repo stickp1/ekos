@@ -11,6 +11,7 @@ use Cake\Database\Schema\TableSchema;
 use Cake\I18n\Time;
 use Cake\Mailer\Email;
 use Cake\Routing\Router;
+use Cake\ORM\Query;
 
 
 
@@ -96,49 +97,48 @@ class ReservedController extends AppController
     }
 
     public function schedule($group_id = null)
-        {
-           $id = $this->Auth->user('id');
-            if(!isset($id) || !isset($group_id))   return $this->redirect(['controller' => '/']);
+    {
+       $id = $this->Auth->user('id');
+        if(!isset($id) || !isset($group_id))   return $this->redirect(['controller' => '/']);
 
-            $user = $this->loadModel('Users')->get($id, [
-                'contain' => ['groups' => ['Courses']]
-                ])->toArray();
-
-            $groups = array();
-            foreach ($user['groups'] as $key => $value) {
-                $groups[$key] = $value['id'];
-            }
-
-            if(!in_array($group_id, $groups)){
-                $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
-                return $this->redirect(['action' => 'index']);
-            }
-
-            $group = $this->loadModel('Groups')->find('all', [
-                'conditions' => ['Groups.id' => $group_id],
-                'contain' => ['Lectures' => ['Users'], 'Courses']
-            ])->first();
-
-            $themes_ = $this->loadModel('Themes')->find('all', [
-            'conditions' => ['courses_id' => $group['courses_id']]
+        $user = $this->loadModel('Users')->get($id, [
+            'contain' => ['groups' => ['Courses']]
             ])->toArray();
-            $themes = array();
-            foreach ($themes_ as $key => $value) {
-                $themes[$value['id']] = $value; 
-            }
 
-            $this->viewBuilder()->options([
-                'pdfConfig' => [
-                    'orientation' => 'portrait',
-                ]
-            ]);
-
-             $this->set(compact( 'group', 'themes'));
-
-            
+        $groups = array();
+        foreach ($user['groups'] as $key => $value) {
+            $groups[$key] = $value['id'];
         }
 
-    public function payments(){
+        if(!in_array($group_id, $groups)){
+            $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $group = $this->loadModel('Groups')->find('all', [
+            'conditions' => ['Groups.id' => $group_id],
+            'contain' => ['Lectures' => ['Users'], 'Courses']
+        ])->first();
+
+        $themes_ = $this->loadModel('Themes')->find('all', [
+        'conditions' => ['courses_id' => $group['courses_id']]
+        ])->toArray();
+        $themes = array();
+        foreach ($themes_ as $key => $value) {
+            $themes[$value['id']] = $value; 
+        }
+
+        $this->viewBuilder()->options([
+            'pdfConfig' => [
+                'orientation' => 'portrait',
+            ]
+        ]);
+
+         $this->set(compact( 'group', 'themes'));        
+    }
+
+    public function payments()
+    {
 
             $id = $this->Auth->user('id');
             if(!isset($id))   return $this->redirect(['controller' => '/']);
@@ -165,10 +165,10 @@ class ReservedController extends AppController
             
 
             $this->set(compact( 'sales', 'courses'));
-
     }
 
-    public function file($file_id = null, $name = null){
+    public function file($file_id = null, $name = null)
+    {
 
         $id = $this->Auth->user('id');
 
@@ -246,8 +246,7 @@ class ReservedController extends AppController
         }
         $this->set(compact('user', 'courses'));
     }
-
-    
+ 
     public function changeMail($new_email, $char=null)
     {
       $this->autoRender = false;
@@ -288,7 +287,7 @@ class ReservedController extends AppController
       }
     }
 
-        public function changeImage()
+    public function changeImage()
     {
 
         $this->viewBuilder()->setLayout('ajax');
@@ -318,868 +317,172 @@ class ReservedController extends AppController
         }
     }
 
-    public function inscription ($group_id = null){
+    public function inscription ($course_id = null, $annual = null)
+    {
+        
+        array_map([$this, 'loadModel'], ['Products']);
+
         $id = $this->Auth->user('id');
+
         if(!isset($id))   return $this->redirect(['controller' => '/']);
 
-        $count = $this->loadModel('Products')->find('all', ['conditions' => ['sales_users_id' => $id, 'group_id' => $group_id]])->count();
-        if($count > 0) return $this->redirect(['action' => 'index', $group_id]);
+        if($scity = $this->request->getCookie('city')) 
+            $city_id = $scity; 
+        else 
+            $city_id = 1;
+    
+        $course = $this->Products->Courses->get($course_id);
 
-        $group = $this->loadModel('Groups')->get($group_id, ['contain' => ['Courses']])->toArray();
-        $count = $this->loadModel('Products')->find('all', ['conditions' => ['group_id' => $group_id]])->count(); 
-        if($group['vacancy'] <= $count || $group['inscriptions_open'] != 1){
+        $groups_raw = $this->Products->find('all', [
+            'fields' => [
+                'group_id', 
+                'count' => 'count(products.id)', 
+                'groups.name', 
+                'groups.courses_id', 
+                'groups.vacancy'
+            ], 
+            'group' => 'group_id'
+        ])->matching('Groups', function (Query $q) use ($course_id, $city_id) {
+            return $q->where([
+                'Groups.courses_id' => $course_id, 
+                'Groups.active' => 1, 
+                'Groups.deleted' => 0,
+                'Groups.city_id' => $city_id, 
+                'Groups.inscriptions_open' => 1
+            ]);
+        });
+
+        $groups = array();
+        foreach ($groups_raw as $key => $value)
+            if ($value['count'] < $value['groups']['vacancy'])
+                $groups[$key] = [
+                    'id'=>$value['group_id'],
+                    'used'=>$value['count'], 
+                    'name'=>$value['groups']['name'], 
+                    'vacancy'=>$value['groups']['vacancy']
+                ];
+
+        // If there is no match (because no one signed up yet): get groups from group table
+        $groups = $groups_raw->count() ? $groups : $this->Products->Groups->find('all', [
+            'conditions' => [
+                'Groups.courses_id' => $course_id, 
+                'Groups.active' => 1, 
+                'Groups.city_id' => $city_id, 
+                'Groups.inscriptions_open' => 1
+            ]
+        ]);
+  
+        if(empty($groups) || $this->Products->exists(['sales_users_id' => $id, 'group_courses_id' => $course_id])){
             $this->Flash->error(__('Não foi possível realizar a inscrição'));
-            return $this->redirect(['controller' => 'reserved']);
+            return $this->redirect(['action' => 'index']);
         }
 
-         if ($this->request->is('post')) {
-             if($this->request->getData('promotion') == 1){ //SE TAMBÉM SE INSCREVEU EM OUTRO MODULO - CALENDARIO A
-                
-                if($group_id == 106) {$group2_id = 118; $group3_id = 116;} elseif ($group_id == 56) { $group2_id = 62; $group3_id = 66;}  elseif ($group_id == 57) { $group2_id = 63; $group3_id = 67; }  elseif ($group_id == 58) { $group2_id = 64; $group3_id = 68; }
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 204;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 93.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group2_id;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 51;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group3_id;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 59.5;
-                $product = $this->loadModel('Products')->save($product);
-                
-
-            } elseif($this->request->getData('promotion') == 3){ //SE TAMBÉM SE INSCREVEU EM OUTRO MODULO - CALENDARIO B
-                
-                if($group_id == 72) {$group2_id = 76; $group3_id = 84;} elseif ($group_id == 108) { $group2_id = 120; $group3_id = 118;}
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 255;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 93.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group2_id;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 51;
-                $product = $this->loadModel('Products')->save($product);
-                
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group3_id;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 110.5;
-                $product = $this->loadModel('Products')->save($product);
-
-
-            } elseif ($this->request->getData('promotion') == 2){ //SE OPTOU PELO PACOTE COMPLETO
-                if($group_id == 55) { // Turmas semana
-                    
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 4;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 61;
-                $product['group_courses_id'] = 10;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 65;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 69;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 73;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 77;
-                $product['group_courses_id'] = 8;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 81;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 85;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 89;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 93;
-                $product['group_courses_id'] = 12;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 97;
-                $product['group_courses_id'] = 13;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                } 
-                elseif ($group_id == 56) { // Turma FDS
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 4;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 62;
-                $product['group_courses_id'] = 10;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 66;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 70;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 74;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 78;
-                $product['group_courses_id'] = 8;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 82;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 86;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 90;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 94;
-                $product['group_courses_id'] = 12;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 98;
-                $product['group_courses_id'] = 13;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-				}
-				elseif ($group_id == 57) { // Turma Semana Coimbra
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 4;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 63;
-                $product['group_courses_id'] = 10;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 67;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 71;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 75;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 79;
-                $product['group_courses_id'] = 8;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 83;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 87;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 91;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 95;
-                $product['group_courses_id'] = 12;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 99;
-                $product['group_courses_id'] = 13;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-				}
-				elseif ($group_id == 72) { // Turma FDS Coimbra
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 210;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 76;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 80;
-                $product['group_courses_id'] = 8;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 84;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 88;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 92;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 96;
-                $product['group_courses_id'] = 12;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 100;
-                $product['group_courses_id'] = 13;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 58;
-                $product['group_courses_id'] = 4;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 64;
-                $product['group_courses_id'] = 10;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
- 
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 68;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                
-                }
-				elseif ($group_id == 107) { // Turma Semana B
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 119;
-                $product['group_courses_id'] = 12;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 117;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 105;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 115;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 101;
-                $product['group_courses_id'] = 4;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 109;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 111;
-                $product['group_courses_id'] = 8;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 113;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 121;
-                $product['group_courses_id'] = 13;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 103;
-                $product['group_courses_id'] = 10;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-                }
-				
-				elseif ($group_id == 106) { // Turma FDS B
-                
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = $group_id;
-                $product['group_courses_id'] = 5;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 118;
-                $product['group_courses_id'] = 9;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 116;
-                $product['group_courses_id'] = 7;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 102;
-                $product['group_courses_id'] = 4;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 105;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 110;
-                $product['group_courses_id'] = 11;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 112;
-                $product['group_courses_id'] = 8;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 114;
-                $product['group_courses_id'] = 3;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 70;
-                $product = $this->loadModel('Products')->save($product);
-
-
-                $sale = $this->loadModel('Sales')->newEntity();
-                $sale['users_id'] = $id;
-                $sale['value'] = 210;
-                $sale['payment_type'] = $this->request->getData('payment_type');
-                $sale = $this->loadModel('Sales')->save($sale);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 108;
-                $product['group_courses_id'] = 6;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 104;
-                $product['group_courses_id'] = 10;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 120;
-                $product['group_courses_id'] = 12;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-                $product = $this->loadModel('Products')->newEntity();
-                $product['group_id'] = 122;
-                $product['group_courses_id'] = 13;
-                $product['sale_id'] = $sale->id;
-                $product['sales_users_id'] = $id;
-                $product['value'] = 52.5;
-                $product = $this->loadModel('Products')->save($product);
-
-             }
+        if($annual){
              
-            } else { //SÓ COMPROU UM
+            // ids of annual courses selection
+            $courses = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
+            $annual_courses = $this->Products->Courses->find('all', [
+                'order' => 'name',
+                'conditions' => 'id in ('.implode(',',$courses).')',
+                'contain' => [
+                    'Groups' => [
+                        'conditions' => [
+                            'active' => 1,
+                            'deleted' => 0,
+                            'city_id' => $city_id
+                        ]
+                    ]
+                ]
+            ])->toArray();
+            $course['price'] = 840;
+            $course['name'] = 'Curso Anual';
+        }
+        if ($this->request->is('post')) {
 
-            $sale = $this->loadModel('Sales')->newEntity();
-            $sale['users_id'] = $id;
-            $sale['value'] = $group['course']['price'];
-            $sale['payment_type'] = $this->request->getData('payment_type');
-            $sale = $this->loadModel('Sales')->save($sale);
+            $posted = $this->request->getData();
+            $group_id = $this->request->getData('group_id');
+            $all_sales = [];
 
+            if($annual){
 
-            $product = $this->loadModel('Products')->newEntity();
-            $product['group_id'] = $group_id;
-            $product['group_courses_id'] = $group['course']['id'];
-            $product['sale_id'] = $sale->id;
-            $product['sales_users_id'] = $id;
-            $product['value'] = $group['course']['price'];
-            $product = $this->loadModel('Products')->save($product);
+                $courses_id_order = [10, 4, 5, 6, 11, 8, 3, 7, 9, 12, 13]; 
+                $courses_per_trimester = [2, 2, 3, 4];
+                $course_it = 0;
+                
+                for($trimester=0; $trimester<4; $trimester++){
 
+                    // generate one sale per trimester with value 210
+                    $sale = $this->Products->Sales->newEntity();
+                    $sale['users_id'] = $id;
+                    $sale['value'] = 210;
+                    $sale['payment_type'] = $this->request->getData('payment_type');
+                    $sale = $this->Products->Sales->save($sale);
+                    array_push($all_sales, $sale->id);
 
-            }
+                    for($c=1; $c<=$courses_per_trimester[$trimester]; $c++){
+                        
+                        $id_tmp = $courses_id_order[$course_it];
 
+                        // generate one product per course with value 210/[total courses in trimester]
+                        $product = $this->Products->newEntity();
+                        $product['group_id'] = $this->request->getData('course_'.$id_tmp.'_group_id');
+                        $product['group_courses_id'] = $id_tmp;
+                        $product['sale_id'] = $sale->id;
+                        $product['sales_users_id'] = $id;
+                        $product['value'] = floatval(210) / $courses_per_trimester[$trimester];
+                        $this->Products->save($product);
 
-            if($this->request->getData('payment_type') == 2):
-            $eupago = $this->loadComponent('Eupago');
-            $reference = $eupago->select_payment_type($this->request->getData('payment_type'), $sale->id, $sale->value);
-            if(@$reference->sucesso){
-                $ref = $this->loadModel('mb_references')->newEntity();
-                $ref['sale_id'] = $sale->id;
-                $ref['entidade'] = $reference->entidade;
-                $ref['referencia'] = $reference->referencia;
-                $ref['valor'] = $reference->valor;
-                $ref['estado'] = $reference->estado;
-                $ref = $this->loadModel('mb_references')->save($ref);
+                        $course_it++;
+                    }
+                }
             } else {
-                $this->loadModel('Products')->deleteAll(['sale_id' => $sale->id]);
-                $this->loadModel('sales')->delete($sale);
-                $this->Flash->error(__('Não foi possível realizar a inscrição'));
-                return $this->redirect(['controller' => 'reserved', 'action' => 'payments']);
+
+                $sale = $this->Products->Sales->newEntity();
+                $sale['users_id'] = $id;
+                $sale['value'] = $course['price'];
+                $sale['payment_type'] = $this->request->getData('payment_type');
+                $sale = $this->Products->Sales->save($sale);
+                array_push($all_sales, $sale);
+
+                $product = $this->Products->newEntity();
+                $product['group_id'] = $group_id;
+                $product['group_courses_id'] = $course['id'];
+                $product['sale_id'] = $sale->id;
+                $product['sales_users_id'] = $id;
+                $product['value'] = $course['price'];
+                $this->Products->save($product);
             }
-            endif;
 
+            if($this->request->getData('payment_type') == 2){
+
+                $eupago = $this->loadComponent('Eupago');
+                $this->loadModel('mb_references');
+                foreach($all_sales as $key => $sale){
+                    $reference = $eupago->select_payment_type($this->request->getData('payment_type'), $sale->id, $sale->value);
+                    if(@$reference->sucesso){
+                        $ref = $this->mb_references->newEntity();
+                        $ref['sale_id'] = $sale->id;
+                        $ref['entidade'] = $reference->entidade;
+                        $ref['referencia'] = $reference->referencia;
+                        $ref['valor'] = $reference->valor;
+                        $ref['estado'] = $reference->estado;
+                        $ref = $this->mb_references->save($ref);
+                    } else {
+                        $this->Products->deleteAll(['sale_id' => $sale->id]);
+                        $this->Sales->delete($sale);
+                        $this->Flash->error(__('Não foi possível realizar a inscrição'));
+                        return $this->redirect(['controller' => 'reserved', 'action' => 'payments']);
+                    }
+                }
+            }
             return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $sale->id]);
-
-            
-
-            // if($product = $this->loadModel('Products')->save($product)){
-               
-            // }
-
-            
-
          }
-
-        $this->set(compact('group'));
+        $this->set(compact('groups', 'course', 'annual_courses'));
     }
 
-    public function waiting ($group_id = null){
+    public function waiting ($group_id = null)
+    {
         $id = $this->Auth->user('id');
         if(!isset($id))   return $this->redirect(['controller' => '/']);
 
@@ -1208,95 +511,92 @@ class ReservedController extends AppController
         $this->set(compact('group'));
     }
 
-    public function exam($id = 1){
+    public function exam($id = 1)
+    {
     
-    $user_id = $this->Auth->user('id');
-    
-    if ($this->request->is('post')) {
-	    $exam = $this->loadModel('Exams')->get($id, ['contain' => ['questions']])->toArray();
-	    
-	    $total = count($exam['questions']);
-	    $correct = 0;
-	    $data = $this->request->getData();
-	    
-	    foreach($exam['questions'] as $key => $question){
-	    	if ($question['correct'] == $data['q'.$question['id']]) $correct += 1;
-	    }
-	    
-	    $user_exams = $this->loadModel('UserExams')->find('all', ['conditions' => ['user_id' => $user_id, 'exam_id' => $id]])->first();
-	    $user_exams['answers'] = json_encode($data);
-	    $user_exams['result'] = $correct."/".$total;
-	    $user_exams['finished'] = 1;
-	    $user_exams = $this->loadModel('UserExams')->save($user_exams);
-	    
-	    $this->redirect(['action' => 'ebank', 'c' => 1]);
-	             
-    }	
-    	
-    	
-    
-       if ($id != 1){
-	    //VERIFIA INSCRIÇÕES DO ALUNO
-	    if (!$user_id){
-		    return $this->redirect(['controller' => '/']);
-	    }
-	    
-	    $user = $this->loadModel('Users')->get($user_id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
-            
+        $user_id = $this->Auth->user('id');
         
-		//Elimina cursos de turmas eliminadas
-        foreach ($user['groups'] as $key => $value) {
-           if($value['deleted'] == 1) unset($user['groups'][$key]);
-        }
-
-        $courses = array();
-        foreach ($user['groups'] as $key => $value) {
-            $courses[$key] = $value['course']['id'];
-        }
-
-        if(in_array(16, $courses) || in_array(15, $courses)){
-        
-        $user_exams = $this->loadModel('UserExams')->find('all', ['conditions' => ['user_id' => $user_id, 'exam_id' => $id]]);
+        if ($this->request->is('post')) {
+    	    $exam = $this->loadModel('Exams')->get($id, ['contain' => ['questions']])->toArray();
+    	    
+    	    $total = count($exam['questions']);
+    	    $correct = 0;
+    	    $data = $this->request->getData();
+    	    
+    	    foreach($exam['questions'] as $key => $question){
+    	    	if ($question['correct'] == $data['q'.$question['id']]) $correct += 1;
+    	    }
+    	    
+    	    $user_exams = $this->loadModel('UserExams')->find('all', ['conditions' => ['user_id' => $user_id, 'exam_id' => $id]])->first();
+    	    $user_exams['answers'] = json_encode($data);
+    	    $user_exams['result'] = $correct."/".$total;
+    	    $user_exams['finished'] = 1;
+    	    $user_exams = $this->loadModel('UserExams')->save($user_exams);
+    	    
+    	    $this->redirect(['action' => 'ebank', 'c' => 1]);             
+        }	
+    	
+        if ($id != 1){
+    	    //VERIFIA INSCRIÇÕES DO ALUNO
+    	    if (!$user_id){
+    		    return $this->redirect(['controller' => '/']);
+    	    }
+    	    
+    	    $user = $this->loadModel('Users')->get($user_id, [
+                'contain' => ['groups' => ['Courses']]
+                ])->toArray();
                 
-        if($user_exams->count() == 0){
-	        $user_exams = $this->loadModel('UserExams')->newEntity();
-	        $user_exams['user_id'] = $user_id;
-	        $user_exams['exam_id'] = $id;
-	        $user_exams['timestamp'] = Time::now();
-	        $user_exams = $this->loadModel('UserExams')->save($user_exams);
-        } else {
-	        $user_exams = $user_exams->first();
-	        
-	        $avg = $this->loadModel('UserExams')->find('all', [
-            'fields' => ['exam_id', 'result' => 'AVG(result)'],
-            'conditions' => ['exam_id' => $id, 'SUBSTRING_INDEX(result,"/",1) > 0'],
-            ])->toArray();
             
-            
-	        
-	        if($user_exams['finished'] != 1){
-		        $user_exams['timestamp'] = Time::now();
-				$user_exams = $this->loadModel('UserExams')->save($user_exams);
-	        }
-	        
-        }
-	        
-        }
-       
-		else { // Se o aluno não tem acesso aos exames de simulação
-	       $id = 1;
-		}
-		
-       
-       }
-       $exam = $this->loadModel('Exams')->get($id, ['contain' => ['questions']])->toArray();
+    		//Elimina cursos de turmas eliminadas
+            foreach ($user['groups'] as $key => $value) {
+               if($value['deleted'] == 1) unset($user['groups'][$key]);
+            }
 
-       $this->set(compact('exam', 'user_exams', 'courses', 'avg'));
+            $courses = array();
+            foreach ($user['groups'] as $key => $value) {
+                $courses[$key] = $value['course']['id'];
+            }
+
+            if(in_array(16, $courses) || in_array(15, $courses)){
+            
+                $user_exams = $this->loadModel('UserExams')->find('all', ['conditions' => ['user_id' => $user_id, 'exam_id' => $id]]);
+                        
+                if($user_exams->count() == 0){
+        	        $user_exams = $this->loadModel('UserExams')->newEntity();
+        	        $user_exams['user_id'] = $user_id;
+        	        $user_exams['exam_id'] = $id;
+        	        $user_exams['timestamp'] = Time::now();
+        	        $user_exams = $this->loadModel('UserExams')->save($user_exams);
+                } else {
+        	        $user_exams = $user_exams->first();
+        	        
+        	        $avg = $this->loadModel('UserExams')->find('all', [
+                    'fields' => ['exam_id', 'result' => 'AVG(result)'],
+                    'conditions' => ['exam_id' => $id, 'SUBSTRING_INDEX(result,"/",1) > 0'],
+                    ])->toArray();
+                    
+                    
+        	        
+        	        if($user_exams['finished'] != 1){
+        		        $user_exams['timestamp'] = Time::now();
+        				$user_exams = $this->loadModel('UserExams')->save($user_exams);
+        	        }
+        	        
+                }  
+            }
+           
+    		else { // Se o aluno não tem acesso aos exames de simulação
+    	       $id = 1;
+    		}
+        }
+
+        $exam = $this->loadModel('Exams')->get($id, ['contain' => ['questions']])->toArray();
+
+        $this->set(compact('exam', 'user_exams', 'courses', 'avg'));
     }
 
-	public function ebank(){
+	public function ebank()
+    {
 
        $user_id = $this->Auth->user('id');
         if(!isset($user_id))   return $this->redirect(['controller' => '/']);
@@ -1328,19 +628,17 @@ class ReservedController extends AppController
         else: $this->redirect(['controller' => 'reserved']);
         
         
-        endif;
-
-       
+        endif;      
     }
     
-
-    public function qbank(){
-       $session = $this->getRequest()->getSession();
-       $user_id = $this->Auth->user('id');
+    public function qbank()
+    {
+        $session = $this->getRequest()->getSession();
+        $user_id = $this->Auth->user('id');
+        
         if(!isset($user_id))   return $this->redirect(['controller' => '/']);
 
         if ($this->request->is('post')) {
-
 
             $question_stat = $this->loadModel('Questions')->find('all', ['fields' => ['id', 'correct', 'a1', 'a2', 'a3', 'a4', 'a5']])->toArray();
             foreach ($question_stat as $value) {
@@ -1378,40 +676,37 @@ class ReservedController extends AppController
 				
 			}
 			
-	        
+            $questions = array();
+            $i = 0;
+            foreach ($questions_ as $value) {
 
-        $questions = array();
-        $i = 0;
-        foreach ($questions_ as $value) {
+                $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
+                if($tot > 50):  
+                    $corr = $value['a'.$value['correct']] / $tot; 
+                else: $corr = 9999; 
+                endif;
 
-            $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
-            if($tot > 50):  $corr = $value['a'.$value['correct']] / $tot; else: $corr = 9999; endif;
-
-            if( (in_array(1, $this->request->getData('difficulty')) && $corr >= $stat75) || 
+                if( (in_array(1, $this->request->getData('difficulty')) && $corr >= $stat75) || 
                 (in_array(2, $this->request->getData('difficulty')) && (($corr < $stat75 && $corr >= $stat25) || $corr == 9999)) ||
-                (in_array(3, $this->request->getData('difficulty')) && $corr < $stat25)
-            ):
-
-           if(array_intersect(explode(',', $value['theme_id']), $this->request->getData('themes'))){
-            $questions[$i]['status'] = 0;
-            $questions[$i]['id'] = $value['id'];
-            $i++;
-           }
-
-           endif;
-        }
-
-        $session->write('question_list', $questions);
-
-        return $this->redirect(['action' => 'question', $questions[0]['id']]);
-
+                (in_array(3, $this->request->getData('difficulty')) && $corr < $stat25)):
+                    
+                    if(array_intersect(explode(',', $value['theme_id']), $this->request->getData('themes'))){
+                        $questions[$i]['status'] = 0;
+                        $questions[$i]['id'] = $value['id'];
+                        $i++;
+                    }
+                endif;
+            }
+            
+            $session->write('question_list', $questions);
+            
+            return $this->redirect(['action' => 'question', $questions[0]['id']]);
         }
 
         $user = $this->loadModel('Users')->get($user_id, [
             'contain' => ['groups' => ['Courses']]
             ])->toArray();
             
-        
 		//Elimina cursos de turmas eliminadas
         foreach ($user['groups'] as $key => $value) {
            if($value['deleted'] == 1) unset($user['groups'][$key]);
@@ -1423,31 +718,33 @@ class ReservedController extends AppController
         }
 
         if(in_array(1, $courses_) && in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING e no CURSO de VERÂO
-        $courses = $this->loadModel('Courses')->find('all', [
+            $courses = $this->loadModel('Courses')->find('all', [
             'conditions' => ['OR' => [['id > ' => 1, 'id <=' => 14], 'id' => 17]] ,
             'contain' => ['Themes']
             ])->toArray();
             
         elseif(in_array(1, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
-        $courses = $this->loadModel('Courses')->find('all', [
+            $courses = $this->loadModel('Courses')->find('all', [
             'conditions' => ['OR' => [['id > ' => 1, 'id <' => 15], 'id' => 17]],
             'contain' => ['Themes']
             ])->toArray();
 
         elseif(count($courses_) > 0): // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
-        $courses = $this->loadModel('Courses')->find('all', [
+            $courses = $this->loadModel('Courses')->find('all', [
             'conditions' => ['OR' => [['id in ('.implode(',', $courses_).')', 'id <' => 14], 'id' => 17]],
             'contain' => ['Themes']
             ])->toArray();
             
-        else: $courses = null;
+        else: 
+            $courses = null;
         endif;
 
-       $question_list = $session->read('question_list');
-       $this->set(compact('courses', 'question_list', 'courses_'));
+        $question_list = $session->read('question_list');
+        $this->set(compact('courses', 'question_list', 'courses_'));
     }
 
-    public function question($id = null){
+    public function question($id = null)
+    {
         $session = $this->getRequest()->getSession();
 
         //  VERIFICA SE NÃO EXISTE PERGUNTA
@@ -1478,7 +775,7 @@ class ReservedController extends AppController
             $courses[$key] = $value['course']['id'];
         }
 
-         if(!in_array($question['course_id'], $courses) && !in_array(1, $courses)){
+         if(!in_array($question['course_id'], $courses) && $question['course_id']!=17 && !in_array(1, $courses)){
             return $this->redirect(['action' => 'index']);
         }
 
@@ -1510,8 +807,8 @@ class ReservedController extends AppController
        }  
     }
 
-
-     public function answer(){
+    public function answer()
+    {
        $this->layout = false;
        $session = $this->getRequest()->getSession();
 
@@ -1537,7 +834,8 @@ class ReservedController extends AppController
        $this->set(compact('answer', 'question'));
     }
 
-    public function flashcards(){
+    public function flashcards()
+    {
         
 
         if ($this->request->is('post')) {
@@ -1590,12 +888,11 @@ class ReservedController extends AppController
 
         $this->set(compact('flashcards', 'courses'));
         
-        }
-
-        
+        }      
     }
 
-    public function fbank(){
+    public function fbank()
+    {
        $session = $this->getRequest()->getSession();
        $user_id = $this->Auth->user('id');
         if(!isset($user_id))   return $this->redirect(['controller' => '/']);
@@ -1697,7 +994,8 @@ class ReservedController extends AppController
        $this->set(compact('courses', 'answered', 'flashcards', 'courses_'));
     }
 
-    public function flashAnswer(){
+    public function flashAnswer()
+    {
         $this->autoRender = false;
         $this->request->allowMethod(['post']);
         $user_id = $this->Auth->user('id');
@@ -1712,12 +1010,10 @@ class ReservedController extends AppController
         $answer['last_time'] = date('Y-m-d');
         
         $answer = $this->loadModel('FlashcardsUser'.$user_id)->save($answer);
-
-        
-
     }
 
-    public function flashFav(){
+    public function flashFav()
+    {
         $this->autoRender = false;
         $this->request->allowMethod(['post']);
         $user_id = $this->Auth->user('id');
@@ -1731,9 +1027,6 @@ class ReservedController extends AppController
         $answer['favorite'] = $this->request->data('answer');
         
         $answer = $this->loadModel('FlashcardsUser'.$user_id)->save($answer);
-
-        
-
     }
 
 
@@ -1796,8 +1089,7 @@ class ReservedController extends AppController
        if($arquivo->copy($dir.$imagem['name'])) {
         $arquivo->close();
         return $imagem['name'];
-       }
-        
+       }    
     }
 
         public function upload($imagem = array(), $dir = 'img/receipts')
@@ -1834,10 +1126,10 @@ class ReservedController extends AppController
 
             return $this->redirect(['action' => 'payments']);
         }
-
     }
 
-    public function Invoices($id = null) {
+    public function Invoices($id = null) 
+    {
         $this->autoRender = false;
         $sale = $this->loadModel('Sales')->get($id);
         if($sale['moloni_id'] == ''){

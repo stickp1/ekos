@@ -39,6 +39,42 @@
                 </p>
                 <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
+                <?php foreach($courses as $key => $value): ?>
+                    <?php foreach ($value['groups'] as $key2 => $group): ?>
+                        <?php if($group['inscriptions_open'] == 1 && $value['id'] == $annual_trigger_course_id): ?>
+                            <?php if (@in_array($group['id'], $inscriptions)) break 2; ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                    <?php foreach ($value['groups'] as $key2 => $group): ?>
+                        <?php if($group['inscriptions_open'] == 1 && $value['id'] == $annual_trigger_course_id): ?>
+                            <?php if(!@in_array($group['id'], $inscriptions) && !isset($annualDisplayed)): ?>
+                                <br>
+                                <span class='small'> Inscrições Abertas </span>
+                                <?php $annualDisplayed = true; ?>
+                            <?php endif; ?>
+                            
+                            <?php if (@$count[$group['id']] >= $group['vacancy']): ?>
+                                <?php if(isset($Auth['id'])): ?>
+                                        <?php if(!in_array($group['id'], $waiting)) ?>
+                                            <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]) ?>"'>Lista de Espera
+                                            </button> 
+                                <?php else: ?>
+                                        <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
+                                        </button>
+                                <?php endif; ?>
+
+                            <?php else: ?>
+                                <?php if(isset($Auth['id'])): ?>
+                                    <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $value['id'], 'true']) ?>"'>INSCREVER
+                                    </button>
+                                <?php else: ?>
+                                    <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER
+                                    </button>
+                                <?php endif; break; ?>                                
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>         
+                <?php endforeach; ?>
             </div>
         </div>
         <div class='row'>
@@ -50,16 +86,13 @@
                         <tr class='primary' id="<?= $value['id']?>">
                             <td><?= $value['name'] ?></td>
                             <td>
-                                <span class='small' style='color: #FEB000'>
-                                <?php 
-                                  $e = '';
-                                  foreach ($value['groups'] as $key2 => $group):
-                                    if(@in_array($group['id'], $inscriptions)) $e = "INSCRITO"; 
-                                    elseif($group['inscriptions_open'] == 1) $e = 'Inscrições Abertas';
-                                  endforeach;
-                                  echo $e;
-                                ?> 
-                                </span>
+                                <?php foreach ($value['groups'] as $key2 => $group): ?>
+                                    <?php if(@in_array($group['id'], $inscriptions)): ?>
+                                      <span class='small'> INSCRITO </span>
+                                    <?php break; elseif($group['inscriptions_open'] == 1): ?>
+                                      <span class='small'> Inscrições Abertas </span>
+                                    <?php break; endif ?>
+                                <?php endforeach; ?>
                             </td>
                             <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value['id']?>'></i>
                             </td>
@@ -103,14 +136,21 @@
                                                               <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
                                                           </td>
                                                           <td width='100px'> 
-                                                              <?php if (@in_array($group['id'], $inscriptions)) 
-                                                                  echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
-                                                                elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
-                                                                  if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
-                                                                elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
-                                                                elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
-                                                                elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
-                                                              ?>  
+                                                              <?php if (@in_array($group['id'], $inscriptions)): ?>
+                                                                  <span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>
+                                                              <?php elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])): ?>
+                                                                  <?php if(!in_array($group['id'], $waiting)) ?> 
+                                                                      <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $value['id']]) ?>"'>Lista de Espera
+                                                                      </button>
+                                                              <?php elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])): ?>
+                                                                  <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
+                                                                  </button>
+                                                              <?php elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])): ?>
+                                                                  <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $value['id']]) ?>"'>INSCREVER
+                                                                  </button>
+                                                              <?php elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])): ?>
+                                                                  <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>
+                                                              <?php endif; ?>
                                                           </td>
                                                       </tr>
                                                       <?php foreach ($group['lectures'] as $lecture) { ?>
@@ -132,7 +172,7 @@
                                                                   <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
                                                                   </span>
                                                                   <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
-                                                                  <?php if(in_array($value['id'], $inscriptions_courses)): ?>
+                                                                  <?php if(@in_array($value['id'], $inscriptions_courses)): ?>
                                                                     <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
                                                                   <?php endif; ?>
                                                               </td>
@@ -187,6 +227,33 @@
                 </p>
                 <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
+                <?php foreach ($summer['groups'] as $key2 => $group): ?>
+                    <?php if(!@in_array($group['id'], $inscriptions) && $group['inscriptions_open'] == 1 && !isset($summerDisplayed)): ?>
+                      <br>
+                      <span class='small'> Inscrições Abertas </span>
+                      <?php $summerDisplayed = true; ?>
+                    <?php endif; ?>
+                    <?php if ($group['inscriptions_open'] == 1): ?>
+                        <?php if (@$count[$group['id']] >= $group['vacancy']): ?>
+                            <?php if(isset($Auth['id']) && !in_array($group['id'], $inscriptions)): ?>
+                                <?php if(!in_array($group['id'], $waiting)) ?>
+                                    <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]) ?>"'>Lista de Espera
+                                    </button> 
+                            <?php elseif(!isset($Auth['id'])): ?>
+                                <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
+                                </button>
+                            <?php endif ?>
+                        <?php else: ?>
+                            <?php if(isset($Auth['id']) && !in_array($group['id'], $inscriptions)): ?>
+                                <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $summer['id']]) ?>"'>INSCREVER
+                                </button>
+                            <?php elseif(!isset($Auth['id'])): ?>
+                                <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER
+                                </button>
+                            <?php endif; break; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
             </div>
         </div>
         <div class='row'>
@@ -197,16 +264,11 @@
                         <tr class='primary' id="s<?= $key?>">
                             <td><?= $value ?></td>
                             <td>
-                                <span class='small' style='color: #FEB000'>
-                                <?php 
-                                  $e = '';
-                                  foreach ($summer['groups'] as $key2 => $group):
-                                    if(@in_array($group['id'], $inscriptions)) $e = "INSCRITO"; 
-                                    elseif($group['inscriptions_open'] == 1) $e = 'Inscrições Abertas';
-                                  endforeach;
-                                  echo $e;
-                                ?> 
-                                </span>
+                                <?php foreach ($summer['groups'] as $key2 => $group): ?>
+                                    <?php if(@in_array($group['id'], $inscriptions)): ?>
+                                      <span class='small'> INSCRITO </span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
                             </td>
                             <td width='50px'><i class="fa fa-chevron-down" id='arrow_s<?= $key?>'></i>
                             </td>
@@ -242,22 +304,15 @@
                                                           <tr style='border-bottom: 1px solid #666'>
                                                               <td valign='middle'>
                                                                   <span style='position: relative; top: 7px'>
-                                                                      <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>    
+                                                                      <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>
                                                                   </span> 
-                                                                  <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> 
-                                                                      <?= $summer['price'] ? $summer['price']. " €" : ''?> 
-                                                                  </span> 
-                                                                  <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
+                                                                  <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) ?>    <span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'>
+                                                                          Esgotado
+                                                                      </span>
                                                               </td>
-                                                              <td width='100px'> 
-                                                                  <?php if (@in_array($group['id'], $inscriptions)) 
-                                                                      echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
-                                                                    elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
-                                                                      if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
-                                                                    elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
-                                                                    elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
-                                                                    elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
-                                                                  ?>  
+                                                              <td> 
+                                                                  <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["controller" => 'frontend', 'action' => 'informacoes', '#' => 'verão'])?>"'>Mais informações
+                                                                  </button>
                                                               </td>
                                                           </tr>
                                                           <?php foreach ($group['lectures'] as $lecture): ?>
@@ -280,7 +335,7 @@
                                                                           <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
                                                                           </span>
                                                                           <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
-                                                                          <?php if(in_array($summer['id'], $inscriptions_courses)): ?>
+                                                                          <?php if(@in_array($summer['id'], $inscriptions_courses)): ?>
                                                                             <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
                                                                           <?php endif; ?>
                                                                       </td>
@@ -301,7 +356,6 @@
                                         <table style='width: 100%;'>
                                             <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666; background-color: white'>
                                                 <td colspan='3' valign='middle' style='text-align: center'> 
-                                                    <span style='font-weight: 600'> <?= $summer['price'] ? $summer['price']. " € | " : '' ?> </span> 
                                                     <span style='font-style: italic'><small>Datas a definir</small></span>
                                                 </td>
                                             </tr>
@@ -503,28 +557,45 @@
 
 
 <style>
-  #intro h1{
-    text-align:center;
-  }
-  #services h1{
-    text-align:center;
-  }
-  .download{
-    margin-top: 30px;
-  }
-  #summer .dependency{
-    background-color: white;
-  }
-  #summer .panel tbody tr:first-child{
-    background-color: #F5F5F5;
-  }
-  #summer .panel .nav-tabs{
-    background-color: #F5F5F5;
-  }
-  #management .courses-list tr td .dependency{
-    background-color: #F5F5F5;
-  }
-
+#intro h1{
+  text-align:center;
+}
+#services h1{
+  text-align:center;
+}
+.download{
+  margin-top: 30px;
+}
+#summer .dependency{
+  background-color: white;
+}
+#summer .panel tbody tr:first-child{
+  background-color: #F5F5F5;
+}
+#summer .panel .nav-tabs{
+  background-color: #F5F5F5;
+}
+#management .courses-list tr td .dependency{
+  background-color: #F5F5F5;
+}
+section .col-md-8 .btn-black{
+  margin: 0; 
+  padding: 10px 30px; 
+  float: center;
+}
+section .col-md-8 > span.small{
+  color: #FEB000;
+  font-size: 1.2em;
+  margin-right: 15px;
+}
+section tr td span.small{
+  color: #FEB000;
+}
+section .tab-pane table td .btn-black{
+  margin: 0; 
+  padding: 10px 30px; 
+  float: right;
+} 
 
 </style>
 

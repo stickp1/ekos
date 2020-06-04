@@ -303,7 +303,6 @@ class NotificationsController extends AppController
             $this->Notifications->save($notification);
             return $this->redirect(['action' => 'index']);
         }
-
     }
 
     /**

@@ -248,10 +248,12 @@ class UsersController extends AppController
                 if(isset($_GET['redirect'])){
                     return $this->redirect($_GET['redirect']);
                 } else {
-                    return $this->redirect(['prefix' => @$url_params['prefix'], 'controller' => $url_params['controller'], 'action' => $url_params['action']]);
+                    return $this->redirect($this->referer());
+                    //return $this->redirect(['prefix' => @$url_params['prefix'], 'controller' => $url_params['controller'], 'action' => $url_params['action']]);
                 } 
             } else {
-                return $this->redirect(['prefix' => @$url_params['prefix'], 'controller' => $url_params['controller'], 'action' => $url_params['action'], 'e' => 1]);
+                return $this->redirect($this->referer());
+                //return $this->redirect(['prefix' => @$url_params['prefix'], 'controller' => $url_params['controller'], 'action' => $url_params['action'], 'e' => 1]);
             }
         }
     }

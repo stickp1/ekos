@@ -17,22 +17,27 @@
               <li <?=  @$this->request->params['param'] == 'inscricoes' ||  @$this->request->params['param'] == null ? 'class="active"': ''?>>
                 <a href="#inscricoes" data-toggle="tab">Inscrições</a>
               </li>
-              <li <?=  @$this->request->params['param'] == 'exame' ? 'class="active"': ''?>>
+              <li <?=  @$this->request->params['param'] == 'exame' ? 'class="active"': ''?> >
                 <a href="#exame" data-toggle="tab">Exame</a>
               </li>
-              <li <?=  @$this->request->params['param'] == 'matriz' ? 'class="active"': ''?>><a href="#matriz" data-toggle="tab">Bibliografia</a>
+              <li <?=  @$this->request->params['param'] == 'matriz' ? 'class="active"': ''?> >
+                <a href="#matriz" data-toggle="tab">Bibliografia</a>
               </li>
-              <li <?=  @$this->request->params['param'] == 'faq' ? 'class="active"': ''?>>
+              <li <?=  @$this->request->params['param'] == 'faq' ? 'class="active"': ''?> >
                 <a href="#faq" data-toggle="tab">FAQs</a>
+              </li>
+              <li <?=  @$this->request->params['param'] == 'docs' ? 'class="active"': ''?> >
+                <a href="#docs" data-toggle="tab">Documentos</a>
               </li>
             </ul>
           </div>
           <div class="panel-body" style='padding-top:50px'>
             <div class="tab-content">
               <div class="tab-pane fade in <?=  @$this->request->params['param'] == 'inscricoes' ||  @$this->request->params['param'] == null ? 'in active': ''?>" id="inscricoes">
-                          <?= $content['1']; ?> 
+                  <?= $content['1']; ?> 
               </div>
-              <div class="tab-pane fade <?=  @$this->request->params['param'] == 'exame' ? 'in active': ''?>" id="exame"><?= $content['2']; ?>
+              <div class="tab-pane fade <?=  @$this->request->params['param'] == 'exame' ? 'in active': ''?>" id="exame">
+                  <?= $content['2']; ?>
               </div>
               <div class="tab-pane fade <?=  @$this->request->params['param'] == 'matriz' ? 'in active': ''?>" id="matriz">
 
@@ -267,6 +272,50 @@
               <div class="tab-pane fade <?=  @$this->request->params['param'] == 'faq' ? 'in active': ''?>" id="faq">
                 <div id="FAQ_accordion">
                   <?= $content['3']; ?>
+                </div>
+              </div>
+              <div class="tab-pane fade <?=  @$this->request->params['param'] == 'docs' ? 'in active': ''?>" id="docs">
+                <p>Nesta secção podes encontrar documentos relevantes.</p><br>
+                <p>Documentos tipo A:</p>
+                <div class="panel panel-info well well-sm">
+                  <div class="panel-body">
+                    <p class='small download'>
+                      <a href='/temas_modulos.pdf' target="_blank">    
+                          <i class="fa fa-download"></i> document A1
+                      </a>
+                    </p>
+                    <p class='small download'>
+                      <a href='/temas_modulos.pdf' target="_blank">    
+                          <i class="fa fa-download"></i> document A2
+                      </a>
+                    </p>
+                    <p class='small download'>
+                      <a href='/temas_modulos.pdf' target="_blank">    
+                          <i class="fa fa-download"></i> document A3
+                      </a>
+                    </p>
+                  </div>
+                </div>
+                <br>
+                <p>Documentos tipo B:</p>
+                <div class="panel panel-info well well-sm">
+                  <div class="panel-body">
+                    <p class='small download'>
+                      <a href='/temas_modulos.pdf' target="_blank">    
+                          <i class="fa fa-download"></i> document B1
+                      </a>
+                    </p>
+                    <p class='small download'>
+                      <a href='/temas_modulos.pdf' target="_blank">    
+                          <i class="fa fa-download"></i> document B2
+                      </a>
+                    </p>
+                    <p class='small download'>
+                      <a href='/temas_modulos.pdf' target="_blank">    
+                          <i class="fa fa-download"></i> document B3
+                      </a>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -163,67 +163,139 @@ class FrontendController extends AppController
 
     public function cursos()
     {
-       $scity = $this->request->getCookie('city');
-       if($scity) $city_id = $scity; else $city_id = 1;
+
+      $this->loadModel('Courses');
+      $this->loadModel('Products');
+      $this->loadModel('WaitingList');
+
+      $scity = $this->request->getCookie('city');
+      if($scity) $city_id = $scity; else $city_id = 1;
+
+      // when inscriptions of course with id 10 (Neurologia e Psiquiatria) open, open annual course inscriptions 
+      $annual_trigger_course_id = 10; 
        
-       $courses = $this->loadModel('Courses')->find('all', [
+      $courses = $this->Courses->find('all', [
           'order' => 'name', 
-          'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
-          'conditions' => ['id >' => 1, 'id <' => 14]
-        ]);
+          'contain' => [
+            'Groups' => [
+              'conditions' => [
+                'Groups.active' => 1, 
+                'Groups.deleted' => 0, 
+                'Groups.city_id' => $city_id
+              ], 
+              'Lectures' => [
+                'Users'
+              ]
+            ], 
+            'Themes'
+          ],
+          'conditions' => [
+            'id >' => 1, 
+            'id <' => 14
+          ]
+      ]);
 
-       // Curso Verão -- Curso Clínico intensivo
-       $summer = $this->loadModel('Courses')->find('all', [
-          'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
-          'conditions' => ['id' => 14]
-        ])->first(); 
+      // Curso Verão -- Curso Clínico intensivo
+      $summer = $this->Courses->find('all', [
+          'contain' => [
+            'Groups' => [
+              'conditions' => [
+                'Groups.active' => 1, 
+                'Groups.deleted' => 0, 
+                'Groups.city_id' => $city_id
+              ], 
+              'Lectures' => [
+                'Users'
+              ]
+            ], 
+            'Themes'
+          ],
+          'conditions' => [
+            'id' => 14
+          ]
+      ])->first(); 
 
-       // Curso Gestão de Tarefas
-       $manage = $this->loadModel('Courses')->find('all', [
-          'contain' => ['Groups' => ['conditions' => ['Groups.active' => 1, 'Groups.deleted' => 0, 'Groups.city_id' => $city_id], 'Lectures' => ['Users']], 'Themes'],
-          'conditions' => ['id' => 18]
-        ])->first();
+      // Curso Gestão de Tarefas
+      $manage = $this->Courses->find('all', [
+          'contain' => [
+            'Groups' =>  [
+              'conditions' => [
+                'Groups.active' => 1, 
+                'Groups.deleted' => 0, 
+                'Groups.city_id' => $city_id
+              ], 
+              'Lectures' => [
+                'Users'
+              ]
+            ], 
+            'Themes'
+          ],
+          'conditions' => [
+            'id' => 18
+          ]
+      ])->first();
 
+      $count_ = $this->Products->find('all', [
+          'fields' => [
+            'group_id', 
+            'count' => 'count(id)'
+          ], 
+          'group' => 'group_id'
+      ])->toArray();
 
-       $count_ = $this->loadModel('Products')->find('all', ['fields' => ['group_id', 'count' => 'count(id)'], 'group' => 'group_id'])->toArray();
-       $count = array();
-       foreach ($count_ as $key => $value) {
-         $count[$value['group_id']] = $value['count'];
-       }
+      $count = array();
 
-       if($this->Auth->user()){
-        $inscriptions = $this->loadModel('Products')->find('list', ['conditions' => ['sales_users_id' => $this->Auth->user('id')], 'valueField' => 'group_id' ])->toArray();
-        $inscriptions_courses = $this->loadModel('UsersGroups')->find('list', ['conditions' => ['users_id' => $this->Auth->user('id')], 'valueField' => 'groups_courses_id' ])->toArray();
-        $waiting = $this->loadModel('WaitingList')->find('list', ['conditions' => ['user_id' => $this->Auth->user('id')], 'valueField' => 'group_id' ])->toArray();
+      foreach ($count_ as $key => $value)
+        $count[$value['group_id']] = $value['count'];
+      
+
+      if($this->Auth->user()){
+        $inscriptions = $this->Products->find('list', [
+            'conditions' => [
+              'sales_users_id' => $this->Auth->user('id')
+            ], 
+            'valueField' => 'group_id' 
+        ])->toArray();
+        
+        $inscriptions_courses = $this->loadModel('UsersGroups')->find('list', [
+            'conditions' => [
+              'users_id' => $this->Auth->user('id')
+            ], 
+            'valueField' => 'groups_courses_id' 
+        ])->toArray();
+        
+        $waiting = $this->WaitingList->find('list', [
+            'conditions' => [
+              'user_id' => $this->Auth->user('id')
+            ], 
+            'valueField' => 'group_id' 
+        ])->toArray();
+        
         $this->set(compact('inscriptions', 'inscriptions_courses', 'waiting'));
-       }
-
-       $themes = $this->loadModel('Themes')->find('list')->toArray();
-
-       $coursesLen = $courses->count();
-
        
-       //$summer = $courses->toArray()[14];
+      }
 
-       //$manage = $courses->toArray()[16];
+      $themes = $this->loadModel('Themes')->find('list')->toArray();
 
-       $courses2 = [
+      $coursesLen = $courses->count();
+
+      $courses2 = [
         1 => "Patologia Médica", 
         2 => "Patologia Cirúrgica", 
         3 => "Patologia Pediátrica", 
         4 => "Patologia Ginecológica/Obstétrica", 
         5 => "Patologia Psiquiátrica"
-        ];
+      ];
 
-       $courses3 = [
+      $courses3 = [
         1 => "Gestão do Trabalho", 
         2 => "Planificação de Tarefas", 
         3 => "Desperdiçadores e Economizadores de Tempo", 
         4 => "Definição de Objetivos", 
         5 => "Aplicação de Exercício Prático"
-        ];
+      ];
 
-       $this->set(compact('courses', 'themes', 'count', 'coursesLen', 'courses2', 'courses3', 'summer', 'manage'));
+      $this->set(compact('courses', 'themes', 'count', 'coursesLen', 'courses2', 'courses3', 'summer', 'manage', 'annual_trigger_course_id'));
     }
 
     public function informacoes()

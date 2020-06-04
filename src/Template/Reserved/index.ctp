@@ -40,80 +40,76 @@
                 <br>
                 <br>
             </div>
+            <div class='col-md-10 col-md-offset-1'>
+                <table class='courses-list'>
+                  
+                    <?php if($user['groups']): foreach ($group['lectures'] as $key => $value) {
+                        $themes_ = explode(',', $value['themes']);
+                        if($value['themes'] != ''):
+                        foreach ($themes_ as $value2) {
+                    ?>
+                  
+                    <tr class='primary' id="<?= $value2?>" >
+                        <td><?= $themes[$value2]['name'] ?>   <span class='small'><?= isset($surveys[$value['id']]) ? '<a href="'.$this->Url->build(["controller" => "frontend", "action" => "feedback", $surveys[$value['id']]]).'"><i class="fa fa-exclamation-triangle"></i></a>':''?></span></td>
+                        <td> <span class='small' style='color: #FEB000'><?= $value['description'] ?></span></td>
+                        <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value2?>'></i></td>
+                    </tr>
+                    <tr>
+                        <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                            <div class='dependency d<?= $value2?> closed'>
+                                <table style='width: 100%;'>
+                                    <tr class='class-list' style='border-top: 1px solid #152335; border-bottom: 1px solid #152335'>
+                                        <td colspan='2'>
+                                            <span style='margin-right: 25px'><?= $value->has('datetime') ?$value['datetime']->i18nFormat('dd.MM.yyyy') : '' ?></span>
+                                            <span style='margin-right: 25px'><?= $value->has('datetime') ? $value['datetime']->i18nFormat('HH')."h" : '' ?><?= $value->has('datetime') ? $value['datetime']->i18nFormat('mm'): '' ?> 
+                                              </span><span style='margin-right: 25px'><?= $value['user']['first_name']." ".$value['user']['last_name']?></span><span style='margin-right: 25px'><?= $value['place']?></span>
+                                        </td>
+                                    </tr>
+                                    <?php if(count($themes[$value2]['uploads']) > 0) {
+                                        foreach ($themes[$value2]['uploads'] as $value3) { 
+                                    ?>
+                                    <tr>
+                                        <td style='padding: 5px' width='30px'></td>
+                                        <td style='padding: 5px'><span class='small'> <?= $this->Html->link('<i class="fa fa-download" style="margin-right:10px;"></i>'.$value3['name'], ['action' => 'file', $value3['id'], $value3['name']], ['escape' => false, 'target' => '_blank']) ?> </span></td>
+                                    </tr>
+                                    <?php } } else { ?>
+                                    <tr>
+                                        <td style='padding: 5px' width='30px'></td>
+                                        <td style='padding: 5px'><span class='small'><em>Sem ficheiros para descarregar.</em></span></td>
+                                    </tr>
+                                    <?php } ?>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                  
+                    <?php } else: ?>
+                  
+                    <tr class='primary' id="<?= $value['id']?>" >
+                        <td><span><?= $value['description']?></span></td>
+                        <td> </td>
+                        <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value['id']?>'></i></td>
+                    </tr>
+                    <tr>
+                        <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                            <div class='dependency d<?= $value['id']?> closed'>
+                                <table style='width: 100%;'>
+                                    <tr class='class-list' style='border-top: 1px solid #152335; border-bottom: 1px solid #152335'>
+                                        <td colspan='2'>
+                                            <span style='margin-right: 25px'><?= $value->has('datetime') ?$value['datetime']->i18nFormat('dd.MM.yyyy') : '' ?></span>
+                                            <span style='margin-right: 25px'><?= $value->has('datetime') ? $value['datetime']->i18nFormat('HH')."h" : '' ?><?= $value->has('datetime') ? $value['datetime']->i18nFormat('mm'): '' ?></span>
+                                            <span style='margin-right: 25px'><?= $value['user']['first_name']." ".$value['user']['last_name']?></span><span style='margin-right: 25px'><?= $value['place']?></span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
 
-            <div class='row' >
-                <div class='col-md-10 col-md-offset-1'>
-                    <table class='courses-list'>
-                      
-                        <?php if($user['groups']): foreach ($group['lectures'] as $key => $value) {
-                            $themes_ = explode(',', $value['themes']);
-                            if($value['themes'] != ''):
-                            foreach ($themes_ as $value2) {
-                        ?>
-                      
-                        <tr class='primary' id="<?= $value2?>" >
-                            <td><?= $themes[$value2]['name'] ?>   <span class='small'><?= isset($surveys[$value['id']]) ? '<a href="'.$this->Url->build(["controller" => "frontend", "action" => "feedback", $surveys[$value['id']]]).'"><i class="fa fa-exclamation-triangle"></i></a>':''?></span></td>
-                            <td> <span class='small' style='color: #FEB000'><?= $value['description'] ?></span></td>
-                            <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value2?>'></i></td>
-                        </tr>
-                        <tr>
-                            <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                <div class='dependency d<?= $value2?> closed'>
-                                    <table style='width: 100%;'>
-                                        <tr class='class-list' style='border-top: 1px solid #152335; border-bottom: 1px solid #152335'>
-                                            <td colspan='2'>
-                                                <span style='margin-right: 25px'><?= $value->has('datetime') ?$value['datetime']->i18nFormat('dd.MM.yyyy') : '' ?></span>
-                                                <span style='margin-right: 25px'><?= $value->has('datetime') ? $value['datetime']->i18nFormat('HH')."h" : '' ?><?= $value->has('datetime') ? $value['datetime']->i18nFormat('mm'): '' ?> 
-                                                  </span><span style='margin-right: 25px'><?= $value['user']['first_name']." ".$value['user']['last_name']?></span><span style='margin-right: 25px'><?= $value['place']?></span>
-                                            </td>
-                                        </tr>
-                                        <?php if(count($themes[$value2]['uploads']) > 0) {
-                                            foreach ($themes[$value2]['uploads'] as $value3) { 
-                                        ?>
-                                        <tr>
-                                            <td style='padding: 5px' width='30px'></td>
-                                            <td style='padding: 5px'><span class='small'> <?= $this->Html->link('<i class="fa fa-download" style="margin-right:10px;"></i>'.$value3['name'], ['action' => 'file', $value3['id'], $value3['name']], ['escape' => false, 'target' => '_blank']) ?> </span></td>
-                                        </tr>
-                                        <?php } } else { ?>
-                                        <tr>
-                                            <td style='padding: 5px' width='30px'></td>
-                                            <td style='padding: 5px'><span class='small'><em>Sem ficheiros para descarregar.</em></span></td>
-                                        </tr>
-                                        <?php } ?>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                      
-                        <?php } else: ?>
-                      
-                        <tr class='primary' id="<?= $value['id']?>" >
-                            <td><span><?= $value['description']?></span></td>
-                            <td> </td>
-                            <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value['id']?>'></i></td>
-                        </tr>
-                        <tr>
-                            <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                <div class='dependency d<?= $value['id']?> closed'>
-                                    <table style='width: 100%;'>
-                                        <tr class='class-list' style='border-top: 1px solid #152335; border-bottom: 1px solid #152335'>
-                                            <td colspan='2'>
-                                                <span style='margin-right: 25px'><?= $value->has('datetime') ?$value['datetime']->i18nFormat('dd.MM.yyyy') : '' ?></span>
-                                                <span style='margin-right: 25px'><?= $value->has('datetime') ? $value['datetime']->i18nFormat('HH')."h" : '' ?><?= $value->has('datetime') ? $value['datetime']->i18nFormat('mm'): '' ?></span>
-                                                <span style='margin-right: 25px'><?= $value['user']['first_name']." ".$value['user']['last_name']?></span><span style='margin-right: 25px'><?= $value['place']?></span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <?php endif; } endif;?>
-                      
-                    </table> 
-                </div>
+                    <?php endif; } endif;?>
+                  
+                </table> 
             </div>
-
             <button class='btn btn-black' onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => "Users", "action" => "logout"]) ?>'" >LOGOUT
             </button>
         </div>
@@ -121,6 +117,13 @@
 </section>
 
 <link rel="stylesheet" href="<?= $url; ?>/css/toastr.css">
+<style>
+table.courses-list tr td:nth-child(2){
+  width: 100px;
+  text-align: right;
+}
+
+</style>
 
 <script src="<?= $url; ?>/js/toastr.js"></script>
 <script>

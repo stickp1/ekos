@@ -34,16 +34,20 @@ class UploaderController extends AppController
       endif;
 
       $this->set(compact('courses_list'));
-
     }
     
     public function documents()
     {
-
-		$uploads = $this->loadModel('Uploads')->find('all', ['contain' => ['Users'], 	'conditions' => ['theme_id' => 0]])->toArray();
+		    $uploads = $this->loadModel('Uploads')->find('all', [
+            'contain' => [
+                'Users'
+            ], 	
+            'conditions' => [
+                'theme_id' => 0
+            ]
+        ])->toArray();
 
         $this->set(compact('uploads'));
-
     }
 
     /**

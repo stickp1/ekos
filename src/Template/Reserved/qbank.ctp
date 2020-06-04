@@ -27,7 +27,7 @@
                     <p style="font-size:12pt; margin-top:10px"><input type="checkbox" name="difficulty[]" value="1"  style='width:20px; height:20px; position:relative; top:4px' checked> Fácil <input type="checkbox" name="difficulty[]" value="2"  style='width:20px; height:20px; position:relative; top:4px' checked> Intermédio <input type="checkbox" name="difficulty[]" value="3"  style='width:20px; height:20px; position:relative; top:4px' checked> Difícil</p>
                     <?php if($question_list): ?>
                     <p class="small" style="margin-top: 30px"><a href="<?= $this->Url->build(["action" => "question", $question_list[0]['id']]) ?>" > <i class="fa  fa-play-circle"></i> <b>Continuar Perguntas</b> </a></p>
-            <?php endif;?>
+                    <?php endif;?>
                 </div>
 
                 
