@@ -65,8 +65,8 @@
             <div class="col-md-8 col-md-offset-2">
               <h1>Os nossos cursos.</h1>
               <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti cursos pensados à medida: organizados em módulos de aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br>
-              <br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
-              <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
+              <br> <strong>Curso Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
+              <br> <strong>Curso de Verão | </strong><span style='font-size: 16px'>inscrições em breve </span>
               <br> <strong>Curso de Gestão de Tarefas e Tempo | </strong><span style='font-size: 16px'>inscrições em breve </span>
               </p>
               <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; visibility:hidden', 'value' => $scity, 'id' => 'city_selector'])?>
@@ -76,15 +76,15 @@
         <div class="row hidden-sm hidden-xs">
             <div class="col-sm-4">
               <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso Anual</h2>
-              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+              <p class='small' style='margin-top: 30px'><a href='/programa_curso_anual.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
             <div class="col-sm-4">
               <h2><span style='font-size:20px;'>Preparação para a PNA</span><br>Curso de Verão</h2>
-              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+              <p class='small' style='margin-top: 30px'><a href='/programa_curso_verao.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
             <div class="col-sm-4">
               <h2>Curso de Gestão <br>de Tarefas e Tempo</h2>
-              <p class='small' style='margin-top: 30px'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
+              <p class='small' style='margin-top: 30px; visibility:hidden;'><a href='/programa_integrado.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
             </div>
         </div>
         <div class="row hidden-sm hidden-xs">

@@ -180,7 +180,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                 </div>
                 <div class="col-md-3 col-sm-6">
                     <h5><a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "contactos"]) ?>" <?= $this->request->params['action'] == 'contactos' ? "class='active'" : ""?>>INSTALAÇÕES</a></h5>
-                        <p>Direção e Atendimento Geral <br> Rua Jorge Colaço 16, <br> 1700-253 Lisboa 
+                        <p>Direção e Atendimento Geral <br> Rua Jorge Colaço 16-A, <br> 1700-253 Lisboa 
                         </p>
                 </div>
                 <!--</div>

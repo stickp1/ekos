@@ -15,7 +15,7 @@
           <div class="panel-heading">
             <ul class="nav nav-tabs" id='submenu'>
               <li <?=  @$this->request->params['param'] == 'inscricoes' ||  @$this->request->params['param'] == null ? 'class="active"': ''?>>
-                <a href="#inscricoes" data-toggle="tab">Inscrições</a>
+                <a id="anual" href="#inscricoes" data-toggle="tab">Inscrições</a>
               </li>
               <li <?=  @$this->request->params['param'] == 'exame' ? 'class="active"': ''?> >
                 <a href="#exame" data-toggle="tab">Exame</a>
