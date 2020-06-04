@@ -43,11 +43,34 @@ class UploaderController extends AppController
                 'Users'
             ], 	
             'conditions' => [
-                'theme_id' => 0
-            ]
+                'theme_id <=' => 0,
+                'Uploads.active' => 1
+            ],
+            'fields' => [
+                'theme_id',
+                'id',
+                'name',
+                'type',
+                'Users.first_name',
+                'Users.last_name',
+                'timestamp',
+                'active',
+            ],
+            'group' => 'theme_id',
+            'group' => 'timestamp'
         ])->toArray();
 
-        $this->set(compact('uploads'));
+
+        $categories = $this->Uploads->find('all', [
+            'conditions' => [
+                'theme_id <=' => 0
+            ],
+            'fields' => [
+                'theme_id', 
+            ],
+        ])->distinct();
+
+        $this->set(compact('uploads', 'categories'));
     }
 
     /**
@@ -93,10 +116,10 @@ class UploaderController extends AppController
         $this->layout = false;
 
 		
-		$user = $this->Auth->user();
+		    $user = $this->Auth->user();
 
 		
-		if($user['role'] == 3) { // Se for administrador, pode ver todas as cidades
+		    if($user['role'] == 3) { // Se for administrador, pode ver todas as cidades
         	$uploads = $this->loadModel('Uploads')->find('all', ['contain' => ['Users', 'Cities'], 'conditions' => ['theme_id' => $id]])->toArray();
         	
         } else {
@@ -130,12 +153,12 @@ class UploaderController extends AppController
             $this->Flash->error(__('Não foi possível eliminar o ficheiro.'));
         }
 
-		if($file['theme_id'] > 0) { //SE NÃO FOR UM DOCUMENTO
-			$course_id = $this->loadModel('Themes')->get($file['theme_id'])['courses_id'];
+		    if($file['theme_id'] > 0) { //SE NÃO FOR UM DOCUMENTO
+			   $course_id = $this->loadModel('Themes')->get($file['theme_id'])['courses_id'];
 	        return $this->redirect(['action' => 'index', 'c' => $course_id, 't' => $file['theme_id']]);
-	    } else {
-		    return $this->redirect(['action' => 'documents']);	    
-		}
+	       } else {
+		      return $this->redirect(['action' => 'documents']);	    
+		    }
     }
 
 
@@ -144,17 +167,17 @@ class UploaderController extends AppController
     {
         if($this->request->is('post')) {
             $file = $this->loadModel('Uploads')->get($id);
-            if ($file['active'] == 1){$file['active'] = 0;} else {$file['active'] = 1;}
-            $this->loadModel('Uploads')->save($file);
             
-            if($file['theme_id'] > 0) { //SE NÃO FOR UM DOCUMENTO
-				$course_id = $this->loadModel('Themes')->get($file['theme_id'])['courses_id'];
-		        return $this->redirect(['action' => 'index', 'c' => $course_id, 't' => $file['theme_id']]);
-	    } else {
-		    return $this->redirect(['action' => 'documents']);	    
-		}
-        }
-
+            if ($file['active'] == 1){$file['active'] = 0;} else {$file['active'] = 1;}
+                $this->loadModel('Uploads')->save($file);
+                
+                if($file['theme_id'] > 0) { //SE NÃO FOR UM DOCUMENTO
+    				      $course_id = $this->loadModel('Themes')->get($file['theme_id'])['courses_id'];
+    		          return $this->redirect(['action' => 'index', 'c' => $course_id, 't' => $file['theme_id']]);
+    	          } else {
+    		          return $this->redirect(['action' => 'documents']);	    
+    		        }
+            }
     }
 
 
@@ -217,8 +240,7 @@ class UploaderController extends AppController
        if($arquivo->copy($dir.$imagem['name'])) {
         $arquivo->close();
         return $imagem['name'];
-       }
-        
+       }      
     }
 
         public function upload($imagem = array(), $dir = 'img/uploads')
@@ -229,10 +251,10 @@ class UploaderController extends AppController
         if($this->request->is('post')) {
             $imagem = $this->request->data['file'];
 
-             if($imagem['error']!=0 || $imagem['size']==0) {
-            $this->Flash->error('Alguma coisa deu errado, o upload retornou erro '.$imagem['error'].' e tamanho '.$imagem['size']);
-            return $this->redirect(['action' => 'index']);
-        }
+            if($imagem['error']!=0 || $imagem['size']==0) {
+                $this->Flash->error('Alguma coisa deu errado, o upload retornou erro '.$imagem['error'].' e tamanho '.$imagem['size']);
+                return $this->redirect(['action' => 'index']);
+            }
 
             $this->checa_dir($dir);
 
@@ -253,11 +275,11 @@ class UploaderController extends AppController
                 $this->Flash->error('Ocorreu um erro');
             }
 
-			if($this->request->data['theme_id'] > 0){
+      			if($this->request->data['theme_id'] > 0){
                 $course_id = $this->loadModel('Themes')->get($upload['theme_id'])['courses_id'];
-            return $this->redirect(['action' => 'index', 'c' => $course_id, 't' => $upload['theme_id']]);
+                return $this->redirect(['action' => 'index', 'c' => $course_id, 't' => $upload['theme_id']]);
             } else {
-	           return $this->redirect(['action' => 'documents']);
+      	        return $this->redirect(['action' => 'documents']);
             }
         }
 

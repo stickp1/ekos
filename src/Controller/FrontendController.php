@@ -300,17 +300,35 @@ class FrontendController extends AppController
 
     public function informacoes()
     {
-       $content = $this->Frontend->find('list', ['valueField' => 'content'])->toArray();
+      $content = $this->Frontend->find('list', [
+        'valueField' => 'content'
+      ])->toArray();
 
-       $themes = $this->LoadModel('Themes')->find('all', ['order' => ['domain', 'area', "relevance REGEXP '[*]' DESC", 'relevance']])->toArray();
+      $themes = $this->LoadModel('Themes')->find('all', [
+        'order' => [
+          'domain', 
+          'area', 
+          "relevance REGEXP '[*]' DESC", 
+          'relevance'
+        ]
+      ])->toArray();
 
-       $matrix = array();
-
-       foreach ($themes as $key => $value) {
+      $matrix = array();
+      foreach ($themes as $key => $value) 
           $matrix[$value['domain']][$value['area']][$value['id']] = $value;
-       }
 
-        $this->set(compact('content', 'matrix'));
+      $documents = $this->loadModel('Uploads')->find('all', [
+          'conditions' => [
+              'theme_id' => 0,
+              'active' => 1,
+          ],
+          'fields' => [
+              'url',
+              'name'
+          ]
+      ]);
+       
+      $this->set(compact('content', 'matrix', 'documents'));
     }
 
     public function contactos($contact = null)

@@ -279,21 +279,12 @@
                 <p>Documentos tipo A:</p>
                 <div class="panel panel-info well well-sm">
                   <div class="panel-body">
+                    <?php foreach($documents as $document): ?>
                     <p class='small download'>
-                      <a href='/temas_modulos.pdf' target="_blank">    
-                          <i class="fa fa-download"></i> document A1
+                      <a href='<?= $document['url'] ?>' target="_blank">    
+                          <i class="fa fa-download"></i><?= $document['name']?>
                       </a>
-                    </p>
-                    <p class='small download'>
-                      <a href='/temas_modulos.pdf' target="_blank">    
-                          <i class="fa fa-download"></i> document A2
-                      </a>
-                    </p>
-                    <p class='small download'>
-                      <a href='/temas_modulos.pdf' target="_blank">    
-                          <i class="fa fa-download"></i> document A3
-                      </a>
-                    </p>
+                    <?php endforeach; ?>
                   </div>
                 </div>
                 <br>
@@ -332,6 +323,9 @@ a.expand{
 }
 #FAQ_accordion>div>p:last-child{
   padding-bottom: 30px
+}
+.fa-download{
+  margin-right: 10px;
 }
 </style>
 
