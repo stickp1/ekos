@@ -7,11 +7,13 @@
 		                <div class="col-md-6">
                         <label for="file" class="floated">Enviar ficheiro: </label>
                         <input type="file" id="file" name="file" ><br>
-                        <input type='hidden' name='theme_id' value='0' />
+                        <input type='hidden' name='city_id' value='<?=$city_id?>' />
+                        <label for="name">Nome do ficheiro:</label>
+                        <input type="text" name="name" id="name" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label for="category">Seleciona uma categoria:</label>
-                        <select class="form-control" name="theme_id">
+                        <label for="theme_id">Seleciona uma categoria:</label>
+                        <select class="form-control" name="theme_id" id="theme_id">
                           <?php $letters = range('A', 'Z'); ?>
                           <?php $catletter = array(); ?>
                           <?php foreach ($categories as $key => $category): ?>
@@ -75,10 +77,16 @@
 </div>
 
 <style>
+.col-md-6{
+  margin-bottom: 20px;
+}
 select.form-control{
   width: 120px;
 }
-button.btn-xs{
+input.form-control{
+  width: 240px;
+}
+.col-md-6 button.btn-xs{
   margin-top: 20px;
 }
 </style>
@@ -92,8 +100,14 @@ $('#add').on('click', function(){
   console.log(last['theme_id']);
   console.log(letters[cats.length]);
   $('select').append("<option id='newOption'></option>");
-  $('#newOption').attr("value", last['theme_id'] - 1).text(letters[cats.length]);
+  $('#newOption').attr('value', last['theme_id'] - 1).text(letters[cats.length]).attr('selected', 'selected');
   $('#add').attr('disabled', true);
 })
+
+$('#file').change(function(){
+  filename = $('#file').val().split(/\\|\//).pop();
+  console.log(filename);
+  $('#name').attr('value', filename);
+});
 
 </script>

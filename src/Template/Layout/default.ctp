@@ -123,6 +123,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes"]) ?>'" href='#' class="dropdown-item">Inscrições</a></li>
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "exame"]) ?>'" href='#' class="dropdown-item">Exame</a></li>
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "matriz"]) ?>'" href='#' class="dropdown-item">Bibliografia</a></li>
+                            <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "docs"]) ?>'" href='#' class="dropdown-item">Documentos</a></li>
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "faq"]) ?>'" href='#' class="dropdown-item">FAQs</a></li>
                         </ul>
                     </li>

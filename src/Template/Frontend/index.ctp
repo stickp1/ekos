@@ -127,6 +127,7 @@
                     </i>
                 </div>
                 <div id="collapseOne" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
+                    <p class='small'><a href='/programa_curso_anual.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
                     <div class="box-body table-responsive no-padding">
                         <table class='courses-list'>
                             <?php foreach ($courses as $key => $value): ?>
@@ -153,6 +154,7 @@
                 </div>
                 <div id="collapseTwo" class="collapse " aria-labelledby="headingTwo" data-parent="#accordion">
                     <div class="box-body table-responsive no-padding">
+                        <p class='small'><a href='/programa_curso_verao.pdf' target="_blank"> <i class="fa fa-download"></i> Programa Integrado </a></p>
                         <table class='courses-list'>
                             <?php foreach ($courses2 as $key => $value): ?>
                             <tr class='primary' id="<?= $key?>" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'cursos', 'c' => 's'.$key]) ?>"'>

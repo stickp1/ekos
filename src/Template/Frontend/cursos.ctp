@@ -306,9 +306,10 @@
                                                                   <span style='position: relative; top: 7px'>
                                                                       <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>
                                                                   </span> 
-                                                                  <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) ?>    <span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'>
+                                                                  <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1): ?>    <span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'>
                                                                           Esgotado
                                                                       </span>
+                                                                  <?php endif; ?>
                                                               </td>
                                                               <td> 
                                                                   <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["controller" => 'frontend', 'action' => 'informacoes', '#' => 'verão'])?>"'>Mais informações

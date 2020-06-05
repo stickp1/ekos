@@ -319,16 +319,27 @@ class FrontendController extends AppController
 
       $documents = $this->loadModel('Uploads')->find('all', [
           'conditions' => [
-              'theme_id' => 0,
+              'theme_id <=' => 0,
               'active' => 1,
           ],
           'fields' => [
+              'id',
               'url',
-              'name'
+              'name',
+              'theme_id'
           ]
       ]);
+
+      $categories = $this->Uploads->find('all', [
+            'conditions' => [
+                'theme_id <=' => 0
+            ],
+            'fields' => [
+                'theme_id', 
+            ],
+        ])->distinct();
        
-      $this->set(compact('content', 'matrix', 'documents'));
+      $this->set(compact('content', 'matrix', 'documents', 'categories'));
     }
 
     public function contactos($contact = null)
@@ -368,13 +379,13 @@ class FrontendController extends AppController
        $this->set(compact('contact'));
     }
 
-     public function soon()
+    public function soon()
     {
         $this->layout = 'ajax';
     }
 
-     public function feedback($id = null)
-     {
+    public function feedback($id = null)
+    {
 
         $survey = $this->loadModel('Feed_user_surveys')->find('all', ['conditions' => ['code' => $id], 'contain' => ['Lectures' => ['Groups' => ['Courses'], 'Users']]]);
         if($survey->count() == 0){
@@ -435,9 +446,9 @@ class FrontendController extends AppController
     
 
         $this->set(compact('questions', 'survey', 'themes'));
-     }
+    }
 
-     public function city ($id = null)
+    public function city ($id = null)
     {
       $this->response = $this->response->withCookie('city', [
         'value' => $id
@@ -544,5 +555,19 @@ class FrontendController extends AppController
       usort( $courses, array( $this, 'sort' ) );
 
       $this->set(compact('courses', 'courses2', 'courses3'));
+    }
+
+    public function file($file_id = null)
+    {
+        $upload = $this->loadModel('Uploads')->get($file_id, [
+            'conditions' => [
+                'theme_id <=' => 0 
+            ]
+        ]);
+
+        $this->autoRender = false;
+        header("Content-type:".$upload['type']);
+        header("Content-Disposition: inline; filename=".$upload['url']);
+        readfile('http://ekos.pt/img/uploads/'.$upload['url']);
     }
 }

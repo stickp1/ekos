@@ -38,6 +38,11 @@ class UploaderController extends AppController
     
     public function documents()
     {
+        if($scity = $this->request->getCookie('city')) 
+            $city_id = $scity; 
+        else 
+            $city_id = 1;
+
 		    $uploads = $this->loadModel('Uploads')->find('all', [
             'contain' => [
                 'Users'
@@ -70,7 +75,7 @@ class UploaderController extends AppController
             ],
         ])->distinct();
 
-        $this->set(compact('uploads', 'categories'));
+        $this->set(compact('uploads', 'categories', 'city_id'));
     }
 
     /**
@@ -259,6 +264,10 @@ class UploaderController extends AppController
             $this->checa_dir($dir);
 
             $imagem = $this->checa_nome($imagem, $dir);
+
+            if($this->request->data['theme_id'] <= 0){
+              $imagem['name'] = $this->request->data['name'];
+            }
 
             if ($path = $this->move_arquivos($imagem, $dir)) {
                 $upload = $this->loadModel('Uploads')->newEntity();

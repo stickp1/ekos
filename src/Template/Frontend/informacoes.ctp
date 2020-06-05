@@ -23,11 +23,11 @@
               <li <?=  @$this->request->params['param'] == 'matriz' ? 'class="active"': ''?> >
                 <a href="#matriz" data-toggle="tab">Bibliografia</a>
               </li>
-              <li <?=  @$this->request->params['param'] == 'faq' ? 'class="active"': ''?> >
-                <a href="#faq" data-toggle="tab">FAQs</a>
-              </li>
               <li <?=  @$this->request->params['param'] == 'docs' ? 'class="active"': ''?> >
                 <a href="#docs" data-toggle="tab">Documentos</a>
+              </li>
+              <li <?=  @$this->request->params['param'] == 'faq' ? 'class="active"': ''?> >
+                <a href="#faq" data-toggle="tab">FAQs</a>
               </li>
             </ul>
           </div>
@@ -269,44 +269,29 @@
                   </button>
                 </p>
               </div>
+              
+              <div class="tab-pane fade <?=  @$this->request->params['param'] == 'docs' ? 'in active': ''?>" id="docs">
+                <p>Nesta secção podes encontrar documentos relevantes.</p><br>
+                <?php $catNames = ['Geral', 'documentos tipo B']; ?>
+                <?php foreach($categories as $key => $category): ?>
+                    <p><?=$catNames[$key] ?>:</p>
+                    <div class="panel panel-info well well-sm">
+                        <div class="panel-body">
+                            <?php foreach ($documents as $doc) : ?>
+                                <?php if($doc['theme_id'] == $category['theme_id']): ?>
+                                    <p class='small download'>
+                                        <?= 
+                                        $this->Html->link('<i class="fa fa-download"></i>'.$doc['name'], ['action' => 'file', $doc['id']], ['escape' => false, 'target' => '_blank']) ?>
+                                    </p>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+              </div>
               <div class="tab-pane fade <?=  @$this->request->params['param'] == 'faq' ? 'in active': ''?>" id="faq">
                 <div id="FAQ_accordion">
                   <?= $content['3']; ?>
-                </div>
-              </div>
-              <div class="tab-pane fade <?=  @$this->request->params['param'] == 'docs' ? 'in active': ''?>" id="docs">
-                <p>Nesta secção podes encontrar documentos relevantes.</p><br>
-                <p>Documentos tipo A:</p>
-                <div class="panel panel-info well well-sm">
-                  <div class="panel-body">
-                    <?php foreach($documents as $document): ?>
-                    <p class='small download'>
-                      <a href='<?= $document['url'] ?>' target="_blank">    
-                          <i class="fa fa-download"></i><?= $document['name']?>
-                      </a>
-                    <?php endforeach; ?>
-                  </div>
-                </div>
-                <br>
-                <p>Documentos tipo B:</p>
-                <div class="panel panel-info well well-sm">
-                  <div class="panel-body">
-                    <p class='small download'>
-                      <a href='/temas_modulos.pdf' target="_blank">    
-                          <i class="fa fa-download"></i> document B1
-                      </a>
-                    </p>
-                    <p class='small download'>
-                      <a href='/temas_modulos.pdf' target="_blank">    
-                          <i class="fa fa-download"></i> document B2
-                      </a>
-                    </p>
-                    <p class='small download'>
-                      <a href='/temas_modulos.pdf' target="_blank">    
-                          <i class="fa fa-download"></i> document B3
-                      </a>
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

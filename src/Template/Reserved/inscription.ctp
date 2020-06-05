@@ -17,8 +17,10 @@
                               </option>
                           <?php endforeach; ?>
                         </select>
-                        <button class="btn" type="button" data-toggle="collapse" data-target="#annual-groups" aria-expanded="false" aria-controls="annual-groups">Mais opções...
-                        </button>
+                        <?php if ($course['name'] == "Curso Anual"): ?>
+                            <button class="btn" type="button" data-toggle="collapse" data-target="#annual-groups" aria-expanded="false" aria-controls="annual-groups">Mais opções...
+                            </button>
+                        <?php endif; ?>
                     </div>
                     <div id="annual-groups" class="panel panel-info collapse">
                         <div class="panel-body">

@@ -1092,7 +1092,7 @@ class ReservedController extends AppController
        }    
     }
 
-        public function upload($imagem = array(), $dir = 'img/receipts')
+    public function upload($imagem = array(), $dir = 'img/receipts')
     {
         $id = $this->Auth->user('id');
         if(!isset($id))   return $this->redirect(['controller' => '/']);
