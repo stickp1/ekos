@@ -458,6 +458,7 @@ class ReservedController extends AppController
 
                 $eupago = $this->loadComponent('Eupago');
                 $this->loadModel('mb_references');
+                $failed = false;
                 foreach($all_sales as $key => $sale){
                     $reference = $eupago->select_payment_type($this->request->getData('payment_type'), $sale->id, $sale->value);
                     if(@$reference->sucesso){
@@ -471,9 +472,12 @@ class ReservedController extends AppController
                     } else {
                         $this->Products->deleteAll(['sale_id' => $sale->id]);
                         $this->Products->Sales->delete($sale);
-                        $this->Flash->error(__('Não foi possível realizar a inscrição'));
-                        return $this->redirect(['controller' => 'reserved', 'action' => 'payments']);
+                        $failed = true;
                     }
+                }
+                if($failed){
+                    $this->Flash->error(__('Não foi possível realizar a inscrição'));
+                    return $this->redirect(['controller' => 'reserved', 'action' => 'payments']);
                 }
             }
             return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $sale->id]);
