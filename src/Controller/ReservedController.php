@@ -418,7 +418,7 @@ class ReservedController extends AppController
                     $sale['value'] = 210;
                     $sale['payment_type'] = $this->request->getData('payment_type');
                     $sale = $this->Products->Sales->save($sale);
-                    array_push($all_sales, $sale->id);
+                    array_push($all_sales, $sale);
 
                     for($c=1; $c<=$courses_per_trimester[$trimester]; $c++){
                         
@@ -470,7 +470,7 @@ class ReservedController extends AppController
                         $ref = $this->mb_references->save($ref);
                     } else {
                         $this->Products->deleteAll(['sale_id' => $sale->id]);
-                        $this->Sales->delete($sale);
+                        $this->Products->Sales->delete($sale);
                         $this->Flash->error(__('Não foi possível realizar a inscrição'));
                         return $this->redirect(['controller' => 'reserved', 'action' => 'payments']);
                     }

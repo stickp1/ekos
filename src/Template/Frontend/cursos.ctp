@@ -312,7 +312,7 @@
                                                                   <?php endif; ?>
                                                               </td>
                                                               <td> 
-                                                                  <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["controller" => 'frontend', 'action' => 'informacoes', '#' => 'verão'])?>"'>Mais informações
+                                                                  <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["controller" => 'frontend', 'action' => 'informacoes', '#' => 'verao'])?>"'><span style="font-size:1.8em;">+ </span><span style="font-size:1.2em; vertical-align:10%;">  info</span>
                                                                   </button>
                                                               </td>
                                                           </tr>

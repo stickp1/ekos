@@ -18,7 +18,7 @@
                           <?php endforeach; ?>
                         </select>
                         <?php if ($course['name'] == "Curso Anual"): ?>
-                            <button class="btn" type="button" data-toggle="collapse" data-target="#annual-groups" aria-expanded="false" aria-controls="annual-groups">Mais opções...
+                            <button class="btn" type="button" data-toggle="collapse" data-target="#annual-groups" aria-expanded="false" aria-controls="annual-groups"><span style="font-size:0.8em;">mais opções...</span>
                             </button>
                         <?php endif; ?>
                     </div>

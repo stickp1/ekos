@@ -41,7 +41,7 @@
               </div>
               <div class="tab-pane fade <?=  @$this->request->params['param'] == 'matriz' ? 'in active': ''?>" id="matriz">
 
-                <p>Abaixo podes encontrar a correspondência entre temas e capítulos a estudar da bibliografia recomendada que elaborámos para ti. Podes consultar os nomes completos de cada livro na página de <a href='/informacoes/exame'>informações do exame</a>. </p> <p> Para cada tema indicámos os capitulos dos vários livros pelos quais podes optar por estudar. A negrito encontra-se a nossa recomendação bibliográfica de base. Em cada aula serão dadas informações mais detalhadas sobre por onde poderás orientar o teu estudo.
+                <p>Nesta secção podes encontrar a <strong>correspondência entre temas e capítulos</strong> da bibliografia recomendada, que a EKOS elaborou para te ajudar a orientar o estudo. Os nomes completos de cada livro encontram-se disponíveis para consulta na página de <a href='/informacoes/exame' style="font-weight:bold; text-decoration:underline;">informações sobre o exame</a>. </p> <p> Para cada tema são indicados os capitulos dos vários livros pelos quais podes optar por estudar. A negrito encontra-se a recomendação bibliográfica de base da EKOS. Em cada aula serão dadas informações mais detalhadas sobre por onde poderás orientar o teu estudo.
                 </p>
                 <br>
                 <br>
@@ -271,8 +271,8 @@
               </div>
               
               <div class="tab-pane fade <?=  @$this->request->params['param'] == 'docs' ? 'in active': ''?>" id="docs">
-                <p>Nesta secção podes encontrar documentos relevantes.</p><br>
-                <?php $catNames = ['Geral', 'documentos tipo B']; ?>
+                <p>Nesta secção podes consultar os documentos relevantes sobre a Prova Nacional de Acesso, bem como os documentos informativos sobre a formação e os cursos da EKOS.</p><br>
+                <?php $catNames = ['A Prova Nacional de Acesso', 'A Oferta Formativa da EKOS']; ?>
                 <?php foreach($categories as $key => $category): ?>
                     <p><?=$catNames[$key] ?>:</p>
                     <div class="panel panel-info well well-sm">
