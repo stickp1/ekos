@@ -438,6 +438,8 @@ class ReservedController extends AppController
                 }
             } else {
 
+                $id_tmp = $courses_id_order[$course_it];
+
                 $sale = $this->Products->Sales->newEntity();
                 $sale['users_id'] = $id;
                 $sale['value'] = $course['price'];
@@ -446,7 +448,7 @@ class ReservedController extends AppController
                 array_push($all_sales, $sale);
 
                 $product = $this->Products->newEntity();
-                $product['group_id'] = $group_id;
+                $product['group_id'] = $this->request->getData('course_'.$id_tmp.'_group_id');
                 $product['group_courses_id'] = $course['id'];
                 $product['sale_id'] = $sale->id;
                 $product['sales_users_id'] = $id;

@@ -18,13 +18,13 @@
                 <a id="anual" href="#inscricoes" data-toggle="tab">Inscrições</a>
               </li>
               <li <?=  @$this->request->params['param'] == 'exame' ? 'class="active"': ''?> >
-                <a href="#exame" data-toggle="tab">Exame</a>
+                <a id="prova" href="#exame" data-toggle="tab">Exame</a>
               </li>
               <li <?=  @$this->request->params['param'] == 'matriz' ? 'class="active"': ''?> >
                 <a href="#matriz" data-toggle="tab">Bibliografia</a>
               </li>
               <li <?=  @$this->request->params['param'] == 'docs' ? 'class="active"': ''?> >
-                <a href="#docs" data-toggle="tab">Documentos</a>
+                <a id="refdoc" href="#docs" data-toggle="tab">Documentos</a>
               </li>
               <li <?=  @$this->request->params['param'] == 'faq' ? 'class="active"': ''?> >
                 <a href="#faq" data-toggle="tab">FAQs</a>
@@ -41,7 +41,7 @@
               </div>
               <div class="tab-pane fade <?=  @$this->request->params['param'] == 'matriz' ? 'in active': ''?>" id="matriz">
 
-                <p>Nesta secção podes encontrar a <strong>correspondência entre temas e capítulos</strong> da bibliografia recomendada, que a EKOS elaborou para te ajudar a orientar o estudo. Os nomes completos de cada livro encontram-se disponíveis para consulta na página de <a href='/informacoes/exame' style="font-weight:bold; text-decoration:underline;">informações sobre o exame</a>. </p> <p> Para cada tema são indicados os capitulos dos vários livros pelos quais podes optar por estudar. A negrito encontra-se a recomendação bibliográfica de base da EKOS. Em cada aula serão dadas informações mais detalhadas sobre por onde poderás orientar o teu estudo.
+                <p>Nesta secção podes encontrar a <strong>correspondência entre temas e capítulos</strong> da bibliografia recomendada, que a EKOS elaborou para te ajudar a orientar o estudo. Os nomes completos de cada livro encontram-se disponíveis para consulta na página de <a href='/informacoes/exame#prova' style="font-weight:bold; text-decoration:underline;">informações sobre o exame</a>. </p> <p> Para cada tema são indicados os capitulos dos vários livros pelos quais podes optar por estudar. A negrito encontra-se a recomendação bibliográfica de base da EKOS. Em cada aula serão dadas informações mais detalhadas sobre por onde poderás orientar o teu estudo.
                 </p>
                 <br>
                 <br>
