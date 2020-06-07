@@ -7,7 +7,7 @@
           <div class="col-md-10 col-md-offset-1 text-left">
             <br>
             <h2 style='text-align:center'>Lista de Espera</h2>
-            <p style='text-align:center'>Infelizmente, as inscrições para o <b>Curso de <?= $group['course']['name']?></b> encontram-se esgotadas.</p>
+            <p style='text-align:center'>Infelizmente, as inscrições para o <b>Curso <?php if($course['name'] != 'Anual') echo 'de' ?> <?= $course['name']?></b> encontram-se esgotadas.</p>
             <br>
             <p class='small'>Na EKOS acreditamos num ensino personalizado através de turmas pequenas que possam promover a discussão e interação, pelo que não nos é possível aceitar mais alunos na turma em questão.</p>
             <p class='small'>Contudo, poderá surgir a <b>hipótese de fazer o curso connosco</b>! Caso estejas interessado, poderás inscrever o teu nome na lista de espera, sem qualquer compromisso, para que possamos entrar em contacto contigo no caso de desistências ou trocas de turma. Esperamos poder contar contigo nas nossas aulas em breve!</p>

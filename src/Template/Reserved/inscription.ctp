@@ -9,7 +9,7 @@
                     <p><?= $course['name']?></p>
                     <p><b><?= $course['price'] ?> €</b></p><br>
                     <div class="select" id="main-group">
-                        <label for="group_id">Por favor seleciona uma turma:</label>
+                        <label for="<?= 'course_'.$course['id'].'_group_id'?>">Por favor seleciona uma turma:</label>
                         <select class="form-control" name="<?= 'course_'.$course['id'].'_group_id'?>" id="<?= 'course_'.$value['id'].'_group_id'?>">
                           <?php foreach ($groups as $key=>$group): ?>
                               <option value=<?=$group['id']?> >
@@ -100,3 +100,15 @@
   margin-top: 50px;
 }
 </style>
+
+<script>
+  $('#main-group select').change(function(){
+    option = $('#main-group select option:selected').text().trim();
+    console.log(option);
+    $('#annual-groups select option').filter(function() {
+      console.log($(this).text().trim() == option);
+      return $(this).text().trim() == option;
+    }).prop('selected', true);
+  });
+
+</script>

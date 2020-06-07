@@ -268,7 +268,7 @@ class FrontendController extends AppController
             'conditions' => [
               'user_id' => $this->Auth->user('id')
             ], 
-            'valueField' => 'group_id' 
+            'valueField' => 'course_id' 
         ])->toArray();
         
         $this->set(compact('inscriptions', 'inscriptions_courses', 'waiting'));
@@ -276,8 +276,6 @@ class FrontendController extends AppController
       }
 
       $themes = $this->loadModel('Themes')->find('list')->toArray();
-
-      $coursesLen = $courses->count();
 
       $courses2 = [
         1 => "Patologia Médica", 
@@ -295,7 +293,11 @@ class FrontendController extends AppController
         5 => "Aplicação de Exercício Prático"
       ];
 
-      $this->set(compact('courses', 'themes', 'count', 'coursesLen', 'courses2', 'courses3', 'summer', 'manage', 'annual_trigger_course_id'));
+
+      foreach($courses as $course)
+        $course['price'] = preg_replace('/\s/', '&nbsp', $course['price']);
+
+      $this->set(compact('courses', 'themes', 'count', 'courses2', 'courses3', 'summer', 'manage', 'annual_trigger_course_id'));
     }
 
     public function informacoes()

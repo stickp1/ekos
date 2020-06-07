@@ -47,23 +47,13 @@
                     <?php endforeach; ?>
                     <?php foreach ($value['groups'] as $key2 => $group): ?>
                         <?php if($group['inscriptions_open'] == 1 && $value['id'] == $annual_trigger_course_id): ?>
-                            <?php if(!@in_array($group['id'], $inscriptions) && !isset($annualDisplayed)): ?>
+                            <?php if(!isset($open)): ?>
                                 <br>
                                 <span class='small'> Inscrições Abertas </span>
-                                <?php $annualDisplayed = true; ?>
+                                <?php $open = true; ?>
                             <?php endif; ?>
-                            
-                            <?php if (@$count[$group['id']] >= $group['vacancy']): ?>
-                                <?php if(isset($Auth['id'])): ?>
-                                        <?php if(!in_array($group['id'], $waiting)) ?>
-                                            <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]) ?>"'>Lista de Espera
-                                            </button> 
-                                <?php else: ?>
-                                        <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
-                                        </button>
-                                <?php endif; ?>
-
-                            <?php else: ?>
+                            <?php if ($group['vacancy'] > @$count[$group['id']]): ?>
+                                <?php $signup = true; ?>
                                 <?php if(isset($Auth['id'])): ?>
                                     <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $value['id'], 'true']) ?>"'>INSCREVER
                                     </button>
@@ -73,16 +63,25 @@
                                 <?php endif; break; ?>                                
                             <?php endif; ?>
                         <?php endif; ?>
-                    <?php endforeach; ?>         
+                    <?php endforeach; ?>
+                    <?php if (@$open && !@$signup && $value['id'] == $annual_trigger_course_id): ?>  
+                        <?php if(isset($Auth['id'])): ?>
+                            <?php if(!in_array($value['id'], $waiting)): ?>
+                                <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $value['id'], 'true']) ?>"'>Lista de Espera
+                                </button> 
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
+                            </button>
+                        <?php endif; ?> 
+                    <?php endif; ?>      
                 <?php endforeach; ?>
             </div>
         </div>
         <div class='row'>
             <div class='col-md-10 col-md-offset-1'>
                 <table class='courses-list'>
-                    <?php $aux = $coursesLen; ?>
                     <?php foreach ($courses as $key => $value) : ?>
-                        <?php //if(--$aux < 5) break; ?>
                         <tr class='primary' id="<?= $value['id']?>">
                             <td><?= $value['name'] ?></td>
                             <td>
@@ -131,17 +130,25 @@
                                                                   <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>    
                                                               </span> 
                                                               <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> 
-                                                                  <?= $value['price'] ? $value['price']. " €" : ''?> 
+                                                                  <?= $value['price'] ? $value['price']. "&nbsp;€" : ''?> 
                                                               </span> 
                                                               <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
                                                           </td>
                                                           <td width='100px'> 
-                                                              <?php if (@in_array($group['id'], $inscriptions)): ?>
+                                                              <?php if (!@in_array($group['id'], $inscriptions) && $group['inscriptions_open'] != 1) :?>
+                                                                  <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["controller" => 'frontend', 'action' => 'informacoes', '#' => 'anual'])?>"'>
+                                                                      <span style="font-size:1.8em;">+ 
+                                                                      </span>
+                                                                      <span style="font-size:1.2em; vertical-align:10%;">  info
+                                                                      </span>
+                                                                  </button>
+                                                              <?php elseif (@in_array($group['id'], $inscriptions)): ?>
                                                                   <span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>
                                                               <?php elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])): ?>
-                                                                  <?php if(!in_array($group['id'], $waiting)) ?> 
+                                                                  <?php if(!in_array($value['id'], $waiting)): ?> 
                                                                       <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $value['id']]) ?>"'>Lista de Espera
                                                                       </button>
+                                                                  <?php endif ?>
                                                               <?php elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])): ?>
                                                                   <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
                                                                   </button>
@@ -192,7 +199,7 @@
             		        <table style='width: 100%;'>
                             <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666; background-color: white'>
                                 <td colspan='3' valign='middle' style='text-align: center'> 
-                                    <span style='font-weight: 600'> <?= $value['price'] ? $value['price']. " € | " : '' ?> </span> 
+                                    <span style='font-weight: 600'> <?= $value['price'] ? $value['price']. "&nbsp;€ | " : '' ?> </span> 
                                     <span style='font-style: italic'><small>Datas a definir</small></span>
                                 </td>
                             </tr>
@@ -259,7 +266,6 @@
         <div class='row'>
             <div class='col-md-10 col-md-offset-1'>
                 <table class='courses-list'>
-                    <?php $aux = $coursesLen; ?>
                     <?php foreach ($courses2 as $key => $value) : ?>
                         <tr class='primary' id="s<?= $key?>">
                             <td><?= $value ?></td>
@@ -423,7 +429,6 @@
         <div class='row'>
             <div class='col-md-10 col-md-offset-1'>
                 <table class='courses-list'>
-                    <?php $aux = $coursesLen; ?>
                     <?php foreach ($courses3 as $key => $value) : ?>
                         <tr class='primary' id="t<?= $key?>">
                             <td><?= $value ?></td>
@@ -476,7 +481,7 @@
                                                                       <?= $min_date != new DateTime('2040-12-31') && $max_date != new DateTime('1994-12-31') ?$min_date->i18nFormat('dd.MM.yyyy')." - ".$max_date->i18nFormat('dd.MM.yyyy') : ""?>    
                                                                   </span> 
                                                                   <span style='position: relative; top: 7px; left: 20px; font-weight: 600'> 
-                                                                      <?= $manage['price'] ? $manage['price']. " €" : ''?> 
+                                                                      <?= $manage['price'] ? $manage['price']. "&nbsp;€" : ''?> 
                                                                   </span> 
                                                                   <?php if(@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1) echo "<span style='position: relative; top: 7px; left: 40px; font-weight: 400; color:red'> Esgotado</span>"; ?>
                                                               </td>
@@ -532,7 +537,7 @@
                                         <table style='width: 100%;'>
                                             <tr style='border-bottom: 1px solid #666; border-top: 1px solid #666;'>
                                                 <td colspan='3' valign='middle' style='text-align: center'> 
-                                                    <span style='font-weight: 600'> <?= $manage['price'] ? $manage['price']. " € | " : '' ?> </span> 
+                                                    <span style='font-weight: 600'> <?= $manage['price'] ? $manage['price']. "&nbsp;€ | " : '' ?> </span> 
                                                     <span style='font-style: italic'><small>Datas a definir</small></span>
                                                 </td>
                                             </tr>
@@ -597,6 +602,22 @@ section .tab-pane table td .btn-black{
   padding: 10px 30px; 
   float: right;
 } 
+@media(max-width: 413px){
+  section .tab-pane tbody tr:first-child td:first-child{
+    padding-bottom: 30px;
+  } 
+  section .tab-pane table td span{
+    left: 0!important;
+    top: 10px!important;
+  }
+  section .tab-pane table td span:first-child{
+    padding-right: 5px;
+  }
+  section .tab-pane table tr:first-child td:last-child{
+    padding-left: 20px;
+  }
+
+}
 
 </style>
 

@@ -74,17 +74,17 @@ class ReservedController extends AppController
             ])->first();
 
         $surveys = $this->loadModel('Feed_user_surveys')->find('list', [
-                'conditions' => ['user_id' => $id, 'answered' => 0, 'course_id' => $group['courses_id']], 
+                'conditions' => ['user_id' => $id, 'answered' => 0, 'course_id' => @$group['courses_id']], 
                 'keyField' => 'lecture_id', 
                 'valueField' => 'code'])->toArray();
 
         $notifications = $this->loadModel('Notifications')->find('all', [
-            'conditions' => ['course_id' => $group['courses_id'], 'active' => 1]
+            'conditions' => ['course_id' => @$group['courses_id'], 'active' => 1]
             ])->toArray();
 
         $themes_ = $this->loadModel('Themes')->find('all', [
-            'conditions' => ['courses_id' => $group['courses_id']],
-            'contain' => ['Uploads' => ['conditions' => ['active' => 1, 'Uploads.city_id' => $group['city_id']]]]
+            'conditions' => ['courses_id' => @$group['courses_id']],
+            'contain' => ['Uploads' => ['conditions' => ['active' => 1, 'Uploads.city_id' => @$group['city_id']]]]
             ])->toArray();
         $themes = array();
         foreach ($themes_ as $key => $value) {
@@ -365,12 +365,14 @@ class ReservedController extends AppController
         // If there is no match (because no one signed up yet): get groups from group table
         $groups = $groups_raw->count() ? $groups : $this->Products->Groups->find('all', [
             'conditions' => [
-                'Groups.courses_id' => $course_id, 
-                'Groups.active' => 1, 
-                'Groups.city_id' => $city_id, 
-                'Groups.inscriptions_open' => 1
+                'courses_id' => $course_id, 
+                'active' => 1, 
+                'deleted' => 0,
+                'city_id' => $city_id, 
+                'inscriptions_open' => 1,
+                'vacancy >' => 0
             ]
-        ]);
+        ])->toArray();
   
         if(empty($groups) || $this->Products->exists(['sales_users_id' => $id, 'group_courses_id' => $course_id])){
             $this->Flash->error(__('Não foi possível realizar a inscrição'));
@@ -480,39 +482,52 @@ class ReservedController extends AppController
                     return $this->redirect(['controller' => 'reserved', 'action' => 'payments']);
                 }
             }
-            return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $sale->id]);
-         }
+            return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $all_sales[0]->id]);
+        }
         $this->set(compact('groups', 'course', 'annual_courses'));
     }
 
-    public function waiting ($group_id = null)
+    public function waiting ($course_id = null, $annual = null)
     {
         $id = $this->Auth->user('id');
-        if(!isset($id))   return $this->redirect(['controller' => '/']);
+        if(!isset($id)) return $this->redirect(['controller' => '/']);
 
-        $count = $this->loadModel('Products')->find('all', ['conditions' => ['sales_users_id' => $id, 'group_id' => $group_id]])->count();
-        if($count > 0) return $this->redirect(['action' => 'index', $group_id]);
+        $count = $this->loadModel('Products')->find('all', [
+            'conditions' => [
+                'sales_users_id' => $id, 
+                'group_courses_id' => $course_id
+            ]
+        ])->count();
 
-        $count = $this->loadModel('WaitingList')->find('all', ['conditions' => ['user_id' => $id, 'group_id' => $group_id]])->count();
-        if($count > 0){ $this->Flash->error('Já te encontras em lista de espera para a turma pretendida.'); return $this->redirect(['controller' => 'cursos']);}
+        if($count > 0) return $this->redirect(['action' => 'index']);
 
-        $group = $this->loadModel('Groups')->get($group_id, ['contain' => ['Courses']])->toArray();
-         if ($this->request->is('post')) {
+        $count = $this->loadModel('WaitingList')->find('all', [
+            'conditions' => [
+                'user_id' => $id, 
+                'course_id' => $course_id
+            ]
+        ])->count();
+
+        if($count > 0){
+            $this->Flash->error('Já te encontras em lista de espera para a turma pretendida.'); 
+            return $this->redirect(['controller' => 'cursos']);
+        }
+
+        $course = $this->loadModel('Courses')->get($course_id)->toArray();
+
+        if($annual) $course['name'] = 'Anual';
+        
+        if ($this->request->is('post')) {
             $waiting = $this->loadModel('WaitingList')->newEntity();
             $waiting['user_id'] = $id;
-            $waiting['group_id'] = $group_id;
-            $waiting['course_id'] = $group['course']['id'];
-            ;
+            $waiting['course_id'] = $course['id'];
 
-            if($waiting = $this->loadModel('WaitingList')->save($waiting)){
+            if($waiting = $this->loadModel('WaitingList')->save($waiting))
                 $this->Flash->success('Foste colocado em lista de espera. Serás contacto caso abra uma nova vaga ou turma.');
-            }
 
             return $this->redirect(['controller' => 'cursos']);
-
          }
-
-        $this->set(compact('group'));
+        $this->set(compact('course'));
     }
 
     public function exam($id = 1)
