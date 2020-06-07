@@ -37,7 +37,7 @@
               $prod = array();
               foreach ($value['products'] as $key2 => $product) {$prod[$key2] = $product['group']['course']['name'];} 
               echo implode(' <b>|</b> ', $prod)." <b>[".$value['products'][0]['group']['name']."]</b>"; ?></td>
-              <td style='width: 75px; padding:10px'><?= $value['value']." €"; ?>
+              <td style='width: 80px; padding:10px'><?= $value['value']." €"; ?>
               <td> 
                 <?php if($value['status'] == 3): ?>
                   <a href="#" data-toggle="modal" data-target="#modal_<?= $value['id']?>"><span class="label label-danger" style='padding: 5px 10px;color: white;'>Efetuar pagamento</span></a>
@@ -106,7 +106,7 @@
 
                 <?php elseif ($value['payment_type'] == 2) : ?>
                   
-                   <p style='text-align:left'>Para concluíres a tua inscrição, deves efetuar efetuar o pagamento através da rede multibanco com os seguintes dados: </p><p><br>
+                   <p style='text-align:left'>Para concluíres a tua inscrição, deves efetuar o pagamento através da rede multibanco com os seguintes dados: </p><p><br>
                     <b>Entidade</b>: <?= $value['mb_reference']['entidade'] ?><br>
                     <b>Referência</b>: <?= $value['mb_reference']['referencia'] ?><br>
                     <b>Valor</b>: <?= $value['mb_reference']['valor'] ?> €</p>
