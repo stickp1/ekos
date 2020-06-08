@@ -82,8 +82,8 @@
                 <thead>
                   <th style="width: 10px">#</th>
                   <th>Nome</th>
-                  <th>Turma pretendida</td>
-                  <th>Data</td>
+                  <!--<th>Turma pretendida</th>-->
+                  <th>Data</th>
                   <th style="width: 100px"></th>
                 </thead>
                 <tbody>
@@ -93,7 +93,7 @@
                 <tr>
                   <td><?= $value['id']?>.</td>
                   <td><?= $value['user']['first_name'].' '.$value['user']['last_name']?></td>
-                  <td><?= $value['group']['name']?></td>
+                  <!--<td><?= $value['group']['name']?></td>-->
                   <td><?= $value->has('timestamp') ? $value->timestamp->nice('Europe/Lisbon', 'pt-PT') : ''?>
                   <td style='font-size:12pt; text-align:right'>
 

@@ -243,8 +243,8 @@
                     <?php if ($group['inscriptions_open'] == 1): ?>
                         <?php if (@$count[$group['id']] >= $group['vacancy']): ?>
                             <?php if(isset($Auth['id']) && !in_array($group['id'], $inscriptions)): ?>
-                                <?php if(!in_array($group['id'], $waiting)) ?>
-                                    <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]) ?>"'>Lista de Espera
+                                <?php if(!in_array($summer['id'], $waiting)) ?>
+                                    <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $summer['id']]) ?>"'>Lista de Espera
                                     </button> 
                             <?php elseif(!isset($Auth['id'])): ?>
                                 <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
@@ -489,9 +489,9 @@
                                                                   <?php if (@in_array($group['id'], $inscriptions)) 
                                                                       echo "<span style='position: relative; top: 7px; right: 10px;'>Inscrito</span>";
                                                                     elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && isset($Auth['id'])) {
-                                                                      if(!in_array($group['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $group['id']]).'\'">Lista de Espera</button>';}}
+                                                                      if(!in_array($manage['id'], $waiting)){ echo  '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $manage['id']]).'\'">Lista de Espera</button>';}}
                                                                     elseif (@$count[$group['id']] >= $group['vacancy'] && $group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >Lista de Espera</button>';
-                                                                    elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $group['id']]).'\'">INSCREVER</button>';
+                                                                    elseif ($group['inscriptions_open'] == 1 && isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" onClick="window.location.href = \''.$this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $manage['id']]).'\'">INSCREVER</button>';
                                                                     elseif ($group['inscriptions_open'] == 1 && !isset($Auth['id'])) echo '<button class="btn btn-black" style="margin: 0; padding: 10px 30px; float: right" data-toggle="modal" data-target="#login" >INSCREVER</button>';
                                                                   ?>  
                                                               </td>

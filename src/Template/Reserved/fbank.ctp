@@ -59,19 +59,19 @@
                 </div>
                 
                 <button class='btn btn-black' type="submit" >COMEÇAR</button> 
-          
             </div>
         </div>
 
-        <?php else: ?>
+            <?php else: ?>
 
-        <div class="row" style='position:relative;'>
-            <div class="reserved-background"></div>
-            <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
-                <h1>Olá <?= $Auth['first_name']; ?>!</h1>
-                <p>Ainda não efetuaste nenhuma inscrição. </p>
-                <br>
-                <button class="btn btn-black" onclick="window.location.href='<?= $this->Url->build(["controller" => 'users', "action" => 'logout'], true); ?>'">LOGOUT</button>
+            <div class="row" style='position:relative;'>
+                <div class="reserved-background"></div>
+                <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
+                    <h1>Olá <?= $Auth['first_name']; ?>!</h1>
+                    <p>Ainda não efetuaste nenhuma inscrição. </p>
+                    <br>
+                    <button class="btn btn-black" onclick="window.location.href='<?= $this->Url->build(["controller" => 'users', "action" => 'logout'], true); ?>'">LOGOUT</button>
+                </div>
             </div>
             <?php endif; ?>
        </div>

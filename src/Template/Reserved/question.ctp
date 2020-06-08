@@ -94,9 +94,8 @@ a.navi:hover{
 
 
 
-    <section id="services" class="text-center ">
-      <div class="container">
-
+<section id="services" class="text-center ">
+    <div class="container">
         <div class="row">
           <div class="col-md-20">
             <div class="panel with-nav-tabs panel-default" style='background:transparent'>
@@ -114,84 +113,80 @@ a.navi:hover{
           </div>
         </div>
 
-
-<?php if(isset($none)): ?>
-
-
-  <div class="row" style='position:relative;'>
-          <div class="reserved-background"></div>
-          <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
-            <h1>Olá <?= $Auth['first_name']; ?>!</h1>
-            <p>Infelizmente, não encontrámos perguntas para os temas selecionados.</p><p> Estamos continuamente a aumentar a nossa base de dados de perguntas, podes tentar novamente outro dia. Até lá, experimenta selecionar outros temas.</p><p><b>Bom estudo!</b></p><br>
-          <button class='btn-black btn' onClick='window.location.href="<?= $this->Url->build(["action" => "qbank"])?>"'> NOVA PESQUISA </button> 
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-<?php else: ?>
-
-<div class="row" style='position:relative;'>
-  <?php foreach ($question_list as $key => $value) { $i = $key + 1; 
-                    if($value['status'] == 1){$class = 'correct';} elseif($value['status'] == 2){$class = 'wrong';} else {$class='';}
-                    if($value['id'] == $question['id']){$qk = $i; $class.=" active";}
-                    ?>
-                   <!--  <a href="<?= $this->Url->build(["action" => "question", $value['id']])?>" class='number <?= $class ?>' id='n<?= $i ?>'><?= $i ?></a>  -->
-                  <?php }; ?>
- <div style='background-color: #2C3949; left: -300px; top: -31px; right:-300px; min-height:50px; position: absolute; z-index: 2; text-align: center; padding-top:6px; color: white; font-size:12pt'>
-
-<div class="col-md-4 col-md-offset-4">
-          
-            <?php if($qk - 1 > 0): ?>
-              <a href='#' class='navi' onClick='window.location.href="<?= $this->Url->build(["action" => "question", $question_list[$qk-2]['id']])?>"'><i class="fa fa-angle-left" ></i></a>
-           <?php endif ?>
-
-            <input type="number" id="selector" value="<?= $qk ?>" style="
-    text-align: center;
-    width: 50px;
-    color: white;
-    background-color: #2C3949;
-    border: 1px solid #929dab;
-    padding: 4px 0px;
-    border-radius: 8px;
-
-"> <span style='color: #929dab; font-size:17pt'> / </span> <?= count($question_list) ?> 
-
-   <?php if($qk <= count($question_list) - 1): ?>
-   <a href='#' class='navi' onClick='window.location.href="<?= $this->Url->build(["action" => "question", $question_list[$qk]['id']])?>"'><i class="fa fa-angle-right"></i></a>
- <?php endif; ?>
-           </div>
-
-<?php 
-$tot = $question['a1']+$question['a2']+$question['a3']+$question['a4']+$question['a5'];
-if($tot > 50):  $corr = $question['a'.$question['correct']] / $tot; ?>
-<div class="col-md-1" style='font-size:18pt; padding-top: 1px; color: #929dab'>
-  <i class="fa fa-lightbulb-o" style='color: #FEB000'></i>    <i class="fa fa-lightbulb-o" <?= $corr < $stat75 ? "style='color: #FEB000'" : '' ?>></i>    <i class="fa fa-lightbulb-o" <?= $corr < $stat25 ? "style='color: #FEB000'" : '' ?>></i>
-</div>
-<?php endif; ?>
-         </div>
-
-
-  </div>
+        <?php if(isset($none)): ?>
 
         <div class="row" style='position:relative;'>
-           <div class="reserved-background"></div>
-          <div class="col-md-10 col-md-offset-1">
-            <div class="panel panel-default" style='background:transparent'>
-                <div class="panel-heading text-left" >
-                  <br>
-                  
-                  </ul>
-                        
-                </div>
-              </div>
-          </div>
+            <div class="reserved-background"></div>
+            <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
+                <h1>Olá <?= $Auth['first_name']; ?>!</h1>
+                <p>Infelizmente, não encontrámos perguntas para os temas selecionados.</p><p> Estamos continuamente a aumentar a nossa base de dados de perguntas, podes tentar novamente outro dia. Até lá, experimenta selecionar outros temas.</p><p><b>Bom estudo!</b></p><br>
+                <button class='btn-black btn' onClick='window.location.href="<?= $this->Url->build(["action" => "qbank"])?>"'> NOVA PESQUISA </button> 
+            </div>
         </div>
 
-        <div class="row"  style='position:relative;'>
-            <div class="reserved-background"></div>
-            <div class="col-md-10 col-md-offset-1">
+    </div>
+</section>
+
+        <?php else: ?>
+
+        <div class="row" style='position:relative;'>
+            <?php foreach ($question_list as $key => $value) 
+                { $i = $key + 1; 
+                  if($value['status'] == 1){$class = 'correct';} 
+                  elseif($value['status'] == 2){$class = 'wrong';} else {$class='';}  
+                  if($value['id'] == $question['id']){$qk = $i; $class.=" active";}
+            ?>
+                   <!--  <a href="<?= $this->Url->build(["action" => "question", $value['id']])?>" class='number <?= $class ?>' id='n<?= $i ?>'><?= $i ?></a>  -->
+            <?php }; ?>
+            <div style='background-color: #2C3949; left: -300px; top: -31px; right:-300px; min-height:50px; position: absolute; z-index: 2; text-align: center; padding-top:6px; color: white; font-size:12pt'>
+
+            <div class="col-md-4 col-md-offset-4">
+                <?php if($qk - 1 > 0): ?>
+                    <a href='#' class='navi' onClick='window.location.href="<?= $this->Url->build(["action" => "question", $question_list[$qk-2]['id']])?>"'><i class="fa fa-angle-left" ></i></a>
+                <?php endif ?>
+                <input type="number" id="selector" value="<?= $qk ?>" style="
+                    text-align: center;
+                    width: 50px;
+                    color: white;
+                    background-color: #2C3949;
+                    border: 1px solid #929dab;
+                    padding: 4px 0px;
+                    border-radius: 8px;"> 
+                    <span style='color: #929dab; font-size:17pt'> / </span> <?= count($question_list) ?> 
+
+                <?php if($qk <= count($question_list) - 1): ?>
+                    <a href='#' class='navi' onClick='window.location.href="<?= $this->Url->build(["action" => "question", $question_list[$qk]['id']])?>"'><i class="fa fa-angle-right"></i></a>
+                <?php endif; ?>
+            </div>
+
+            <?php 
+                $tot = $question['a1']+$question['a2']+$question['a3']+$question['a4']+$question['a5'];
+                if($tot > 50):  $corr = $question['a'.$question['correct']] / $tot; 
+            ?>
+                <div class="col-md-1" style='font-size:18pt; padding-top: 1px; color: #929dab'>
+                    <i class="fa fa-lightbulb-o" style='color: #FEB000'></i>    <i class="fa fa-lightbulb-o" <?= $corr < $stat75 ? "style='color: #FEB000'" : '' ?>></i>    <i class="fa fa-lightbulb-o" <?= $corr < $stat25 ? "style='color: #FEB000'" : '' ?>></i>
+                </div>
+            <?php endif; ?>
+        </div>
+
+
+    </div>
+
+    <div class="row" style='position:relative;'>
+        <div class="reserved-background"></div>
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default" style='background:transparent'>
+                <div class="panel-heading text-left" >
+                    <br>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row"  style='position:relative;'>
+        <div class="reserved-background"></div>
+        <div class="col-md-10 col-md-offset-1">
 
 
                
@@ -264,8 +259,11 @@ $('.submit').on('click', function(){
     $('#n<?= $qk?>').addClass('correct');
   }
 
-  $.post( '<?= $this->Url->build(["action" => "answer"])?>', { id: <?= $question['id']?>, answer: selected, qk: <?= $qk - 1 ?>})
-  .done(function( data ) {
+  $.post( '<?= $this->Url->build(["action" => "answer"])?>', { 
+    id: <?= $question['id']?>, 
+    answer: selected, 
+    qk: <?= $qk - 1 ?>
+  }).done(function( data ) {
     eval(data)
   });
 

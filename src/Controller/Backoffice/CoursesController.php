@@ -36,7 +36,17 @@ class CoursesController extends AppController
     public function view($id = null)
     {
          $course = $this->Courses->get($id, [
-            'contain' => ['Themes', 'Groups' => ['conditions' => ['Groups.deleted' => 0]], 'WaitingList' => ['Groups', 'Users']]
+            'contain' => [
+                'Themes', 
+                'Groups' => [
+                    'conditions' => [
+                        'Groups.deleted' => 0
+                    ]
+                ], 
+                'WaitingList' => [ 
+                    'Users'
+                ]
+            ]
         ]);
         
         $cities = $this->loadModel('Cities')->find('list')->toArray();

@@ -159,8 +159,17 @@ class ReservedController extends AppController
 	        }
 
             $sales = $this->loadModel('sales')->find('all', [
-                'conditions' => ['users_id' => $id ],
-                'contain' => ['Products' => ['Groups' => ['Courses']], 'Mb_references']
+                'conditions' => [
+                    'users_id' => $id 
+                ],
+                'contain' => [
+                    'Products' => [
+                        'Groups' => [
+                            'Courses'
+                        ]
+                    ], 
+                    'Mb_references'
+                ]
             ])->toArray();
             
 
@@ -450,7 +459,8 @@ class ReservedController extends AppController
                 array_push($all_sales, $sale);
 
                 $product = $this->Products->newEntity();
-                $product['group_id'] = $this->request->getData('course_'.$id_tmp.'_group_id');
+                $product['group_id'] = $this->request->getData('course_'.$course_id.'_group_id');
+
                 $product['group_courses_id'] = $course['id'];
                 $product['sale_id'] = $sale->id;
                 $product['sales_users_id'] = $id;
@@ -525,7 +535,7 @@ class ReservedController extends AppController
             $waiting['course_id'] = $course['id'];
 
             if($waiting = $this->loadModel('WaitingList')->save($waiting))
-                $this->Flash->success('Foste colocado em lista de espera. Serás contacto caso abra uma nova vaga ou turma.');
+                $this->Flash->success('Foste colocado em lista de espera. Serás contactado caso abra uma nova vaga ou turma.');
 
             return $this->redirect(['controller' => 'cursos']);
          }
@@ -869,8 +879,12 @@ class ReservedController extends AppController
             $user_id = $this->Auth->user('id');
             
             $user = $this->loadModel('Users')->get($user_id, [
-                'contain' => ['groups' => ['Courses']]
-                ])->toArray();
+                'contain' => [
+                    'groups' => [
+                        'Courses'
+                    ]
+                ]
+            ])->toArray();
 
             //Elimina cursos de turmas eliminadas
             foreach ($user['groups'] as $key => $value) {
@@ -885,26 +899,56 @@ class ReservedController extends AppController
             if($this->request->data('wrong') == 0) {
 
                 $flashcards = $this->loadModel('Flashcards')->find('all', [
-                        'contain' => ['FlashcardsUser'.$user_id, 'Themes'],
-                        'conditions' => ['Flashcards.active' => 1, 'theme_id in' => $this->request->data('themes')],
-                        'order' => ['FlashcardsUser'.$user_id.'.correct' => 'ASC', 'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 'rand()']
-                        ])->toArray();
-            } elseif($this->request->data('wrong') == 1) {
+                        'contain' => [
+                            'FlashcardsUser'.$user_id, 
+                            'Themes'
+                        ],
+                        'conditions' => [
+                            'Flashcards.active' => 1, 
+                            'theme_id in' => $this->request->data('themes')
+                        ],
+                        'order' => [
+                            'FlashcardsUser'.$user_id.'.correct' => 'ASC', 
+                            'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
+                            'rand()'
+                        ]
+                ])->toArray();  
+            }elseif($this->request->data('wrong') == 1) {
                 
                 $flashcards = $this->loadModel('Flashcards')->find('all', [
-                        'contain' => ['FlashcardsUser'.$user_id, 'Themes'],
-                        'conditions' => ['Flashcards.active' => 1, 'theme_id in' => $this->request->data('themes'), 'FlashcardsUser'.$user_id.'.correct !=' => 1],
-                        'order' => ['FlashcardsUser'.$user_id.'.correct' => 'ASC', 'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 'rand()']
-                        ])->toArray();
-
-            } elseif($this->request->data('wrong') == 2) {
+                        'contain' => [
+                            'FlashcardsUser'.$user_id, 
+                            'Themes'
+                        ],
+                        'conditions' => [
+                            'Flashcards.active' => 1, 
+                            'theme_id in' => $this->request->data('themes'), 
+                            'FlashcardsUser'.$user_id.'.correct !=' => 1
+                        ],
+                        'order' => [
+                            'FlashcardsUser'.$user_id.'.correct' => 'ASC', 
+                            'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
+                            'rand()'
+                        ]
+                ])->toArray();
+            }elseif($this->request->data('wrong') == 2) {
                 
                 $flashcards = $this->loadModel('Flashcards')->find('all', [
-                        'contain' => ['FlashcardsUser'.$user_id, 'Themes'],
-                        'conditions' => ['Flashcards.active' => 1, 'theme_id in' => $this->request->data('themes'), 'FlashcardsUser'.$user_id.'.favorite' => 1],
-                        'order' => ['FlashcardsUser'.$user_id.'.correct' => 'ASC', 'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 'rand()']
-                        ])->toArray();
-
+                        'contain' => [
+                            'FlashcardsUser'.$user_id, 
+                            'Themes'
+                        ],
+                        'conditions' => [
+                            'Flashcards.active' => 1, 
+                            'theme_id in' => $this->request->data('themes'), 
+                            'FlashcardsUser'.$user_id.'.favorite' => 1
+                        ],
+                        'order' => [
+                            'FlashcardsUser'.$user_id.'.correct' => 'ASC', 
+                            'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
+                            'rand()'
+                        ]
+                ])->toArray();
             }
 
         $this->set(compact('flashcards', 'courses'));
