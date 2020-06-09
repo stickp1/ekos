@@ -230,7 +230,7 @@
             <p><b>Avaliação</b><br>Na turma da semana, as aulas terão, normalmente, lugar às 2ª/4ª/5ª entre as 18h e as 20h. Na turma do sábado, as aulas terão lugar entre as 8h30 e às 16h00 </p>
             -->
             <p><b>Departamento de Formação</b><br><span style='font-size:16px;'>Gestor e Coordenador da Formação |</span><span style='font-size:14px;'> David Alves Berhanu</span><br><span style='font-size:16px;'>Responsável pelo Atendimento Diário |</span> <span style='font-size:14px;'> Ana Pereira Dagge</span></p>
-            <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'matriz-ekos.pdf']); ?>"' >REGULAMENTO ATIVIDADE FORMATIVA</button>
+            <button class="btn btn-black" onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'regulamento.pdf']); ?>"' >REGULAMENTO ATIVIDADE FORMATIVA</button>
         </div>
       </div>
     
