@@ -31,7 +31,7 @@
             <h1>Banco de Perguntas e Flashcards.</h1>
             <p>Não podes assistir aos nossos cursos presenciais, mas gostarias de ter acesso ao nosso Banco de Perguntas e Flashcards? Agora já é possível!</p>
 
-		<?php if (!isset($Auth['id'])): echo '<button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>'; else: ?> <button class="btn btn-black" onClick="window.open('https://ekos.pt/reserved/inscription/128')" >INSCREVER</button> <?php endif; ?>
+		<?php if (!isset($Auth['id'])): echo '<button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>'; else: ?> <button class="btn btn-black" onClick="window.open('https://ekos.pt/reserved/inscription/1')" >INSCREVER</button> <?php endif; ?>
 		
           </div>
         </div>

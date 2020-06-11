@@ -246,17 +246,21 @@
                                 <?php if(!in_array($summer['id'], $waiting)) ?>
                                     <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'waiting', $summer['id']]) ?>"'>Lista de Espera
                                     </button> 
-                            <?php elseif(!isset($Auth['id'])): ?>
+                            <!--
+                            <?php //elseif(!isset($Auth['id'])): ?>
                                 <button class="btn btn-black" data-toggle="modal" data-target="#login" >Lista de Espera
                                 </button>
+                            -->
                             <?php endif ?>
                         <?php else: ?>
                             <?php if(isset($Auth['id']) && !in_array($group['id'], $inscriptions)): ?>
                                 <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', $summer['id']]) ?>"'>INSCREVER
                                 </button>
-                            <?php elseif(!isset($Auth['id'])): ?>
+                            <!--
+                            <?php //elseif(!isset($Auth['id'])): ?>
                                 <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER
                                 </button>
+                            -->
                             <?php endif; break; ?>
                         <?php endif; ?>
                     <?php endif; ?>
