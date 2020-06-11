@@ -11,6 +11,7 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\ThemesTable|\Cake\ORM\Association\BelongsTo $Themes
  * @property \App\Model\Table\FlashcardsUser7Table|\Cake\ORM\Association\HasMany $FlashcardsUser7
+ * @property \App\Model\Table\UsersFlashcardsTable|\Cake\ORM\Association\HasMany $UsersFlashcards
  *
  * @method \App\Model\Entity\Flashcard get($primaryKey, $options = [])
  * @method \App\Model\Entity\Flashcard newEntity($data = null, array $options = [])
@@ -51,6 +52,10 @@ class FlashcardsTable extends Table
         $this->hasOne('FlashcardsUser'.$user_id, [
             'foreignKey' => 'flashcard_id'
         ]);
+
+        $this->hasOne('UsersFlashcards')
+            ->setForeignKey('flashcard_id')
+            ->setConditions(['user_id' => $user_id]);
     }
 
     /**
