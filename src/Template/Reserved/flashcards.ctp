@@ -205,7 +205,7 @@ a.navi:hover{
 var fav = []; 
 <?php 
     foreach ($flashcards as $key => $value) { 
-        if (@$value['flashcards_user'.$Auth['id']]['favorite'] == 1) 
+        if (@$value['users_flashcard']['favorite'] == 1) 
             echo "fav[$value[id]] = 1;"; 
         else 
             echo " fav[$value[id]] = 0;"; 
