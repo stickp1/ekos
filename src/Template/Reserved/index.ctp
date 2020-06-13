@@ -69,13 +69,11 @@
                                         foreach ($themes[$value2]['uploads'] as $value3) { 
                                     ?>
                                     <tr>
-                                        <td style='padding: 5px' width='30px'></td>
-                                        <td style='padding: 5px'><span class='small'> <?= $this->Html->link('<i class="fa fa-download" style="margin-right:10px;"></i>'.$value3['name'], ['action' => 'file', $value3['id'], $value3['name']], ['escape' => false, 'target' => '_blank']) ?> </span></td>
+                                        <td style='padding: 5px 5px 5px 30px'><span class='small'> <?= $this->Html->link('<i class="fa fa-download" style="margin-right:10px;"></i>'.$value3['name'], ['action' => 'file', $value3['id'], $value3['name']], ['escape' => false, 'target' => '_blank']) ?> </span></td>
                                     </tr>
                                     <?php } } else { ?>
                                     <tr>
-                                        <td style='padding: 5px' width='30px'></td>
-                                        <td style='padding: 5px'><span class='small'><em>Sem ficheiros para descarregar.</em></span></td>
+                                        <td style='padding: 5px 5px 5px 30px'><span class='small'><em>Sem ficheiros para descarregar.</em></span></td>
                                     </tr>
                                     <?php } ?>
                                 </table>
