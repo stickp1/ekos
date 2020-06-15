@@ -750,20 +750,45 @@ class ReservedController extends AppController
 
         if(in_array(1, $courses_) && in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING e no CURSO de VERÂO
             $courses = $this->loadModel('Courses')->find('all', [
-            'conditions' => ['OR' => [['id > ' => 1, 'id <=' => 14], 'id' => 17]] ,
+            'conditions' => [
+                'OR' => [
+                    [
+                        'id > ' => 1, 
+                        'id <=' => 14
+                    ], 
+                    'id' => 17]
+            ] ,
             'contain' => ['Themes']
             ])->toArray();
             
         elseif(in_array(1, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
             $courses = $this->loadModel('Courses')->find('all', [
-            'conditions' => ['OR' => [['id > ' => 1, 'id <' => 15], 'id' => 17]],
-            'contain' => ['Themes']
+                'conditions' => [
+                    'OR' => [
+                        [
+                            'id > ' => 1, 
+                            'id <' => 15
+                        ], 
+                        'id' => 17
+                    ]
+                ],
+                'contain' => [
+                    'Themes'
+                ]
             ])->toArray();
 
         elseif(count($courses_) > 0): // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
             $courses = $this->loadModel('Courses')->find('all', [
-            'conditions' => ['OR' => [['id in ('.implode(',', $courses_).')', 'id <' => 14], 'id' => 17]],
-            'contain' => ['Themes']
+                'conditions' => [
+                    'OR' => [
+                        [
+                            'id in ('.implode(',', $courses_).')', 
+                            'id <' => 14
+                        ], 
+                        'id' => 17
+                    ]
+                ],
+                'contain' => ['Themes']
             ])->toArray();
             
         else: 
@@ -892,7 +917,7 @@ class ReservedController extends AppController
 
             if($this->request->data('wrong') == 0) {
 
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
+                $flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'FlashcardsUser'.$user_id, 
                             'Themes'
@@ -906,9 +931,9 @@ class ReservedController extends AppController
                             'FlashcardsUser'.$user_id.'.last_time' => 'ASC',
                             'rand()'
                         ]
-                ])->toArray();*/  
+                ])->toArray(); 
 
-                $flashcards = $this->loadModel('Flashcards')->find('all', [
+                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                     'contain' => [
                         'UsersFlashcards',
                         'Themes'
@@ -922,11 +947,11 @@ class ReservedController extends AppController
                         'UsersFlashcards.last_time' => 'ASC',
                         'rand()'
                     ]
-                ])->toArray();
+                ])->toArray();*/
 
             }elseif($this->request->data('wrong') == 1) {
                 
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
+                $flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'FlashcardsUser'.$user_id, 
                             'Themes'
@@ -941,9 +966,9 @@ class ReservedController extends AppController
                             'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
                             'rand()'
                         ]
-                ])->toArray();*/
+                ])->toArray();
 
-                $flashcards = $this->loadModel('Flashcards')->find('all', [
+                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'UsersFlashcards',
                             'Themes'
@@ -958,11 +983,11 @@ class ReservedController extends AppController
                             'UsersFlashcards.last_time' => 'ASC',
                             'rand()'
                         ]
-                ])->toArray();
+                ])->toArray();*/
 
             }elseif($this->request->data('wrong') == 2) {
                 
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
+                $flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'FlashcardsUser'.$user_id, 
                             'Themes'
@@ -977,9 +1002,9 @@ class ReservedController extends AppController
                             'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
                             'rand()'
                         ]
-                ])->toArray();*/
+                ])->toArray();
 
-                $flashcards = $this->loadModel('Flashcards')->find('all', [
+                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'UsersFlashcards',
                             'Themes'
@@ -994,7 +1019,7 @@ class ReservedController extends AppController
                             'UsersFlashcards.last_time' => 'ASC',
                             'rand()'
                         ]
-                ])->toArray();
+                ])->toArray();*/
             
             }
 
@@ -1005,39 +1030,71 @@ class ReservedController extends AppController
 
     public function fcorrect()
     {
+        /*$this->loadModel('UsersFlashcards');
+        $db = ConnectionManager::get('default');
+        $tables = $db->schemaCollection()->listTables();
+        $a = 200;
+        $status = []; 
+        $total = 0;
+        $flashes = $this->loadModel('Flashcards')->find('all', [
+            'fields' => [
+                'id'
+            ]
+        ]);
+        while($a < count($tables)){
+            $table_name = $tables[$a];
+            if (strpos($table_name, 'flashcards_user') !== false){
+                $b = $this->loadModel('FlashcardsUser'.substr($table_name, 15))->deleteAll([
+                    'flashcard_id NOT IN' => $flashes
+                ]);
+                array_push($status, $b);
+                $total++;
+            }
+            $a++;
+        }*/
+        $id = $this->Auth->user('id');
+        if($id!==265)
+            return $this->redirect(['controller' => '/']);
         $this->loadModel('UsersFlashcards');
         $db = ConnectionManager::get('default');
         $tables = $db->schemaCollection()->listTables();
-        $a = 7; 
+        $a = 1;
+        $status = []; 
+        $total = 0;
         while($a < count($tables)){
-            $a++;
             $table_name = $tables[$a];
-            if (strpos($table_name, 'flashcards_user') !== false){
-                $values_raw  = $this->loadModel('FlashcardsUser'.substr($table_name, 15))->find('all', [
-                    'fields' => [
-                        'flashcard_id',
-                        'correct',
-                        'last_time',
-                        'favorite'
-                    ]
-                ])->toArray();
+            if (strpos($table_name, 'flashcards_user') !== false && $table_name != "flashcards_user7"){
+                $total++;
+                $name = 'FlashcardsUser'.substr($table_name, 15);
+                $fields = ['flashcard_id', 'correct', 'last_time', 'user_id' => intval(substr($table_name, 15))];
+                if($this->loadModel($name)->hasField('favorite')){
+                    array_push($fields, 'favorite');
+                }
+                $values_raw  = $this->$name->find('all', [
+                    'fields' => $fields
+                ])->enableBufferedResults('false')->all();
                 $values = [];
                 foreach($values_raw as $key=>$row){
                     $values[$key] = [
                         'flashcard_id' => $row['flashcard_id'], 
                         'correct' => $row['correct'], 
                         'last_time' => $row['last_time'],
-                        'favorite' => $row['favorite'],
+                        'favorite' => @$row['favorite'],
                         'user_id' => intval(substr($table_name, 15))
                     ];
                 }
-                if($c = count($values)>0 && $values[0]['user_id']!=7){
+                if(!empty($values)){
+                    //echo "<br><br><br><br>".$table_name."<br>";
+                    //var_dump($values);
                     $entities = $this->UsersFlashcards->newEntities($values);
                     $b = $this->UsersFlashcards->saveMany($entities);
+                    //$this->UsersFlashcards->query()->insert(['flashcard_id','correct','favorite','user_id'])->values($values)->execute();
+                    array_push($status, ['entities' => $b ? true : false, 'table_name' => $table_name]);
                 } 
             }
+            $a++;
         }
-        $this->set(compact('tables', 'values', 'b', 'entities', 'table_name'));
+        $this->set(compact('tables', 'values', 'status', 'total'));
     }
 
     public function fbank()
@@ -1134,7 +1191,7 @@ class ReservedController extends AppController
                 ])->toArray();
             endif;
 
-        /*
+        
         $query = $this->loadModel('FlashcardsUser'.$user_id)->find();
         $query->select([
             'count' => $query->func()->count('correct'), 
@@ -1148,9 +1205,9 @@ class ReservedController extends AppController
         ])->group([
             'theme_id'
         ]);
-        */
+        
 
-        $query = $this->UsersFlashcards->find('all', [
+        /*$query = $this->UsersFlashcards->find('all', [
             'conditions' => [
                 'user_id' => $user_id
             ]
@@ -1166,7 +1223,7 @@ class ReservedController extends AppController
             'correct' => 1
         ])->group([
             'theme_id'
-        ]);
+        ]);*/
 
 
         foreach ($query as $key => $value) {
