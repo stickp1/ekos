@@ -748,7 +748,7 @@ class ReservedController extends AppController
             $courses_[$key] = $value['course']['id'];
         }
 
-        if(in_array(1, $courses_) && in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING e no CURSO de VERÂO
+        if(in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING e no CURSO de VERÂO
             $courses = $this->loadModel('Courses')->find('all', [
             'conditions' => [
                 'OR' => [
@@ -1028,8 +1028,11 @@ class ReservedController extends AppController
         }      
     }
 
+    // TEMPORARY FUNCTION FOR USER_FLASHCARDS TABLE MIGRATION.
+    // MIGRATION SUCCESSFULY CONCLUDED! KEEP FUNCTION FOR A WHILE
     public function fcorrect()
     {
+
         /*$this->loadModel('UsersFlashcards');
         $db = ConnectionManager::get('default');
         $tables = $db->schemaCollection()->listTables();
@@ -1052,6 +1055,8 @@ class ReservedController extends AppController
             }
             $a++;
         }*/
+        
+        /*
         $id = $this->Auth->user('id');
         if($id!==265)
             return $this->redirect(['controller' => '/']);
@@ -1094,14 +1099,12 @@ class ReservedController extends AppController
             }
             $a++;
         }
-        $this->set(compact('tables', 'values', 'status', 'total'));
+        $this->set(compact('tables', 'values', 'status', 'total')); 
+        */
     }
 
     public function fbank()
     {
-        //$this->loadModel('UsersFlashcards');
-        //$this->loadModel('Courses');
-        //$this->loadModel('Users');
         array_map([$this, 'loadModel'], ['Users', 'Courses', 'UsersFlashcards']);
 
         $session = $this->getRequest()->getSession();
@@ -1110,7 +1113,7 @@ class ReservedController extends AppController
             return $this->redirect(['controller' => '/']);
 
         
-        /*
+        
             //VÊ SE EXISTE UMA TABELA PARA OS FLASHCARDS DO UTILIZADOR, OU CRIA
             $data = $this->request->getData();
             $db = ConnectionManager::get('default');
@@ -1149,7 +1152,7 @@ class ReservedController extends AppController
                     $db->query('ALTER TABLE flashcards_user'.$user_id.' ADD favorite int');
                 } 
             }
-        */
+        
 
         $user = $this->Users->get($user_id, [
             'contain' => [
