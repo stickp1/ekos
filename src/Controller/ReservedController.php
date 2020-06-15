@@ -805,20 +805,35 @@ class ReservedController extends AppController
 
         //  VERIFICA SE NÃO EXISTE PERGUNTA
         if(!$id){
-
             $this->set('none', 1);
 
         } else {
 
-        $question = $this->loadModel('Questions')->get($id,
-        ['fields' => ['id', 'correct', 'a1', 'a2', 'a3', 'a4', 'a5', 'pic', 'op1', 'op2', 'op3', 'op4', 'op5', 'correct', 'question', 'course_id', 'justification']])->toArray();
+        $question = $this->loadModel('Questions')->get($id, [
+            'fields' => [
+                'id', 
+                'correct', 
+                'a1', 'a2', 'a3', 'a4', 'a5', 
+                'pic', 
+                'op1', 'op2', 'op3', 'op4', 'op5', 
+                'correct', 
+                'question', 
+                'course_id', 
+                'justification'
+            ]
+        ])->toArray();
 
         //VERIFICA SE O UTILIZADOR COMPROU O CURSO DA PERGUNTA
         $user_id = $this->Auth->user('id');
-        if(!isset($user_id))   return $this->redirect(['controller' => '/']);
+        if(!isset($user_id))   
+            return $this->redirect(['controller' => '/']);
         $user = $this->loadModel('Users')->get($user_id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
+            'contain' => [
+                'groups' => [
+                    'Courses'
+                ]
+            ]
+        ])->toArray();
             
         //Elimina cursos de turmas eliminadas
         foreach ($user['groups'] as $key => $value) {
@@ -831,7 +846,7 @@ class ReservedController extends AppController
             $courses[$key] = $value['course']['id'];
         }
 
-         if(!in_array($question['course_id'], $courses) && $question['course_id']!=17 && !in_array(1, $courses)){
+         if(!in_array($question['course_id'], $courses) && $question['course_id']!=17 && !in_array(1, $courses) && !in_array(14, $courses)){
             return $this->redirect(['action' => 'index']);
         }
 
