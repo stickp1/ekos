@@ -47,7 +47,14 @@
                                         <tr>
                                             <td style='padding: 5px' width='30px'><input type="checkbox" name="themes[]" value="<?= $theme['id']?>"  style='width:15px; height:15px' class="t_<?= $key?> t"></td>
                                             <td style='padding: 5px'><span class='small'><?= $theme['name']?></td>
-                                            <td style='padding: 5px: width: 50px'><span class='small' style='color: <?= @$answered[$theme['id']] / $flashcards[$theme['id']] < 0.5 ? 'red' : ''?> <?= @$answered[$theme['id']] / $flashcards[$theme['id']] > 0.9 ? 'green' : ''?>' ><?= $this->Number->toPercentage(@$answered[$theme['id']] / $flashcards[$theme['id']] * 100, 0);?></td>
+                                            <td style='padding: 5px: width: 50px'>
+                                                <span class='small' style='color: 
+                                                  <?= @$answered[$theme['id']] / $flashcards[$theme['id']] < 0.5 ? 'red' : ''?> 
+                                                  <?= @$answered[$theme['id']] / $flashcards[$theme['id']] > 0.9 ? 'green' : ''?>' 
+                                                >
+                                                  <?= $this->Number->toPercentage(@$answered[$theme['id']] / $flashcards[$theme['id']] * 100, 0);?>
+                                                </span>
+                                            </td>
                                         </tr>
                                         <?php endif; } } ?>
                                     </table>

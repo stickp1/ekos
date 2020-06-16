@@ -40,13 +40,15 @@ class ReservedController extends AppController
         if(!isset($id))   return $this->redirect(['controller' => '/']);
 
         $user = $this->loadModel('Users')->get($id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
-
-		//Elimina cursos de turmas eliminadas
-        foreach ($user['groups'] as $key => $value) {
-           if($value['deleted'] == 1) unset($user['groups'][$key]);
-        }
+            'contain' => [
+                'groups' => [
+                    'conditions' => [
+                        'deleted' => 0
+                    ],
+                    'Courses'
+                ]
+            ],
+        ])->toArray();
 
         $courses = array();
         foreach ($user['groups'] as $key => $value) {
@@ -61,11 +63,10 @@ class ReservedController extends AppController
         if($group_id != null && !in_array($group_id, $groups)){
             $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
             return $this->redirect(['action' => 'index']);
-        } elseif($group_id == null && !count($user['groups']) > 0) {
+        } elseif($group_id == null && !count($user['groups']) > 0)
             $user['groups'] = 0;
-        } elseif($group_id == null) {
+        elseif($group_id == null)
             $group_id = $user['groups'][0]['id'];
-        }
 
         if(@count($user['groups']) > 0):
         $group = $this->loadModel('Groups')->find('all', [
@@ -671,7 +672,14 @@ class ReservedController extends AppController
 
         if ($this->request->is('post')) {
 
-            $question_stat = $this->loadModel('Questions')->find('all', ['fields' => ['id', 'correct', 'a1', 'a2', 'a3', 'a4', 'a5']])->toArray();
+            $question_stat = $this->loadModel('Questions')->find('all', [
+                'fields' => [
+                    'id', 
+                    'correct', 
+                    'a1', 'a2', 'a3', 'a4', 'a5'
+                ]
+            ])->toArray();
+            
             foreach ($question_stat as $value) {
                 $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
                 if($tot > 50 ) $statistics[$value['id']] = $value['a'.$value['correct']] / $tot;
@@ -695,15 +703,21 @@ class ReservedController extends AppController
 			if($this->request->getData('courses')[0] == 14) {
 				
 				$questions_ = $this->loadModel('questions')->find('all', [
-	                'conditions' => ['active' => 1, 'course_id' => 14],
-	                ])->toArray();
+	                'conditions' => [
+                        'active' => 1, 
+                        'course_id' => 14
+                    ],
+	            ])->toArray();
 				
 			} else {
 				
 				$questions_ = $this->loadModel('questions')->find('all', [
-	                'conditions' => ['active' => 1, 'course_id in ('.implode(',', $this->request->getData('courses')).')'],
+	                'conditions' => [
+                        'active' => 1, 
+                        'course_id in ('.implode(',', $this->request->getData('courses')).')'
+                    ],
 	                'order' => 'rand()'
-	                ])->toArray();
+	            ])->toArray();
 				
 			}
 			
@@ -734,31 +748,36 @@ class ReservedController extends AppController
             return $this->redirect(['action' => 'question', $questions[0]['id']]);
         }
 
-        $user = $this->loadModel('Users')->get($user_id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
-            
-		//Elimina cursos de turmas eliminadas
-        foreach ($user['groups'] as $key => $value) {
-           if($value['deleted'] == 1) unset($user['groups'][$key]);
-        }
-
-        $courses_ = array();
-        foreach ($user['groups'] as $key => $value) {
-            $courses_[$key] = $value['course']['id'];
-        }
-
-        if(in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING e no CURSO de VERÂO
-            $courses = $this->loadModel('Courses')->find('all', [
+        $courses_ = $this->loadModel('UsersGroups')->find('list', [
+            'contain' => 'Groups',
             'conditions' => [
-                'OR' => [
-                    [
-                        'id > ' => 1, 
-                        'id <=' => 14
-                    ], 
-                    'id' => 17]
-            ] ,
-            'contain' => ['Themes']
+                'users_id' => $user_id,
+                'Groups.deleted' => 0
+            ],
+            'valueField' => 'groups_courses_id'
+        ])->toArray();
+
+        if(in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO e no CURSO de VERÂO
+            $courses = $this->loadModel('Courses')->find('all', [
+                'conditions' => [
+                    'OR' => [
+                        [
+                            'id > ' => 1, 
+                            'id <=' => 14
+                        ], 
+                        'id' => 17]
+                ] ,
+                'contain' => [
+                    'Themes' => [
+                        'conditions' => [
+                            'OR' => [
+                                'courses_id <' => 14,
+                                'area IS NOT' => null
+                            ],
+                            'courses_id in' => [17, 14]
+                        ]
+                    ]
+                ]
             ])->toArray();
             
         elseif(in_array(1, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
@@ -773,7 +792,17 @@ class ReservedController extends AppController
                     ]
                 ],
                 'contain' => [
-                    'Themes'
+                    'Themes' => [
+                        'conditions' => [
+                            'OR' => [
+                                [
+                                    'courses_id <' => 14,
+                                    'area IS NOT' => null
+                                ],
+                                'courses_id in' => [17, 14]
+                            ]
+                        ]
+                    ]
                 ]
             ])->toArray();
 
@@ -1048,7 +1077,8 @@ class ReservedController extends AppController
     public function fcorrect()
     {
 
-        /*$this->loadModel('UsersFlashcards');
+        /*
+        $this->loadModel('UsersFlashcards');
         $db = ConnectionManager::get('default');
         $tables = $db->schemaCollection()->listTables();
         $a = 200;
@@ -1120,7 +1150,7 @@ class ReservedController extends AppController
 
     public function fbank()
     {
-        array_map([$this, 'loadModel'], ['Users', 'Courses', 'UsersFlashcards']);
+        array_map([$this, 'loadModel'], ['Users', 'Courses', 'Flashcards']);
 
         $session = $this->getRequest()->getSession();
         $user_id = $this->Auth->user('id');
@@ -1128,7 +1158,7 @@ class ReservedController extends AppController
             return $this->redirect(['controller' => '/']);
 
         
-        
+        /*
             //VÊ SE EXISTE UMA TABELA PARA OS FLASHCARDS DO UTILIZADOR, OU CRIA
             $data = $this->request->getData();
             $db = ConnectionManager::get('default');
@@ -1167,28 +1197,26 @@ class ReservedController extends AppController
                     $db->query('ALTER TABLE flashcards_user'.$user_id.' ADD favorite int');
                 } 
             }
-        
+        */
 
         $user = $this->Users->get($user_id, [
             'contain' => [
                 'groups' => [
+                    'conditions' => [
+                        'deleted' => 0
+                    ],
                     'Courses'
                 ]
             ]
         ])->toArray();
-        
-        //Elimina cursos de turmas eliminadas
-        foreach ($user['groups'] as $key => $value)
-            if($value['deleted'] == 1) 
-                unset($user['groups'][$key]);
         
         $courses_ = array();
         foreach ($user['groups'] as $key => $value)
             $courses_[$key] = $value['course']['id'];
 
         // VERIFICA SE COMPROU CURSOS
-        if(count($courses_) > 0): 
-            if(in_array(1, $courses_)):
+        if(count($courses_) > 0){ 
+            if(in_array(1, $courses_))
                 $courses = $this->Courses->find('all', [
                     'conditions' => [
                         'id > ' => 1, 
@@ -1198,7 +1226,7 @@ class ReservedController extends AppController
                         'Themes'
                     ]
                 ])->toArray();
-            else:
+            else
                 $courses = $this->Courses->find('all', [
                     'conditions' => [
                         'id in ('.implode(',', $courses_).')', 
@@ -1206,65 +1234,40 @@ class ReservedController extends AppController
                     'contain' => [
                         'Themes'
                     ]
-                ])->toArray();
-            endif;
+                ])->toArray();            
 
-        
-        $query = $this->loadModel('FlashcardsUser'.$user_id)->find();
-        $query->select([
-            'count' => $query->func()->count('correct'), 
-            'Flashcards.theme_id'
-        ])->join([
-            'table' => 'Flashcards',
-            'type' => 'INNER',
-            'conditions' => 'Flashcards.id = flashcard_id'
-        ])->where([
-            'correct' => 1
-        ])->group([
-            'theme_id'
-        ]);
-        
+            $answered = $this->Flashcards->UsersFlashcards->find('list', [
+                'fields' => [
+                    'theme' => 'Flashcards.theme_id',
+                    'count' => 'count(Flashcards.theme_id)'
+                ],
+                'contain' => 'Flashcards',
+                'conditions' => [
+                    'user_id' => $user_id,
+                    'correct' => 1
+                ],
+                'keyField' => 'theme',
+                'valueField' => 'count',
+                'group' => 'Flashcards.id'
+            ])->toArray();
 
-        /*$query = $this->UsersFlashcards->find('all', [
-            'conditions' => [
-                'user_id' => $user_id
-            ]
-        ]);
-        $query->select([
-            'count' => $query->func()->count('correct'),
-            'Flashcards.theme_id'
-        ])->join([
-            'table' => 'Flashcards',
-            'type' => 'INNER',
-            'conditions' => 'Flashcards.id = flashcard_id'
-        ])->where([
-            'correct' => 1
-        ])->group([
-            'theme_id'
-        ]);*/
+            $flashcards = $this->Flashcards->find('list', [
+                'fields' => [
+                    'count' => 'count(theme_id)',
+                    'theme' => 'theme_id'
+                ], 
+                'conditions' => [
+                    'active' => 1
+                ],
+                'keyField' => 'theme',
+                'valueField' => 'count',
+                'group' => 'theme_id'
+            ])->toArray();
 
+        } else 
+            $courses = null;
 
-        foreach ($query as $key => $value) {
-            $answered[$value['Flashcards']['theme_id']] = $value['count'];
-        }
-
-        $query2 = $this->loadModel('Flashcards')->find();
-        $query2->select([
-            'count' => $query->func()->count('id'), 
-            'theme_id'
-        ])->where([
-            'active' => 1
-        ])->group(['theme_id']);
-
-        foreach ($query2 as $key => $value) {
-            $flashcards[$value['theme_id']] = $value['count'];
-        }
-
-
-        else: $courses = null;
-        endif;
-
-       $this->set(compact('courses', 'answered', 'flashcards', 'courses_', 'query'));
+       $this->set(compact('courses', 'answered', 'flashcards', 'courses_', 'answered'));
     }
 
     public function flashAnswer()
