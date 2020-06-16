@@ -665,6 +665,8 @@ class ReservedController extends AppController
     
     public function qbank()
     {
+        array_map([$this, 'loadModel'], ['Questions', 'Courses', 'UsersGroups']);
+        $this->loadModel('Questions');
         $session = $this->getRequest()->getSession();
         $user_id = $this->Auth->user('id');
         
@@ -672,7 +674,7 @@ class ReservedController extends AppController
 
         if ($this->request->is('post')) {
 
-            $question_stat = $this->loadModel('Questions')->find('all', [
+            $question_stat = $this->Questions->find('all', [
                 'fields' => [
                     'id', 
                     'correct', 
@@ -702,7 +704,7 @@ class ReservedController extends AppController
 
 			if($this->request->getData('courses')[0] == 14) {
 				
-				$questions_ = $this->loadModel('questions')->find('all', [
+				$questions_ = $this->Questions->find('all', [
 	                'conditions' => [
                         'active' => 1, 
                         'course_id' => 14
@@ -711,7 +713,7 @@ class ReservedController extends AppController
 				
 			} else {
 				
-				$questions_ = $this->loadModel('questions')->find('all', [
+				$questions_ = $this->Questions->find('all', [
 	                'conditions' => [
                         'active' => 1, 
                         'course_id in ('.implode(',', $this->request->getData('courses')).')'
@@ -726,21 +728,21 @@ class ReservedController extends AppController
             foreach ($questions_ as $value) {
 
                 $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
-                if($tot > 50):  
+                if($tot > 50)
                     $corr = $value['a'.$value['correct']] / $tot; 
-                else: $corr = 9999; 
-                endif;
+                else 
+                    $corr = 9999; 
 
                 if( (in_array(1, $this->request->getData('difficulty')) && $corr >= $stat75) || 
                 (in_array(2, $this->request->getData('difficulty')) && (($corr < $stat75 && $corr >= $stat25) || $corr == 9999)) ||
-                (in_array(3, $this->request->getData('difficulty')) && $corr < $stat25)):
+                (in_array(3, $this->request->getData('difficulty')) && $corr < $stat25)){
                     
                     if(array_intersect(explode(',', $value['theme_id']), $this->request->getData('themes'))){
                         $questions[$i]['status'] = 0;
                         $questions[$i]['id'] = $value['id'];
                         $i++;
                     }
-                endif;
+                }
             }
             
             $session->write('question_list', $questions);
@@ -748,7 +750,7 @@ class ReservedController extends AppController
             return $this->redirect(['action' => 'question', $questions[0]['id']]);
         }
 
-        $courses_ = $this->loadModel('UsersGroups')->find('list', [
+        $courses_ = $this->UsersGroups->find('list', [
             'contain' => 'Groups',
             'conditions' => [
                 'users_id' => $user_id,
@@ -757,8 +759,8 @@ class ReservedController extends AppController
             'valueField' => 'groups_courses_id'
         ])->toArray();
 
-        if(in_array(14, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO e no CURSO de VERÂO
-            $courses = $this->loadModel('Courses')->find('all', [
+        if(in_array(14, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO
+            $courses = $this->Courses->find('all', [
                 'conditions' => [
                     'OR' => [
                         [
@@ -771,17 +773,19 @@ class ReservedController extends AppController
                     'Themes' => [
                         'conditions' => [
                             'OR' => [
-                                'courses_id <' => 14,
-                                'area IS NOT' => null
-                            ],
-                            'courses_id in' => [17, 14]
+                                [
+                                    'courses_id <' => 14,
+                                    'area IS NOT' => null
+                                ],
+                                'courses_id in' => [17, 14]
+                            ]
                         ]
                     ]
                 ]
             ])->toArray();
             
-        elseif(in_array(1, $courses_)): //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
-            $courses = $this->loadModel('Courses')->find('all', [
+        } elseif(in_array(1, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
+            $courses = $this->Courses->find('all', [
                 'conditions' => [
                     'OR' => [
                         [
@@ -806,8 +810,8 @@ class ReservedController extends AppController
                 ]
             ])->toArray();
 
-        elseif(count($courses_) > 0): // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
-            $courses = $this->loadModel('Courses')->find('all', [
+        } elseif(count($courses_) > 0){ // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
+            $courses = $this->Courses->find('all', [
                 'conditions' => [
                     'OR' => [
                         [
@@ -820,9 +824,8 @@ class ReservedController extends AppController
                 'contain' => ['Themes']
             ])->toArray();
             
-        else: 
+        } else 
             $courses = null;
-        endif;
 
         $question_list = $session->read('question_list');
         $this->set(compact('courses', 'question_list', 'courses_'));
@@ -938,30 +941,25 @@ class ReservedController extends AppController
     {
         if ($this->request->is('post')) {
 
+            array_map([$this, 'loadModel'], ['UsersGroups', 'Courses', 'Flashcards']);
+
             if(is_null($this->request->data('themes')))
                 return $this->redirect(['action' => 'fbank']);
 
             $user_id = $this->Auth->user('id');
             
-            $user = $this->loadModel('Users')->get($user_id, [
-                'contain' => [
-                    'groups' => [
-                        'Courses'
-                    ]
-                ]
+            $courses = $this->UsersGroups->find('list', [
+                'contain' => 'Groups',
+                'conditions' => [
+                    'users_id' => $user_id,
+                    'Groups.deleted' => 0
+                ],
+                'valueField' => 'groups_courses_id'
             ])->toArray();
-
-            //Elimina cursos de turmas eliminadas
-            foreach ($user['groups'] as $key => $value)
-              if($value['deleted'] == 1) unset($user['groups'][$key]);
-            
-            $courses = array();
-            foreach ($user['groups'] as $key => $value)
-              $courses[$key] = $value['course']['id'];
 
             if($this->request->data('wrong') == 0) {
 
-                $flashcards = $this->loadModel('Flashcards')->find('all', [
+                /*$flashcards = $this->Flashcards->find('all', [
                         'contain' => [
                             'FlashcardsUser'.$user_id, 
                             'Themes'
@@ -975,9 +973,9 @@ class ReservedController extends AppController
                             'FlashcardsUser'.$user_id.'.last_time' => 'ASC',
                             'rand()'
                         ]
-                ])->toArray(); 
+                ])->toArray();*/
 
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
+                $flashcards = $this->Flashcards->find('all', [
                     'contain' => [
                         'UsersFlashcards',
                         'Themes'
@@ -991,11 +989,11 @@ class ReservedController extends AppController
                         'UsersFlashcards.last_time' => 'ASC',
                         'rand()'
                     ]
-                ])->toArray();*/
+                ])->toArray();
 
             }elseif($this->request->data('wrong') == 1) {
                 
-                $flashcards = $this->loadModel('Flashcards')->find('all', [
+                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'FlashcardsUser'.$user_id, 
                             'Themes'
@@ -1010,9 +1008,9 @@ class ReservedController extends AppController
                             'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
                             'rand()'
                         ]
-                ])->toArray();
+                ])->toArray();*/
 
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
+                $flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'UsersFlashcards',
                             'Themes'
@@ -1027,11 +1025,11 @@ class ReservedController extends AppController
                             'UsersFlashcards.last_time' => 'ASC',
                             'rand()'
                         ]
-                ])->toArray();*/
+                ])->toArray();
 
             }elseif($this->request->data('wrong') == 2) {
                 
-                $flashcards = $this->loadModel('Flashcards')->find('all', [
+                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'FlashcardsUser'.$user_id, 
                             'Themes'
@@ -1046,9 +1044,9 @@ class ReservedController extends AppController
                             'FlashcardsUser'.$user_id.'.last_time' => 'ASC', 
                             'rand()'
                         ]
-                ])->toArray();
+                ])->toArray();*/
 
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
+                $flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
                             'UsersFlashcards',
                             'Themes'
@@ -1063,12 +1061,11 @@ class ReservedController extends AppController
                             'UsersFlashcards.last_time' => 'ASC',
                             'rand()'
                         ]
-                ])->toArray();*/
+                ])->toArray();
             
             }
 
-        $this->set(compact('flashcards', 'courses'));
-        
+            $this->set(compact('flashcards', 'courses'));
         }      
     }
 
@@ -1150,7 +1147,7 @@ class ReservedController extends AppController
 
     public function fbank()
     {
-        array_map([$this, 'loadModel'], ['Users', 'Courses', 'Flashcards']);
+        array_map([$this, 'loadModel'], ['UsersGroups', 'Courses', 'Flashcards']);
 
         $session = $this->getRequest()->getSession();
         $user_id = $this->Auth->user('id');
@@ -1199,24 +1196,20 @@ class ReservedController extends AppController
             }
         */
 
-        $user = $this->Users->get($user_id, [
-            'contain' => [
-                'groups' => [
-                    'conditions' => [
-                        'deleted' => 0
-                    ],
-                    'Courses'
-                ]
-            ]
+         $courses_ = $this->UsersGroups->find('list', [
+            'contain' => 'Groups',
+            'conditions' => [
+                'users_id' => $user_id,
+                'Groups.deleted' => 0
+            ],
+            'valueField' => 'groups_courses_id'
         ])->toArray();
-        
-        $courses_ = array();
-        foreach ($user['groups'] as $key => $value)
-            $courses_[$key] = $value['course']['id'];
 
         // VERIFICA SE COMPROU CURSOS
         if(count($courses_) > 0){ 
-            if(in_array(1, $courses_))
+
+            // E-LEARNING
+            if(in_array(1, $courses_) || in_array(14, $courses_))  
                 $courses = $this->Courses->find('all', [
                     'conditions' => [
                         'id > ' => 1, 
@@ -1226,6 +1219,7 @@ class ReservedController extends AppController
                         'Themes'
                     ]
                 ])->toArray();
+            // OTHER COURSES
             else
                 $courses = $this->Courses->find('all', [
                     'conditions' => [
@@ -1234,7 +1228,7 @@ class ReservedController extends AppController
                     'contain' => [
                         'Themes'
                     ]
-                ])->toArray();            
+                ])->toArray();     
 
             $answered = $this->Flashcards->UsersFlashcards->find('list', [
                 'fields' => [
@@ -1248,7 +1242,7 @@ class ReservedController extends AppController
                 ],
                 'keyField' => 'theme',
                 'valueField' => 'count',
-                'group' => 'Flashcards.id'
+                'group' => 'Flashcards.theme_id'
             ])->toArray();
 
             $flashcards = $this->Flashcards->find('list', [
