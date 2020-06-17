@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <?php if($courses != ''): ?>
+            <?php if(isset($courses)): ?>
             <div class="row" style='position:relative;'>
                 <div class="reserved-background"></div>
                 <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
@@ -31,50 +31,49 @@
                 </div>
 
                 
-                    <div class='col-md-10 col-md-offset-1'>
-                        <table class='courses-list' style='margin-top: 20px; margin-bottom:20px'>
-                            <?php foreach ($courses as $key => $course) { ?>
-                            <tr class='primary' id="<?= $key?>">
-                                <td width='40px'><input type="checkbox" id="<?= $key?>" class='c c_<?= $key?>' name='courses[]' value="<?= $course['id'] ?>"  ></td>
-                                <td class='clickable'><?= $course['name'] ?></td>
-                                <td width='50px' class='clickable'><i class="fa fa-chevron-down" id='arrow_<?= $key?>'></i></td>
-                            </tr>    
-                            <tr>
-                                <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                    <div class='dependency d<?= $key?> closed'>
-                                        <table style='width: 100%;'>
-                                            <?php if(count($course['themes']) > 0) {
-                                                foreach ($course['themes'] as $theme) { ?>
-                                            <tr>
-                                                <td style='padding: 5px' width='30px'><input type="checkbox" name="themes[]" value="<?= $theme['id']?>"  style='width:15px; height:15px' class="t_<?= $key?> t"></td>
-                                                <td style='padding: 5px'><span class='small'><?= $theme['name']?></span></td>
-                                            </tr>
-                                            <?php  } } ?>
-                                        </table>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </table>
-                    </div>
+                <div class='col-md-10 col-md-offset-1'>
+                    <table class='courses-list' style='margin-top: 20px; margin-bottom:20px'>
+                        <?php foreach ($courses as $key => $themes) { ?>
+                        <tr class='primary' id="<?= $key?>">
+                            <td width='40px'><input type="checkbox" id="<?= $key?>" class='c c_<?= $key?>' name='courses[]' value="<?= $key ?>"  ></td>
+                            <td class='clickable'><?= $course_names[$key] ?></td>
+                            <td width='50px' class='clickable'><i class="fa fa-chevron-down" id='arrow_<?= $key?>'></i></td>
+                        </tr>    
+                        <tr>
+                            <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                                <div class='dependency d<?= $key?> closed'>
+                                    <table style='width: 100%;'>
+                                        <?php if(count($themes) > 0) {
+                                            foreach ($themes as $theme_id => $theme) { ?>
+                                        <tr>
+                                            <td style='padding: 5px' width='30px'><input type="checkbox" name="themes[]" value="<?= $theme_id ?>"  style='width:15px; height:15px' class="t_<?= $key?> t"></td>
+                                            <td style='padding: 5px'><span class='small'><?= $theme ?></span></td>
+                                        </tr>
+                                        <?php  } } ?>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </table>
+                </div>
                 
-                  <button class='btn btn-black' type="submit" >COMEÇAR</button> 
-              </div>
+                <button class='btn btn-black' type="submit" >COMEÇAR</button> 
+            </div>
         </div>
 
-        <?php else: ?>
+            <?php else: ?>
 
-        <div class="row" style='position:relative;'>
-            <div class="reserved-background"></div>
-            <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
-                <h1>Olá <?= $Auth['first_name']; ?>!</h1>
-                <p>Ainda não efetuaste nenhuma inscrição. </p>
-                <br>
-                <button class="btn btn-black" onclick="window.location.href='/users/logout'">LOGOUT</button>
+            <div class="row" style='position:relative;'>
+                <div class="reserved-background"></div>
+                <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
+                    <h1>Olá <?= $Auth['first_name']; ?>!</h1>
+                    <p>Ainda não efetuaste nenhuma inscrição. </p>
+                    <br>
+                    <button class="btn btn-black" onclick="window.location.href='/users/logout'">LOGOUT</button>
+                </div>
             </div>
-        
-        <?php endif; ?>
-    
+            <?php endif; ?>
         </div>
     </form>
 </section>

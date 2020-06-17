@@ -722,7 +722,7 @@ class ReservedController extends AppController
 	            ])->toArray();
 				
 			}
-			
+
             $questions = array();
             $i = 0;
             foreach ($questions_ as $value) {
@@ -759,76 +759,40 @@ class ReservedController extends AppController
             'valueField' => 'groups_courses_id'
         ])->toArray();
 
-        if(in_array(14, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO
-            $courses = $this->Courses->find('all', [
+        $courses = $this->loadModel('Themes')->find('list', [
+                'contain' => 'Courses',
                 'conditions' => [
                     'OR' => [
                         [
-                            'id > ' => 1, 
-                            'id <=' => 14
-                        ], 
-                        'id' => 17]
-                ] ,
-                'contain' => [
-                    'Themes' => [
-                        'conditions' => [
-                            'OR' => [
-                                [
-                                    'courses_id <' => 14,
-                                    'area IS NOT' => null
-                                ],
-                                'courses_id in' => [17, 14]
-                            ]
+                            'Courses.id >' => 1,
+                            'Courses.id <' => 14,
+                            'area IS NOT' => null
+                        ],
+                        'Courses.id in' => [14, 17],
+                        [
+                            'Courses.id in ('.implode(',', $courses_).')', 
+                            'Courses.id <' => 14 
                         ]
-                    ]
-                ]
-            ])->toArray();
-            
-        } elseif(in_array(1, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
-            $courses = $this->Courses->find('all', [
-                'conditions' => [
-                    'OR' => [
-                        [
-                            'id > ' => 1, 
-                            'id <' => 15
-                        ], 
-                        'id' => 17
                     ]
                 ],
-                'contain' => [
-                    'Themes' => [
-                        'conditions' => [
-                            'OR' => [
-                                [
-                                    'courses_id <' => 14,
-                                    'area IS NOT' => null
-                                ],
-                                'courses_id in' => [17, 14]
-                            ]
-                        ]
-                    ]
-                ]
-            ])->toArray();
+                'groupField' => 'courses_id'
+            ]);
 
+        if(in_array(14, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO
+            //nothing happens
+        } elseif(in_array(1, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
+            //some behaviour change may be added
         } elseif(count($courses_) > 0){ // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
-            $courses = $this->Courses->find('all', [
-                'conditions' => [
-                    'OR' => [
-                        [
-                            'id in ('.implode(',', $courses_).')', 
-                            'id <' => 14
-                        ], 
-                        'id' => 17
-                    ]
-                ],
-                'contain' => ['Themes']
-            ])->toArray();
-            
+            $courses->where([
+                'Courses.id in ('.implode(',', $courses_).')', 
+                'Courses.id <' => 14 
+            ]);
         } else 
             $courses = null;
-
+            
+        $course_names = $this->Courses->find('list')->toArray();
         $question_list = $session->read('question_list');
-        $this->set(compact('courses', 'question_list', 'courses_'));
+        $this->set(compact('courses', 'question_list', 'courses_', 'course_names'));
     }
 
     public function question($id = null)
