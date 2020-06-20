@@ -545,122 +545,152 @@ class ReservedController extends AppController
 
     public function exam($id = 1)
     {
+        array_map([$this, 'loadModel'], ['Exams', 'UserExams', 'UsersGroups']);
     
         $user_id = $this->Auth->user('id');
         
         if ($this->request->is('post')) {
-    	    $exam = $this->loadModel('Exams')->get($id, ['contain' => ['questions']])->toArray();
+    	    $exam = $this->Exams->get($id, [
+                'contain' => [
+                    'questions'
+                ]
+            ])->toArray();
     	    
     	    $total = count($exam['questions']);
     	    $correct = 0;
     	    $data = $this->request->getData();
     	    
-    	    foreach($exam['questions'] as $key => $question){
-    	    	if ($question['correct'] == $data['q'.$question['id']]) $correct += 1;
-    	    }
+    	    foreach($exam['questions'] as $key => $question)
+                if(array_key_exists('q'.$question['id'], $data) && $question['correct'] == $data['q'.$question['id']])
+                    $correct += 1;
     	    
-    	    $user_exams = $this->loadModel('UserExams')->find('all', ['conditions' => ['user_id' => $user_id, 'exam_id' => $id]])->first();
+    	    $user_exams = $this->UserExams->find('all', [
+                'conditions' => [
+                    'user_id' => $user_id, 
+                    'exam_id' => $id
+                ]
+            ])->first();
     	    $user_exams['answers'] = json_encode($data);
     	    $user_exams['result'] = $correct."/".$total;
     	    $user_exams['finished'] = 1;
-    	    $user_exams = $this->loadModel('UserExams')->save($user_exams);
+    	    $user_exams = $this->UserExams->save($user_exams);
     	    
-    	    $this->redirect(['action' => 'ebank', 'c' => 1]);             
-        }	
+    	    $this->redirect(['action' => 'ebank', 'c' => $id]);
+
+        }
     	
         if ($id != 1){
-    	    //VERIFIA INSCRIÇÕES DO ALUNO
-    	    if (!$user_id){
-    		    return $this->redirect(['controller' => '/']);
-    	    }
-    	    
-    	    $user = $this->loadModel('Users')->get($user_id, [
-                'contain' => ['groups' => ['Courses']]
-                ])->toArray();
-                
-            
-    		//Elimina cursos de turmas eliminadas
-            foreach ($user['groups'] as $key => $value) {
-               if($value['deleted'] == 1) unset($user['groups'][$key]);
-            }
 
-            $courses = array();
-            foreach ($user['groups'] as $key => $value) {
-                $courses[$key] = $value['course']['id'];
-            }
+    	    if (!$user_id)
+    		    return $this->redirect(['controller' => '/']);
+    	    
+    	    $courses = $this->UsersGroups->find('list', [
+                'contain' => 'Groups',
+                'conditions' => [
+                    'users_id' => $user_id,
+                    'Groups.deleted' => 0
+                ],
+                'valueField' => 'groups_courses_id'
+            ])->toArray();
 
             if(in_array(16, $courses) || in_array(15, $courses)){
             
-                $user_exams = $this->loadModel('UserExams')->find('all', ['conditions' => ['user_id' => $user_id, 'exam_id' => $id]]);
+                $user_exams = $this->UserExams->find('all', [
+                    'conditions' => [
+                        'user_id' => $user_id, 
+                        'exam_id' => $id
+                    ]
+                ]);
                         
                 if($user_exams->count() == 0){
-        	        $user_exams = $this->loadModel('UserExams')->newEntity();
+        	        $user_exams = $this->UserExams->newEntity();
         	        $user_exams['user_id'] = $user_id;
         	        $user_exams['exam_id'] = $id;
         	        $user_exams['timestamp'] = Time::now();
-        	        $user_exams = $this->loadModel('UserExams')->save($user_exams);
+        	        $user_exams = $this->UserExams->save($user_exams);
                 } else {
         	        $user_exams = $user_exams->first();
         	        
-        	        $avg = $this->loadModel('UserExams')->find('all', [
-                    'fields' => ['exam_id', 'result' => 'AVG(result)'],
-                    'conditions' => ['exam_id' => $id, 'SUBSTRING_INDEX(result,"/",1) > 0'],
+        	        $avg = $this->UserExams->find('all', [
+                        'fields' => [
+                            'exam_id', 
+                            'result' => 'AVG(result)'
+                        ],
+                        'conditions' => [
+                            'exam_id' => $id, 
+                            'SUBSTRING_INDEX(result,"/",1) > 0'
+                        ]
                     ])->toArray();
-                    
-                    
+
+                    $user_exams['avg'] = $avg;
         	        
         	        if($user_exams['finished'] != 1){
         		        $user_exams['timestamp'] = Time::now();
-        				$user_exams = $this->loadModel('UserExams')->save($user_exams);
+        				$user_exams = $this->UserExams->save($user_exams);
         	        }
-        	        
                 }  
-            }
-           
-    		else { // Se o aluno não tem acesso aos exames de simulação
+            } else { // Se o aluno não tem acesso aos exames de simulação
     	       $id = 1;
     		}
+        } else {
+            $user_exams = ['timestamp' => Time::now()];
+            $courses = [];
         }
 
-        $exam = $this->loadModel('Exams')->get($id, ['contain' => ['questions']])->toArray();
+        $exam = $this->loadModel('Exams')->get($id, [
+            'contain' => [
+                'questions'
+            ]
+        ])->toArray();
 
-        $this->set(compact('exam', 'user_exams', 'courses', 'avg'));
+        $this->set(compact('exam', 'user_exams', 'courses'));    
     }
 
 	public function ebank()
     {
-
-       $user_id = $this->Auth->user('id');
+        $user_id = $this->Auth->user('id');
         if(!isset($user_id))   return $this->redirect(['controller' => '/']);
 
-        $user = $this->loadModel('Users')->get($user_id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
-            
-        
-		//Elimina cursos de turmas eliminadas
-        foreach ($user['groups'] as $key => $value) {
-           if($value['deleted'] == 1) unset($user['groups'][$key]);
-        }
+        $courses = $this->loadModel('UsersGroups')->find('list', [
+            'contain' => 'Groups',
+            'conditions' => [
+                'users_id' => $user_id,
+                'Groups.deleted' => 0
+            ],
+            'valueField' => 'groups_courses_id'
+        ])->toArray();
 
-        $courses = array();
-        foreach ($user['groups'] as $key => $value) {
-            $courses[$key] = $value['course']['id'];
-        }
-
-        if(in_array(15, $courses) || in_array(16, $courses)):
+        if(in_array(15, $courses) || in_array(16, $courses)){
         	
         	$exams = $this->loadModel('Exams')->find('all', [
-            'conditions' => ['id > ' => 1, 'active' => 1],
-            'contain' => ['UserExams' => ['conditions' => ['user_id' => $user_id]]]
+            'conditions' => [
+                'id > ' => 1, 
+                'active' => 1
+            ],
+            'contain' => [
+                'UserExams' => [
+                    'conditions' => [
+                        'user_id' => $user_id
+                    ]
+                ]
+            ]
             ])->toArray();
             
            $this->set(compact('exams', 'courses'));
                    
-        else: $this->redirect(['controller' => 'reserved']);
-        
-        
-        endif;      
+        } else 
+            $this->redirect(['controller' => 'reserved']); 
+
+        if(isset($_GET['c'])){
+            $result = $this->loadModel('UserExams')->find('list', [
+                'conditions' => [
+                    'exam_id' => $_GET['c'],
+                    'user_id' => $user_id
+                ],
+                'valueField' => 'result'
+            ])->first();
+            $this->set(compact('result'));     
+        }
     }
     
     public function qbank()
@@ -709,7 +739,7 @@ class ReservedController extends AppController
                         'active' => 1, 
                         'course_id' => 14
                     ],
-	            ])->toArray();
+                ])->toArray();
 				
 			} else {
 				
@@ -719,10 +749,11 @@ class ReservedController extends AppController
                         'course_id in ('.implode(',', $this->request->getData('courses')).')'
                     ],
 	                'order' => 'rand()'
+                    //'order' => 'id'
 	            ])->toArray();
 				
 			}
-
+            $question_list = array();
             $questions = array();
             $i = 0;
             foreach ($questions_ as $value) {
@@ -734,20 +765,31 @@ class ReservedController extends AppController
                     $corr = 9999; 
 
                 if( (in_array(1, $this->request->getData('difficulty')) && $corr >= $stat75) || 
-                (in_array(2, $this->request->getData('difficulty')) && (($corr < $stat75 && $corr >= $stat25) || $corr == 9999)) ||
-                (in_array(3, $this->request->getData('difficulty')) && $corr < $stat25)){
+                (in_array(2, $this->request->getData('difficulty')) && (($corr < $stat75 && $corr >= $stat25))) ||
+                (in_array(3, $this->request->getData('difficulty')) && $corr < $stat25) || $corr == 9999){
                     
                     if(array_intersect(explode(',', $value['theme_id']), $this->request->getData('themes'))){
-                        $questions[$i]['status'] = 0;
-                        $questions[$i]['id'] = $value['id'];
+                        //$questions['id'][$i] = $value['id'];
+                        $questions[$value['id']]['status'] = 0;
+                        $questions[$value['id']]['answer'] = 0;
+                        //$questions['status'][$i] = 0; 
+                        //$questions['answer'][$i] = 0;
+                        $question_list[$i]['id'] = $value['id'];
+                        $question_list[$i]['status'] = 0;
                         $i++;
                     }
                 }
             }
-            
-            $session->write('question_list', $questions);
-            
-            return $this->redirect(['action' => 'question', $questions[0]['id']]);
+            //foreach($questions as $key => $value)
+            //    $questions[$key] = array_chunk($value, $this->request->getData('number'));
+
+            $questions = array_chunk($questions, $this->request->getData('number'), true);
+            $pointer = 0;
+            $session->write('question_list', $question_list);
+            $session->write('question_list2', $questions);
+            $session->write('question_pointer', $pointer);
+            return $this->redirect(['action' => 'question', empty($questions) ? null : $pointer]);
+            //return $this->redirect(['action' => 'question', empty($questions) ? null : $questions[0][0]['id']]);
         }
 
         $courses_ = $this->UsersGroups->find('list', [
@@ -778,34 +820,48 @@ class ReservedController extends AppController
                 'groupField' => 'courses_id'
             ]);
 
-        if(in_array(14, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO
+        if(in_array(14, $courses_)){                //VERIFICA SE ESTÁ INSCRITO NO CURSO DE VERÃO
             //nothing happens
-        } elseif(in_array(1, $courses_)){ //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
+        } elseif(in_array(1, $courses_)){           //VERIFICA SE ESTÁ INSCRITO NO E-LEARNING sem CURSO de VERÂO
             //some behaviour change may be added
-        } elseif(count($courses_) > 0){ // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
+        } elseif(count($courses_) > 0){             // VERIFCA OS CURSOS EM QUE ESTÁ INSCRITO
             $courses->where([
                 'Courses.id in ('.implode(',', $courses_).')', 
                 'Courses.id <' => 14 
             ]);
         } else 
             $courses = null;
-            
+
         $course_names = $this->Courses->find('list')->toArray();
         $question_list = $session->read('question_list');
-        $this->set(compact('courses', 'question_list', 'courses_', 'course_names'));
+        $question_list2 = $session->read('question_list2');
+        $pointer = $session->read('question_pointer');
+        $this->set(compact('courses', 'question_list', 'courses_', 'course_names', 'question_list2', 'pointer'));
     }
 
-    public function question($id = null)
+    public function question($pointer = null)
     {
+
         $session = $this->getRequest()->getSession();
+        $user_id = $this->Auth->user('id');
+
+        $courses = $this->loadModel('UsersGroups')->find('list', [
+            'contain' => 'Groups',
+            'conditions' => [
+                'users_id' => $user_id,
+                'Groups.deleted' => 0
+            ],
+            'valueField' => 'groups_courses_id'
+        ])->toArray();
+
 
         //  VERIFICA SE NÃO EXISTE PERGUNTA
-        if(!$id){
+        if(!isset($pointer)){
             $this->set('none', 1);
 
         } else {
 
-        $question = $this->loadModel('Questions')->get($id, [
+        $question = $this->loadModel('Questions')->get(1045, [
             'fields' => [
                 'id', 
                 'correct', 
@@ -820,36 +876,24 @@ class ReservedController extends AppController
         ])->toArray();
 
         //VERIFICA SE O UTILIZADOR COMPROU O CURSO DA PERGUNTA
-        $user_id = $this->Auth->user('id');
         if(!isset($user_id))   
             return $this->redirect(['controller' => '/']);
-        $user = $this->loadModel('Users')->get($user_id, [
-            'contain' => [
-                'groups' => [
-                    'Courses'
-                ]
-            ]
-        ])->toArray();
-            
-        //Elimina cursos de turmas eliminadas
-        foreach ($user['groups'] as $key => $value) {
-           if($value['deleted'] == 1) unset($user['groups'][$key]);
-        }
-
-
-        $courses = array();
-        foreach ($user['groups'] as $key => $value) {
-            $courses[$key] = $value['course']['id'];
-        }
 
          if(!in_array($question['course_id'], $courses) && $question['course_id']!=17 && !in_array(1, $courses) && !in_array(14, $courses)){
             return $this->redirect(['action' => 'index']);
         }
 
-        $question_stat = $this->loadModel('Questions')->find('all', ['fields' => ['id', 'correct', 'a1', 'a2', 'a3', 'a4', 'a5']])->toArray();
+        $question_stat = $this->loadModel('Questions')->find('all', [
+            'fields' => [
+                'id', 
+                'correct', 
+                'a1', 'a2', 'a3', 'a4', 'a5'
+            ]
+        ])->toArray();
         foreach ($question_stat as $value) {
             $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
-            if($tot > 50 ) $statistics[$value['id']] = $value['a'.$value['correct']] / $tot;
+            if($tot > 50 ) 
+                $statistics[$value['id']] = $value['a'.$value['correct']] / $tot;
         }
 
         function get_percentile($percentile, $array) {
@@ -867,38 +911,103 @@ class ReservedController extends AppController
         $stat25 = get_percentile(25, $statistics);
         $stat75 = get_percentile(75, $statistics);
 
-       $question_list = $session->read('question_list');
+        $question_list2 = $session->read('question_list2');
+        $question_list = $session->read('question_list');
 
-       $this->set(compact('question', 'question_list', 'stat25', 'stat75', 'statistics', 'courses'));
+        $question_ids = array_keys($question_list2[$pointer]);
+        $question_ids_flip = array_flip($question_ids);
+        
+        $questions = $this->Questions->find('all', [
+            'conditions' => [
+                'id in' => array_keys($question_list2[$pointer])
+            ],
+            'fields' => [
+                'id', 
+                'correct', 
+                'a1', 'a2', 'a3', 'a4', 'a5', 
+                'pic', 
+                'op1', 'op2', 'op3', 'op4', 'op5', 
+                'correct', 
+                'question', 
+                'course_id', 
+                'justification',
+                'total' => 'a1 + a2 + a3 + a4 + a5',
+            ]
+        ]);
+    
+        foreach($questions as $question)
+            if($question['course_id']!=17 && empty(array_intersect([$question['course_id'], 14, 1], $courses)))
+                return $this->redirect(['action' => 'index']);
 
-       }  
+        $session->write('question_pointer', $pointer);
+
+
+       $this->set(compact('question', 'question_list', 'stat25', 'stat75', 'statistics', 'questions', 'question_list2', 'pointer', 'question_ids', 'question_ids_flip'));
+
+       }
+
+       $this->set(compact('courses'));  
     }
 
     public function answer()
     {
-       $this->layout = false;
-       $session = $this->getRequest()->getSession();
-
-       $id = $this->request->getData('id');
-       $answer = $this->request->getData('answer');
-       $qk = $this->request->getData('qk');
-       $question = $this->loadModel('Questions')->get($id, ['fields' => ['id', 'correct', 'a1', 'a2', 'a3', 'a4', 'a5']]);
-
-       if($question['correct'] == $answer) $status = 1; else $status = 2; 
-       $session->write('question_list.'.$qk.'.status', $status);
-       $session->write('question_list.'.$qk.'.answer', $answer);
-
-       if($answer != ''):
-        $question['a'.$answer] = $question['a'.$answer] + 1;
+        $this->autoRender = false;
+        $this->loadModel('Questions');
+        $session = $this->getRequest()->getSession();
         
-        $query = $this->loadModel('Questions')->query();
-        $query->update()
-            ->set(['a'.$answer => $question['a'.$answer]])
-            ->where(['id' => $id])
-            ->execute();
-        endif;
+        /*
+                $id = $this->request->getData('id');
+                $answer = $this->request->getData('answer');
+                $qk = $this->request->getData('qk');
+                $question = $this->loadModel('Questions')->get($id, [
+                    'fields' => [
+                        'id', 
+                        'correct', 
+                        'a1', 'a2', 'a3', 'a4', 'a5'
+                    ]
+                ]);
 
-       $this->set(compact('answer', 'question'));
+                if($question['correct'] == $answer) 
+                    $status = 1; 
+                else 
+                    $status = 2; 
+                
+                $session->write('question_list.'.$qk.'.status', $status);
+                $session->write('question_list.'.$qk.'.answer', $answer);
+
+                if($answer != ''):
+                    $question['a'.$answer] = $question['a'.$answer] + 1;
+                
+                    $query = $this->loadModel('Questions')->query();
+                    $query->update()
+                        ->set(['a'.$answer => $question['a'.$answer]])
+                        ->where(['id' => $id])
+                        ->execute();
+                endif;
+        */
+
+        $id = $this->request->getData('question_id');
+        $answer = $this->request->getData('answer');
+        
+        $question = $this->Questions->get($id, [
+            'fields' => [
+                'id',
+                'correct',
+                'a1', 'a2', 'a3', 'a4', 'a5' 
+            ]
+        ]);
+        
+        if($answer != '')
+            $question['a'.$answer]++;
+        
+        $question_list2 = $session->read('question_list2');
+        $pointer = $session->read('question_pointer');
+        if(isset($question_list2) && isset($pointer)){
+            $question_list2[$pointer][$id]['status'] = ($answer == $question['correct'] ? 1 : 2);
+            $question_list2[$pointer][$id]['answer'] = $answer;
+            $session->write('question_list2', $question_list2);
+        }
+        $this->Questions->save($question);
     }
 
     public function flashcards()

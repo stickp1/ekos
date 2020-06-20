@@ -18,19 +18,57 @@
             </div>
 
             <?php if(isset($courses)): ?>
+
             <div class="row" style='position:relative;'>
                 <div class="reserved-background"></div>
                 <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
                     <h1>Olá <?= $Auth['first_name']; ?>!</h1>
-                    <p>Seleciona os temas e dificuldade das perguntas que desejas fazer.</p>
+                    <p>Seleciona os temas, dificuldade e número das perguntas que desejas fazer.</p>
                     <a href='#' onClick="event.preventDefault(); $('.c').prop('checked', !$('.t').prop('checked'));$('.t').prop('checked', !$('.t').prop('checked'));">Selecionar todos os temas</a>
-                    <p style="font-size:12pt; margin-top:10px"><input type="checkbox" name="difficulty[]" value="1"  style='width:20px; height:20px; position:relative; top:4px' checked> Fácil <input type="checkbox" name="difficulty[]" value="2"  style='width:20px; height:20px; position:relative; top:4px' checked> Intermédio <input type="checkbox" name="difficulty[]" value="3"  style='width:20px; height:20px; position:relative; top:4px' checked> Difícil</p>
-                    <?php if($question_list): ?>
-                    <p class="small" style="margin-top: 30px"><a href="<?= $this->Url->build(["action" => "question", $question_list[0]['id']]) ?>" > <i class="fa  fa-play-circle"></i> <b>Continuar Perguntas</b> </a></p>
+                    <div class="row" id="options">
+                        <div class="col-xs-3 col-xs-offset-3"> 
+                            <div class="well well-sm" id="difficulty">
+                                <div>Dificuldade:</div>
+                                <div>
+                                    <input type="checkbox" name="difficulty[]" value="1" checked>Fácil
+                                </div>
+                                <div>
+                                    <input type="checkbox" name="difficulty[]" value="2" checked> Intermédio
+                                </div>
+                                <div> 
+                                    <input type="checkbox" name="difficulty[]" value="3" checked> Difícil
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            
+                            <div class="well well-sm" id="number">
+                                <div>Número de <br>perguntas:</div>
+                                <div>
+                                    <input type="radio" name="number" value="10"> 10 perguntas
+                                </div>
+                                <div>
+                                    <input type="radio" name="number" value="25"> 25 perguntas
+                                </div>
+                                <div>
+                                    <input type="radio" name="number" value="50" checked> 50 perguntas
+                                </div>
+                                <div>
+                                    <input type="radio" name="number" value="100"> 100 perguntas
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if(isset($question_list2) && isset($pointer)): ?>
+                    <p class="small" style="margin-top: 30px">
+                        <a href="<?= $this->Url->build(["action" => "question", $pointer]) ?>" >
+                            <i class="fa  fa-play-circle"></i> 
+                            <b>Continuar Perguntas</b> 
+                        </a>
+                    </p>
                     <?php endif;?>
                 </div>
-
-                
+             
                 <div class='col-md-10 col-md-offset-1'>
                     <table class='courses-list' style='margin-top: 20px; margin-bottom:20px'>
                         <?php foreach ($courses as $key => $themes) { ?>
@@ -60,8 +98,7 @@
                 
                 <button class='btn btn-black' type="submit" >COMEÇAR</button> 
             </div>
-        </div>
-
+    
             <?php else: ?>
 
             <div class="row" style='position:relative;'>
@@ -73,6 +110,7 @@
                     <button class="btn btn-black" onclick="window.location.href='/users/logout'">LOGOUT</button>
                 </div>
             </div>
+
             <?php endif; ?>
         </div>
     </form>
@@ -85,38 +123,69 @@
 .courses-list a span{
   opacity: 0.85
 }
-
 .courses-list a:hover span{
   opacity: 1
 }
-
-input[type='checkbox'] {
+input[type='checkbox'],input[type="radio"] {
         -webkit-appearance: none;
         width: 30px;
         height: 30px;
-
         outline: none;
         border: 2px solid gray;
         margin-left: 3px
-    }
-
- input[type='checkbox']:before {
+}
+input[type='checkbox']:before, input[type="radio"]:before{
         content: '';
         display: block;
         width: 50%;
         height: 50%;
         margin: 25% auto;
-
-    }
-
- input[type="checkbox"]:checked:before {
+}
+input[type="checkbox"]:checked:before, input[type="radio"]:checked:before {
         background: #FEB000;
-    }
-
- input[type='checkbox']:checked {
+}
+input[type='checkbox']:checked, input[type="radio"]:checked {
     border: 2px solid #152335;
- }
-  </style>
+}
+#difficulty, #number{
+    padding-top: 45px;
+    position:relative;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    height:90%;
+    font-size:12pt;
+    margin-top:10px;
+    text-align: left;
+    background: rgb(44, 57, 73, 0.2);
+}
+#difficulty input[type='checkbox'], #number input[type='radio']{
+    width:20px; 
+    height:20px; 
+    position:relative; 
+    top:5px;
+    margin-right: 5px;
+}
+#difficulty div, #number div{
+    height:100%;
+}
+#difficulty div:first-child, #number div:first-child{
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    text-align: center;
+    left:0;
+    right:0;
+}
+.row#options{
+    display: flex;
+    flex-flow: row wrap;
+}
+.row#options::before{
+    display: block;
+}
+
+</style>
 
 <script>
 $('.clickable').on('click', function(){
