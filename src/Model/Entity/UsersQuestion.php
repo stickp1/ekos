@@ -4,18 +4,19 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * UsersFlashcard Entity
+ * UsersQuestion Entity
  *
  * @property int $id
- * @property int $flashcard_id
+ * @property int $question_id
  * @property int $user_id
  * @property int $correct
  * @property \Cake\I18n\FrozenTime $last_time
+ * @property int $favorite
  *
- * @property \App\Model\Entity\Flashcard $flashcard
+ * @property \App\Model\Entity\Question $question
  * @property \App\Model\Entity\User $user
  */
-class UsersFlashcard extends Entity
+class UsersQuestion extends Entity
 {
 
     /**
@@ -28,7 +29,7 @@ class UsersFlashcard extends Entity
      * @var array
      */
     protected $_accessible = [
-        'flashcard_id' => true,
+        'question_id' => true,
         'user_id' => true,
         'correct' => true,
         'last_time' => true,

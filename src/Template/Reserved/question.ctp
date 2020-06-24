@@ -1,6 +1,6 @@
 <?php $url = $this->Url->build(["prefix" => false, "controller" => '/'], true); ?>
 <style>
-a.number{
+a.number, a.pointer{
   padding: 3px 5px;
   margin: 5px;
   display: inline-block;
@@ -156,12 +156,51 @@ div#question-image{
 #question-slider a:first-child{
   margin-left: 20px;
 }
+#question-slider a.pointer:first-child{
+  width: auto;
+}
 #question-slider a:last-child{
   margin-right: 20px;
   width: auto;
 }
+#question-slider a:nth-last-child(2){
+  width: auto;
+}
 .tab-pane{
   position: relative;
+}
+a.pointer{
+  font-style: italic;
+}
+#timer{
+  position: absolute;
+  top:-62px;
+  left:0;
+  margin-left:30px;
+  z-index: 2;
+  color: white;
+  font-size: 17px;
+}
+.favorite{
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  left: 0;
+  text-align: center;
+  bottom: -50px;
+  font-size:18pt; 
+  padding-top: 1px; 
+  color: #929dab;
+}
+.favorite i{
+  transition: all 0.2s ease-in-out;
+}
+.favorite i:hover{
+  cursor: pointer;
+  color: #FEB000;
+}
+.favorite .fav{
+  color: #FEB000;
 }
 </style>
 
@@ -199,37 +238,32 @@ div#question-image{
         <?php else: ?>
 
         <div class="row" id="question-header" style='position:relative;'>
-            <?php foreach ($question_list as $key => $value): ?> 
-                <?php $i = $key + 1; ?> 
-                <?php switch($value['status']):
-                        case 1:   $class = 'correct'; 
-                        case 2:   $class = 'wrong'; 
-                        default:  $class='';
-                      endswitch;
-                      
-                      if($value['id'] == $question['id']): 
-                        $qk = $i;
-                        $class.=" active";
-                      endif;
-                      
-                ?>
-            <?php endforeach; ?>
             <div id="banner">
                 <div id="question-slider">
-                    <?php for($counter = 0; $counter < count($question_list2[$pointer]); $counter++): ?>  
+                    <?php if($pointer > 0): ?>
+                        <a class="pointer" href="<?= $this->Url->build(["prefix" => false, "action" => "question", $pointer - 1]) ?>" id="n_prev">
+                            <?=count($question_list[$pointer])?> perguntas anteriores
+                        </a>
+                    <?php endif ?>
+                    <?php for($counter = 0; $counter < count($question_list[$pointer]); $counter++): ?>  
                     <?php $i = $question_ids[$counter] ?>
-                        <a href="#q<?= $i?>" class='number' data-toggle="tab" id='n<?= $counter + 1 ?>'>
+                        <a href="#q<?= $i?>" class="number" data-toggle="tab" id="n<?= $counter + 1 ?>">
                             <?= $counter + 1  ?>
                         </a>
                     <?php endfor ?>
+                    <?php if(count($question_list) > 1): ?>
+                        <a class="pointer" href="<?= $this->Url->build(["prefix" => false, "action" => "question", $pointer + 1]) ?>" id="n_next">
+                            próximas <?=count($question_list[$pointer])?> perguntas
+                        </a>
+                    <?php endif ?>
                 </div>
                 <div id="question-selector" class="col-md-4 col-md-offset-4">
-                        <a href='#' class='navi prev'>
-                            <i class="fa fa-angle-left" ></i>
-                        </a>
+                    <a href="#" class="navi prev">
+                        <i class="fa fa-angle-left" ></i>
+                    </a>
                     <input type="number" id="selector" value="1"> 
                     <span> / </span> 
-                    <?= count($question_list2[$pointer]) ?> 
+                    <?= count($question_list[$pointer]) ?> 
                     <a href='#' class='navi next'>
                       <i class="fa fa-angle-right"></i>
                     </a>
@@ -239,21 +273,24 @@ div#question-image{
 
         <div class="row" id="new-question-body" style='position:relative;'>
             <div class="col-md-10 col-md-offset-1">
+                <div id="timer"></div>
                 <div class="panel-body">
                     <div class="tab-content">
                         <?php $counter = 0; ?>
                         <?php foreach ($questions as $key => $value): ?>
                             <?php $i = $value['id']; $counter++; ?>
                             <div class="tab-pane fade in" id="q<?= $i ?>"> <b><?= $value['question']; ?></b>
-
-                                <?php if($value['total'] > 50): ?>
-                                    <?php $corr = $value['a'.$value['correct']] / $value['total']; ?>
+                                <?php $corr = $question_list[$pointer][$value['id']]['corr'] ?>
+                                <?php if($corr): ?>
                                     <div id="difficulty" class="col-md-1">
                                         <i class="fa fa-lightbulb-o" style='color: #FEB000'></i>    
-                                        <i class="fa fa-lightbulb-o" <?= $corr < $stat75 ? "style='color: #FEB000'" : '' ?>></i>    
-                                        <i class="fa fa-lightbulb-o" <?= $corr < $stat25 ? "style='color: #FEB000'" : '' ?>></i>
+                                        <i class="fa fa-lightbulb-o" <?= $corr > 1 ? "style='color: #FEB000'" : '' ?>></i>    
+                                        <i class="fa fa-lightbulb-o" <?= $corr > 2 ? "style='color: #FEB000'" : '' ?>></i>
                                     </div>
                                 <?php endif; ?>
+                                <div class="favorite">
+                                  <i class="fa fa-star <?= $question_list[$pointer][$i]['fav'] ? 'fav' : ''?>" id="fav<?= $i ?>"></i>   
+                              </div>
                                 <br> 
                                 <br>
                                 <?php if($value['pic'] != '') {
@@ -261,27 +298,27 @@ div#question-image{
                                 }
                                 ?>       
                                 <?php if ($value['op1'] != ''): ?>
-                                    <input type='radio' name='q<?= $i ?>' value='1' <?= @$question_list2[$pointer][$i]['answer']==1 ? "checked" : ""?> class='radio-btn'/> 
+                                    <input type='radio' name='q<?= $i ?>' value='1' <?= @$question_list[$pointer][$i]['answer']==1 ? "checked" : ""?> class='radio-btn'/> 
                                     <span id='l<?= $i ?>_1'> <?= $value['op1']; ?> </span><br> 
                                 <?php endif ?>
                                 <?php if ($value['op2'] != ''): ?>
-                                    <input type='radio' name='q<?= $i ?>' value='2' <?= @$question_list2[$pointer][$i]['answer']==2 ? "checked" : ""?>/> 
+                                    <input type='radio' name='q<?= $i ?>' value='2' <?= @$question_list[$pointer][$i]['answer']==2 ? "checked" : ""?>/> 
                                     <span id='l<?= $i ?>_2'><?= $value['op2']; ?> </span><br> 
                                 <?php endif ?>
                                 <?php if ($value['op3'] != ''): ?>
-                                    <input type='radio' name='q<?= $i ?>' value='3' <?= @$question_list2[$pointer][$i]['answer']==3 ? "checked" : ""?>/> 
+                                    <input type='radio' name='q<?= $i ?>' value='3' <?= @$question_list[$pointer][$i]['answer']==3 ? "checked" : ""?>/> 
                                     <span id='l<?= $i ?>_3'><?= $value['op3']; ?> </span><br> 
                                 <?php endif ?>
                                 <?php if ($value['op4'] != ''): ?> 
-                                    <input type='radio' name='q<?= $i ?>' value='4' <?= @$question_list2[$pointer][$i]['answer']==4 ? "checked" : ""?>/> 
+                                    <input type='radio' name='q<?= $i ?>' value='4' <?= @$question_list[$pointer][$i]['answer']==4 ? "checked" : ""?>/> 
                                     <span id='l<?= $i ?>_4'><?= $value['op4']; ?> </span><br> 
                                 <?php endif ?>
                                 <?php if ($value['op5'] != ''): ?>
-                                    <input type='radio' name='q<?= $i ?>' value='5' <?= @$question_list2[$pointer][$i]['answer']==5 ? "checked" : ""?>/> 
+                                    <input type='radio' name='q<?= $i ?>' value='5' <?= @$question_list[$pointer][$i]['answer']==5 ? "checked" : ""?>/> 
                                     <span id='l<?= $i ?>_5'><?= $value['op5']; ?> </span><br> 
                                 <?php endif ?>
                                 <br> 
-                                <div class='answer' id="a<?= $i ?>" <?= $question_list2[$pointer][$i]['status'] > 0 ?  "style='display: block'" : "" ?>>
+                                <div class='answer' id="a<?= $i ?>" <?= $question_list[$pointer][$i]['answer'] > 0 ?  "style='display: block'" : "" ?>>
                                     <div id="graph" style='text-align: center; padding: 20px;' ></div>
                                     <label><b>Justificação</b></label>
                                     <br>
@@ -289,7 +326,7 @@ div#question-image{
                                 </div>
                                 <p style='text-align: center'> 
                                     <button class='prev btn-black btn' id='p<?= $i?>'> « </button>  
-                                    <button class='submit btn-black btn' id='b<?= $i ?>' <?= $question_list2[$pointer][$i]['status'] > 0 ?  "disabled" : "" ?>> Validar 
+                                    <button class='submit btn-black btn' id='b<?= $i ?>' <?= $question_list[$pointer][$i]['answer'] > 0 ?  "disabled" : "" ?>> Validar 
                                     </button> 
                                     <button class='next btn-black btn' id='nn<?= $i ?>'> » </button> 
                                 </p>
@@ -310,32 +347,11 @@ div#question-image{
 
 
 <script src="<?= $url; ?>/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
+<?= $this->Html->script('jquery.countdown.js'); ?>
 <script>
 
-/*$('.submit').on('click', function(){
-  selected = $('input[name=q]:checked').val();
-  $('#l_<?= $question["correct"]?>').addClass('correct');
-  $('.answer').slideDown();
-  $(this).prop('disabled', true);
-  if(<?= $question["correct"]?> != selected){
-    $('#l_'+selected).addClass('wrong');
-    $('#n<?= $qk?>').addClass('wrong');
-  } else {
-    $('#n<?= $qk?>').addClass('correct');
-  }
-
-  $.post( '<?= $this->Url->build(["action" => "answer"])?>', { 
-    id: <?= $question['id']?>, 
-    answer: selected, 
-    qk: <?= $qk - 1 ?>
-  }).done(function( data ) {
-    eval(data)
-  });
-
-})*/
-
 all_ids = <?php echo json_encode(array_flip($question_ids)); ?>;
-question_list = <?php echo json_encode($question_list2[$pointer]); ?>;
+question_list = <?php echo json_encode($question_list[$pointer]); ?>;
 
 $('.submit').on('click', function(){
   
@@ -354,7 +370,7 @@ $('.submit').on('click', function(){
     $('#n'+question_nr).addClass('correct');
   }
   
-  $.post( "<?= $url?>/reserved/answer", { 
+  $.post( "<?= $url?>/reserved/qanswer", { 
     question_id: id[0], 
     answer: selected,
   }).done(function(data) {
@@ -365,43 +381,16 @@ $('.submit').on('click', function(){
   doGraph(id);
 })
 
-<?php if($a = 10001 && $question_list[$qk-1]['status'] > 0 ): ?>
-
-    $('#l_<?= $question["correct"]?>').addClass('correct');
-
-    $("#graph").sparkline([ 
-      <?= $question['a1'] ? $question['a1'] : '0' ?>, 
-      <?= $question['a2'] ? $question['a2'] : '0'?>, 
-      <?= $question['a3'] ? $question['a3'] : '0' ?>, 
-      <?= $question['a4'] ? $question['a4'] : '0' ?>, 
-      <?= $question['a5'] ? $question['a5'] : '0' ?> ], { 
-            type: 'bar',
-            width: "97%",
-            height: "125px",
-            barWidth: "20",
-            barSpacing: "17",
-            colorMap: [
-              <?=  $question['correct'] == 1 ? "'green'"  :  ($question_list[$qk-1]['answer'] == 1 ? "'red'" : "'#999'") ?>, 
-              <?=  $question['correct'] == 2 ? "'green'"  :  ($question_list[$qk-1]['answer'] == 2 ? "'red'" : "'#999'") ?>, 
-              <?=  $question['correct'] == 3 ? "'green'"  :  ($question_list[$qk-1]['answer'] == 3 ? "'red'" : "'#999'") ?>, 
-              <?=  $question['correct'] == 4 ? "'green'"  :  ($question_list[$qk-1]['answer'] == 4 ? "'red'" : "'#999'") ?>, 
-              <?=  $question['correct'] == 5 ? "'green'"  :  ($question_list[$qk-1]['answer'] == 5 ? "'red'" : "'#999'") ?>
-              ] 
-    });
-
-    $("#graph").fadeIn();
-<?php endif; ?>
-
 <?php foreach($questions as $key => $value): ?>
     <?php $i = $value['id']; ?>
 
-    <?php if($question_list2[$pointer][$i]['status'] > 0 ): ?>
+    <?php if($question_list[$pointer][$i]['answer'] > 0 ): ?>
     
         $('#l'+<?= $i ?>+'_<?=$value['correct']?>').addClass('correct');
         question_nr = all_ids[<?= $i ?>]+1;
 
-        <?php if($value['correct'] != $question_list2[$pointer][$i]['answer']): ?>
-          $('#l<?= $i."_".$question_list2[$pointer][$i]['answer'] ?>').addClass('wrong');
+        <?php if($value['correct'] != $question_list[$pointer][$i]['answer']): ?>
+          $('#l<?= $i."_".$question_list[$pointer][$i]['answer'] ?>').addClass('wrong');
           $('#n'+question_nr).addClass('wrong');
         <?php else: ?>
           $('#n'+question_nr).addClass('correct');
@@ -448,9 +437,7 @@ $('a.number').on('click', function () {
   $('#selector').val(id);
 })
 
-function doGraph(id){
-
-  
+function doGraph(id){ 
 
   a1 = $('#a1_'+id).val() ? $('#a1_'+id).val() : 0;
   a2 = $('#a2_'+id).val() ? $('#a2_'+id).val() : 0;
@@ -479,32 +466,40 @@ function doGraph(id){
   $('#a'+id+' #graph').fadeIn();
 }
 
-$('.answer').on('slideDown', function(){
-  ax = <?php echo json_encode($i); ?>;
-  console.log(ax);  
-  /*
-  $("#graph").sparkline([ 
-          <?= $value['a1'] ? $value['a1'] : '0' ?>, 
-          <?= $value['a2'] ? $value['a2'] : '0'?>, 
-          <?= $value['a3'] ? $value['a3'] : '0' ?>, 
-          <?= $value['a4'] ? $value['a4'] : '0' ?>, 
-          <?= $value['a5'] ? $value['a5'] : '0' ?> ], { 
-                type: 'bar',
-                width: "97%",
-                height: "125px",
-                barWidth: "20",
-                barSpacing: "17",
-                colorMap: [
-                  <?=  $value['correct'] == 1 ? "'green'" : ($question_list2[$pointer][$i]['answer'] == 1 ? "'red'" : "'#999'") ?>, 
-                  <?=  $value['correct'] == 2 ? "'green'" : ($question_list2[$pointer][$i]['answer'] == 2 ? "'red'" : "'#999'") ?>, 
-                  <?=  $value['correct'] == 3 ? "'green'" : ($question_list2[$pointer][$i]['answer'] == 3 ? "'red'" : "'#999'") ?>, 
-                  <?=  $value['correct'] == 4 ? "'green'" : ($question_list2[$pointer][$i]['answer'] == 4 ? "'red'" : "'#999'") ?>, 
-                  <?=  $value['correct'] == 5 ? "'green'" : ($question_list2[$pointer][$i]['answer'] == 5 ? "'red'" : "'#999'") ?>
-                  ] 
-        });
+today = new Date();
 
-        $("#graph").fadeIn();
-*/
+<?php if($timer): ?>
+  $("#timer").countdown(today.setMinutes(today.getMinutes() + <?= $timer ?>) , {elapse: true})
+    .on('update.countdown', function(event) {
+        var $this = $(this);
+        if (event.elapsed) {
+            console.log("time is up!");
+        } else {
+            $this.html(event.strftime('<span>%H:%M:%S</span>'));
+        }
+  }); 
+<?php elseif($timer == 0): ?>
+  console.log('tastas');
+  $("#timer").countdown(today, {elapse: true})
+    .on('update.countdown', function(event) {
+        var $this = $(this);
+        if (event.elapsed) {
+           $this.html(event.strftime('<span>%H:%M:%S</span>'));
+        }
+  }); 
+<?php endif ?>
+
+$('.favorite i').on('click', function() {
+  id = $(this).attr('id').match(/\d+/g);
+  if($(this).hasClass('fav'))
+      $(this).removeClass('fav');
+  else
+      $(this).addClass('fav');
+  question_list[id]['fav'] = !question_list[id]['fav']; 
+  $.post( "<?= $url?>/reserved/qfav", { 
+    id: id[0], 
+    fav: question_list[id]['fav'] ? 1 : 0
+  }).done(function( data ){});
 })
 
 </script>

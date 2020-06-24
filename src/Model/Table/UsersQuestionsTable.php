@@ -7,22 +7,22 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * UsersFlashcards Model
+ * UsersQuestions Model
  *
- * @property \App\Model\Table\FlashcardsTable|\Cake\ORM\Association\BelongsTo $Flashcards
- * @property \App\Model\Table\FlashcardsTable|\Cake\ORM\Association\BelongsTo $Flashcards
+ * @property \App\Model\Table\QuestionsTable|\Cake\ORM\Association\BelongsTo $Questions
+ * @property \App\Model\Table\QuestionsTable|\Cake\ORM\Association\BelongsTo $Questions
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
  *
- * @method \App\Model\Entity\UsersFlashcard get($primaryKey, $options = [])
- * @method \App\Model\Entity\UsersFlashcard newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\UsersFlashcard[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\UsersFlashcard|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\UsersFlashcard|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\UsersFlashcard patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\UsersFlashcard[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\UsersFlashcard findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\UsersQuestion get($primaryKey, $options = [])
+ * @method \App\Model\Entity\UsersQuestion newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\UsersQuestion[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\UsersQuestion|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\UsersQuestion|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\UsersQuestion patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\UsersQuestion[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\UsersQuestion findOrCreate($search, callable $callback = null, $options = [])
  */
-class UsersFlashcardsTable extends Table
+class UsersQuestionsTable extends Table
 {
 
     /**
@@ -35,12 +35,12 @@ class UsersFlashcardsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('users_flashcards');
+        $this->setTable('users_questions');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Flashcards', [
-            'foreignKey' => 'flashcard_id'
+        $this->belongsTo('Questions', [
+            'foreignKey' => 'question_id'
         ]);
 
         $this->belongsTo('Users', [
