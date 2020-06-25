@@ -191,6 +191,7 @@ a.pointer{
   font-size:18pt; 
   padding-top: 1px; 
   color: #929dab;
+
 }
 .favorite i{
   transition: all 0.2s ease-in-out;
@@ -242,7 +243,7 @@ a.pointer{
                 <div id="question-slider">
                     <?php if($pointer > 0): ?>
                         <a class="pointer" href="<?= $this->Url->build(["prefix" => false, "action" => "question", $pointer - 1]) ?>" id="n_prev">
-                            <?=count($question_list[$pointer])?> perguntas anteriores
+                            anteriores <?=count($question_list[$pointer])?> perguntas
                         </a>
                     <?php endif ?>
                     <?php for($counter = 0; $counter < count($question_list[$pointer]); $counter++): ?>  
@@ -288,8 +289,8 @@ a.pointer{
                                         <i class="fa fa-lightbulb-o" <?= $corr > 2 ? "style='color: #FEB000'" : '' ?>></i>
                                     </div>
                                 <?php endif; ?>
-                                <div class="favorite">
-                                  <i class="fa fa-star <?= $question_list[$pointer][$i]['fav'] ? 'fav' : ''?>" id="fav<?= $i ?>"></i>   
+                                <div class="favorite" style="display: flex; justify-content: center; align-items: center;">
+                                  <i class="fa fa-star <?= $question_list[$pointer][$i]['fav'] ? 'fav' : ''?>" id="fav<?= $i ?>"></i><span style="font-size: 0.5em; font-style:italic; margin-left: 10px;"> marcar como favorito</span>   
                               </div>
                                 <br> 
                                 <br>

@@ -23,7 +23,7 @@
                 <div class="reserved-background"></div>
                 <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
                     <h1>Olá <?= $Auth['first_name']; ?>!</h1>
-                    <p>Seleciona os temas, dificuldade e número das perguntas que desejas fazer.</p>
+                    <p>Seleciona os temas que desejas fazer e personaliza a tua sessão de treino.</p>
                     <div class="row" id="options">
                         <div class="col-lg-3"> 
                             <div class="well well-sm q-options" id="difficulty">
@@ -31,7 +31,7 @@
                                     <input type="checkbox" id="all-themes">Todos os temas
                                 </div>
                                 <hr id="separator">
-                                <div>Dificuldade:</div>
+                                <div>Dificuldade</div>
                                 <div>
                                     <input type="checkbox" name="difficulty[]" value="1" checked>Fácil
                                 </div>
@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-lg-3">   
                             <div class="well well-sm q-options" id="filter">
-                                <div>Filtro:</div>
+                                <div>Filtros</div>
                                 <div>
                                     <input type="checkbox" name="filter[]" class="filter-q" value="0"> Perguntas novas
                                 </div>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-lg-3 ">   
                             <div class="well well-sm q-options" id="number">
-                                <div>Número de <br>perguntas:</div>
+                                <div>Número</div>
                                 <div>
                                     <input type="radio" name="number" value="10"> 10 perguntas
                                 </div>
@@ -79,13 +79,15 @@
                         </div>
                         <div class="col-lg-3">   
                             <div class="well well-sm q-options" id="time">
-                                <div>Temporizador:</div>
+                                <div>Temporizador</div>
                                 <div>
-                                    <input type="radio" name="timer" id="chronometer" value="0"> Contar tempo
+                                    <input type="radio" name="timer" id="chronometer" value="0"> Cronómetro
                                 </div>
                                 <div>
-                                    <input type="radio" name="timer" class="timer" id="no-lim" value="1"> Limite de 
-                                    <input type="text" name="time-lim" class="timer" value="60"> min
+                                    <input type="radio" name="timer" class="timer" id="no-lim" value="1"> Duração da sessão: 
+                                </div>
+                                <div id="tempo_input">
+                                    <input type="text" name="time-lim" class="timer" value="60"> minutos
                                 </div>
                             </div>
                         </div>
@@ -94,7 +96,7 @@
                     <p class="small" style="margin-top: 30px">
                         <a href="<?= $this->Url->build(["action" => "question", $pointer]) ?>" >
                             <i class="fa  fa-play-circle"></i> 
-                            <b>Continuar Perguntas</b> 
+                            <b>Continuar Sessão de Treino</b> 
                         </a>
                     </p>
                     <?php endif;?>
@@ -138,7 +140,7 @@
                     </table>
                 </div>
                 
-                <button class='btn btn-black' type="submit" >COMEÇAR</button> 
+                <button class='btn btn-black' type="submit" >INICIAR SESSÃO DE TREINO</button> 
             </div>
     
             <?php else: ?>
@@ -204,7 +206,7 @@ input[type='checkbox']:disabled, input[type="text"]:disabled{
     font-size:12pt;
     margin-top:10px;
     text-align: left;
-    border: 1.2px solid black;
+    border: 2.2px solid #152335;
     border-radius: 10px;
 }
 .q-options input[type='checkbox'], .q-options input[type='radio']{
@@ -217,16 +219,25 @@ input[type='checkbox']:disabled, input[type="text"]:disabled{
 .q-options input[type='text']{
     width:35px; 
     height:20px; 
+    text-align: center;
     position:relative; 
     background-color: transparent;
 }
-.q-options div{
-    height:100%;
+.q-options #no-lim{
+    margin-top:25px;
 }
+
+.q-options #tempo_input{
+    text-align:center;
+    margin-top:5px;
+}
+/*.q-options div{
+    height:100%;
+}*/
 .q-options div:first-child{
     font-weight: bold;
     position: absolute;
-    top: 5px;
+    top: 15px;
     text-align: center;
     left:0;
     right:0;
