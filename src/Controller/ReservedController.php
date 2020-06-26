@@ -804,6 +804,7 @@ class ReservedController extends AppController
                 $timer = isset($timer) ? ($timer == 1 ? $this->request->getData('time-lim') : 0) : null;
                 $session->write('question_list', $question_list);
                 $session->write('question_pointer', $pointer);
+                $session->write('question_timer', $timer);
                 //$this->set(compact('question_list', 'pointer', 'timer'));
                 return $this->redirect(['action' => 'question', empty($question_list) ? null : $pointer, $timer]);
             } 
@@ -926,6 +927,7 @@ class ReservedController extends AppController
 
 
         $question_list = $session->read('question_list');
+        $timer0 = $session->read('question_timer');
 
         if(!isset($pointer) || empty(@$question_list))
             $this->set('none', 1);
@@ -981,7 +983,7 @@ class ReservedController extends AppController
             }
 
             $session->write('question_pointer', $pointer);
-            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'cans', 'wans', 'nans'));
+            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'timer0','cans', 'wans', 'nans'));
        }
        $this->set(compact('courses'));  
     }

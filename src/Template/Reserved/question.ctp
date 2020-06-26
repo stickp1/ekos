@@ -409,7 +409,7 @@ today = new Date();
 
 <?php if($timer==-1): ?>
   $("#finished").modal();
-<?php elseif($timer): ?>
+<?php elseif($timer0): ?>
   today.setMinutes(today.getMinutes() + <?= floor($timer) ?>);
   today.setSeconds(today.getSeconds() + <?= ($timer - floor($timer)) * 60 ?>);
   $("#timer").countdown(today).on('update.countdown', function(event) {
@@ -420,7 +420,9 @@ today = new Date();
   $("#timer").countdown(today).on('finish.countdown', function(event) {
       unvalidated(<?= $pointer ?>, -1);
   });
-<?php elseif(isset($timer)): ?>
+<?php elseif(isset($timer0)): ?>
+  today.setMinutes(today.getMinutes() - <?= floor($timer) ?>);
+  today.setSeconds(today.getSeconds() - <?= ($timer - floor($timer)) * 60 ?>);
   $("#timer").countdown(today, {elapse: true})
     .on('update.countdown', function(event) {
         var $this = $(this);
@@ -475,7 +477,6 @@ function unvalidated(pointer, timer){
   $.post( "<?= $url?>/reserved/qunvalidated", { 
     answers: question_list
   }).done(function(data) {
-    console.log('success');
     document.location = ("<?= $url ?>/reserved/question/"+pointer+"/"+timer);
   });
 }
