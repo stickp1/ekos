@@ -934,52 +934,6 @@ class ReservedController extends AppController
             if(!isset($user_id))   
                 return $this->redirect(['controller' => '/']);
 
-            if($pointer == -1){
-                $end = 1;
-                $pointer = $session->read('question_pointer');
-
-                /*$questions = $this->Questions->find('all', [
-                    'conditions' => [
-                        'id in' => $question_ids
-                    ]
-                    'contain' => 'UsersQuestions',
-                    'fields' => [
-                        'id',
-                        'correct',
-                        'a1', 'a2', 'a3', 'a4', 'a5',
-                        'UsersQuestions.last_time',
-                        'UsersQuestions.correct',
-                        'UsersQuestions.id'
-                    ]
-                ]);
-                
-
-                /*if($answer != '')
-                    $question['a'.$answer]++;
-
-                if($question->users_question){
-                    $question->users_question->correct = ($answer == $question['correct']);
-                } else {
-                    $user_question = $this->Questions->UsersQuestions->newEntity();
-                    $user_question['question_id'] = $id;
-                    $user_question['user_id'] = $user_id;
-                    $user_question['correct'] = ($answer == $question['correct']);
-                    $question->users_question = $user_question;
-                }
-
-                $question_list = $session->read('question_list');
-                $pointer = $session->read('question_pointer');
-                
-                if(isset($question_list) && isset($pointer)){
-                    $question_list[$pointer][$id]['answer'] = $answer;
-                    $session->write('question_list', $question_list);
-                }
-
-                $question->setDirty('users_question', true);
-                $this->Questions->save($question);*/
-                $this->set(compact('end'));
-            }
-
             $question_ids = array_keys($question_list[$pointer]);
             $questions = $this->Questions->find('all', [
                 'conditions' => [
@@ -1013,7 +967,7 @@ class ReservedController extends AppController
                 else   $wans++;
             }
 
-            if(@$end){
+            if($timer == -1){
                 $user_data = [];
                 foreach($questions as $k => $v){
                     $answer = $question_list[$pointer][$v['id']]['answer'];

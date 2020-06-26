@@ -65,7 +65,7 @@
                     </table>
                 </div>
                 
-                <button class='btn btn-black' type="submit" >COMEÇAR</button> 
+                <button class='btn btn-black' type="submit" >INICIAR SESSÃO DE TREINO</button> 
             </div>
         </div>
 
