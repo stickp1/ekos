@@ -804,7 +804,7 @@ class ReservedController extends AppController
                 $timer = isset($timer) ? ($timer == 1 ? $this->request->getData('time-lim') : 0) : null;
                 $session->write('question_list', $question_list);
                 $session->write('question_pointer', $pointer);
-                
+                //$this->set(compact('question_list', 'pointer', 'timer'));
                 return $this->redirect(['action' => 'question', empty($question_list) ? null : $pointer, $timer]);
             } 
             return $this->redirect(['action' => 'question', null]);
@@ -927,42 +927,107 @@ class ReservedController extends AppController
 
         $question_list = $session->read('question_list');
 
-        if(!isset($pointer) || !isset($question_list))
+        if(!isset($pointer) || empty(@$question_list))
             $this->set('none', 1);
-        
         else {
 
-        if(!isset($user_id))   
-            return $this->redirect(['controller' => '/']);
-    
-        
-        $question_ids = array_keys($question_list[$pointer]);
-        
-        $questions = $this->Questions->find('all', [
-            'conditions' => [
-                'id in' => $question_ids
-            ],
-            'fields' => [
-                'id', 
-                'correct', 
-                'a1', 'a2', 'a3', 'a4', 'a5', 
-                'pic', 
-                'op1', 'op2', 'op3', 'op4', 'op5', 
-                'correct', 
-                'question', 
-                'course_id', 
-                'justification',
-                'total' => 'a1 + a2 + a3 + a4 + a5',
-            ]
-        ]);
-    
-        foreach($questions as $question)
-            if($question['course_id']!=17 && empty(array_intersect([$question['course_id'], 14, 1], $courses)))
-                return $this->redirect(['action' => 'index']);
+            if(!isset($user_id))   
+                return $this->redirect(['controller' => '/']);
 
-        $session->write('question_pointer', $pointer);
+            if($pointer == -1){
+                $end = 1;
+                $pointer = $session->read('question_pointer');
 
-        $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer'));
+                /*$questions = $this->Questions->find('all', [
+                    'conditions' => [
+                        'id in' => $question_ids
+                    ]
+                    'contain' => 'UsersQuestions',
+                    'fields' => [
+                        'id',
+                        'correct',
+                        'a1', 'a2', 'a3', 'a4', 'a5',
+                        'UsersQuestions.last_time',
+                        'UsersQuestions.correct',
+                        'UsersQuestions.id'
+                    ]
+                ]);
+                
+
+                /*if($answer != '')
+                    $question['a'.$answer]++;
+
+                if($question->users_question){
+                    $question->users_question->correct = ($answer == $question['correct']);
+                } else {
+                    $user_question = $this->Questions->UsersQuestions->newEntity();
+                    $user_question['question_id'] = $id;
+                    $user_question['user_id'] = $user_id;
+                    $user_question['correct'] = ($answer == $question['correct']);
+                    $question->users_question = $user_question;
+                }
+
+                $question_list = $session->read('question_list');
+                $pointer = $session->read('question_pointer');
+                
+                if(isset($question_list) && isset($pointer)){
+                    $question_list[$pointer][$id]['answer'] = $answer;
+                    $session->write('question_list', $question_list);
+                }
+
+                $question->setDirty('users_question', true);
+                $this->Questions->save($question);*/
+                $this->set(compact('end'));
+            }
+
+            $question_ids = array_keys($question_list[$pointer]);
+            $questions = $this->Questions->find('all', [
+                'conditions' => [
+                    'Questions.id in' => $question_ids
+                ],
+                'contain' => 'UsersQuestions',
+                'fields' => [
+                    'Questions.id', 
+                    'a1', 'a2', 'a3', 'a4', 'a5', 
+                    'pic', 
+                    'op1', 'op2', 'op3', 'op4', 'op5', 
+                    'Questions.correct', 
+                    'question', 
+                    'course_id', 
+                    'justification',
+                    'total' => 'a1 + a2 + a3 + a4 + a5',
+                    'UsersQuestions.last_time',
+                    'UsersQuestions.correct',
+                    'UsersQuestions.id'
+                ]
+            ]);
+            $cans = 0;  
+            $wans = 0;  
+            $nans = 0;
+            foreach($questions as $question){
+                if($question['course_id']!=17 && empty(array_intersect([$question['course_id'], 14, 1], $courses)))
+                    return $this->redirect(['action' => 'index']);
+                $ans = $question_list[$pointer][$question['id']]['answer'];
+                if($question['correct'] == $ans)    $cans++;
+                elseif($ans == 0)   $nans++;
+                else   $wans++;
+            }
+
+            if(@$end){
+                $user_data = [];
+                foreach($questions as $k => $v){
+                    $answer = $question_list[$pointer][$v['id']]['answer'];
+                    $user_data[$k]['question_id'] = $v['id'];
+                    $user_data[$k]['user_id'] = $user_id;
+                    $user_data[$k]['correct'] = ($answer == $v['correct']);
+                    $v['a'.$answer]++;
+                }
+                $user_data = $this->Questions->UsersQuestions->newEntities($user_data);
+                $user_data = $this->Questions->UsersQuestions->saveMany($user_data);
+            }
+
+            $session->write('question_pointer', $pointer);
+            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'cans', 'wans', 'nans'));
        }
        $this->set(compact('courses'));  
     }
@@ -1015,6 +1080,27 @@ class ReservedController extends AppController
 
         $question->setDirty('users_question', true);
         $this->Questions->save($question);
+    }
+
+    public function qunvalidated()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        array_map([$this, 'loadModel'], ['Questions', 'UsersQuestions']);
+
+        $user_id = $this->Auth->user('id');
+        
+        $session = $this->getRequest()->getSession();
+
+        $question_list  = $session->read('question_list');
+        $pointer = $session->read('question_pointer');
+
+        $answers = $this->request->getData('answers');
+
+        foreach($question_list[$pointer] as $qid => $value)
+            $question_list[$pointer][$qid]['answer'] = $answers[$qid]['answer'];
+        
+        $session->write('question_list', $question_list);
     }
 
     public function qfav()
@@ -1336,38 +1422,40 @@ class ReservedController extends AppController
 
         $user_id = $this->Auth->user('id');
 
-        $answer = $this->loadModel('FlashcardsUser'.$user_id)->find('all', ['conditions' => ['flashcard_id' => $this->request->data('id')]]);
+        //$answer = $this->loadModel('FlashcardsUser'.$user_id)->find('all', ['conditions' => ['flashcard_id' => $this->request->data('id')]]);
         
-        $answer2 = $this->UsersFlashcards->find('all', [
+        $answer = $this->UsersFlashcards->find('all', [
             'conditions' => [
                 'user_id' => $user_id,
                 'flashcard_id' => $this->request->data('id')
             ]
         ]);
 
+        /*
         if($answer->count()>0): 
             $answer = $answer->first(); 
         else: 
             $answer = $this->loadModel('FlashcardsUser'.$user_id)->newEntity(); 
             $answer['flashcard_id'] = $this->request->data('id'); 
         endif;
+        */
 
-        if($answer2->count()>0)
-            $answer2 = $answer2->first();
+        if($answer->count()>0)
+            $answer = $answer->first();
         else {
-            $answer2 = $this->UsersFlashcards->newEntity();
-            $answer2['user_id'] = $user_id;
-            $answer2['flashcard_id'] = $this->request->data('id'); 
+            $answer = $this->UsersFlashcards->newEntity();
+            $answer['user_id'] = $user_id;
+            $answer['flashcard_id'] = $this->request->data('id'); 
         } 
-       
+        /*       
         $answer['correct'] = $this->request->data('answer');
         $answer['last_time'] = date('Y-m-d');
         
         $answer = $this->loadModel('FlashcardsUser'.$user_id)->save($answer);
-
-        $answer2['correct'] = $this->request->data('answer');
-        $answer2['last_time'] = date('Y-m-d');
-        $answer2 = $this->UsersFlashcards->save($answer2);
+        */
+        $answer['correct'] = $this->request->data('answer');
+        $answer['last_time'] = date('Y-m-d');
+        $answer = $this->UsersFlashcards->save($answer);
     }
 
     public function flashFav()

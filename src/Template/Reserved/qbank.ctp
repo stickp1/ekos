@@ -293,8 +293,11 @@ function optionStyle(){
 }
 
 $('#all-themes').on('click', function(){
-    $('.c').prop('checked', !$('.t').prop('checked'));
-    $('.t').prop('checked', !$('.t').prop('checked'));
+    if($(this).prop('checked'))
+        $('.c, .t').prop('checked', true);
+    else
+        $('.c, .t').prop('checked', false);
+        
 })
 
 $('#chronometer').on('click', function(){

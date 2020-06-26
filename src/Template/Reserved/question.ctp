@@ -156,16 +156,20 @@ div#question-image{
 #question-slider a:first-child{
   margin-left: 20px;
 }
-#question-slider a.pointer:first-child{
-  width: auto;
-}
 #question-slider a:last-child{
   margin-right: 20px;
+}
+#question-slider a.pointer:first-child, #question-slider a.pointer:last-child{
+  width: auto;
+}
+<?php if(count($question_list[$pointer])==100): ?>
+#question-slider a:last-child{
   width: auto;
 }
 #question-slider a:nth-last-child(2){
   width: auto;
 }
+<?php endif ?>
 .tab-pane{
   position: relative;
 }
@@ -201,6 +205,9 @@ a.pointer{
 }
 .favorite .fav{
   color: #FEB000;
+}
+#minutes{
+  display: none;
 }
 </style>
 
@@ -241,8 +248,8 @@ a.pointer{
             <div id="banner">
                 <div id="question-slider">
                     <?php if($pointer > 0): ?>
-                        <a class="pointer" href="<?= $this->Url->build(["prefix" => false, "action" => "question", $pointer - 1]) ?>" id="n_prev">
-                            <?=count($question_list[$pointer])?> perguntas anteriores
+                        <a class="pointer" href="#" id="n_prev">
+                            <?=count($question_list[$pointer-1])?> perguntas anteriores
                         </a>
                     <?php endif ?>
                     <?php for($counter = 0; $counter < count($question_list[$pointer]); $counter++): ?>  
@@ -251,9 +258,9 @@ a.pointer{
                             <?= $counter + 1  ?>
                         </a>
                     <?php endfor ?>
-                    <?php if(count($question_list) > 1): ?>
-                        <a class="pointer" href="<?= $this->Url->build(["prefix" => false, "action" => "question", $pointer + 1]) ?>" id="n_next">
-                            próximas <?=count($question_list[$pointer])?> perguntas
+                    <?php if(count($question_list) > $pointer + 1): ?>
+                        <a class="pointer" href="#" id="n_next">
+                            próximas <?=count($question_list[$pointer+1])?> perguntas
                         </a>
                     <?php endif ?>
                 </div>
@@ -274,6 +281,7 @@ a.pointer{
         <div class="row" id="new-question-body" style='position:relative;'>
             <div class="col-md-10 col-md-offset-1">
                 <div id="timer"></div>
+                <input type="hidden" id="minutes" value="<?= $timer?>" />
                 <div class="panel-body">
                     <div class="tab-content">
                         <?php $counter = 0; ?>
@@ -290,7 +298,7 @@ a.pointer{
                                 <?php endif; ?>
                                 <div class="favorite">
                                   <i class="fa fa-star <?= $question_list[$pointer][$i]['fav'] ? 'fav' : ''?>" id="fav<?= $i ?>"></i>   
-                              </div>
+                                </div>
                                 <br> 
                                 <br>
                                 <?php if($value['pic'] != '') {
@@ -318,7 +326,7 @@ a.pointer{
                                     <span id='l<?= $i ?>_5'><?= $value['op5']; ?> </span><br> 
                                 <?php endif ?>
                                 <br> 
-                                <div class='answer' id="a<?= $i ?>" <?= $question_list[$pointer][$i]['answer'] > 0 ?  "style='display: block'" : "" ?>>
+                                <div class='answer' id="a<?= $i ?>" <?= $question_list[$pointer][$i]['answer'] > 0 ?  "style='display: block'" : (@$end ? "style='display: block'" : "") ?>>
                                     <div id="graph" style='text-align: center; padding: 20px;' ></div>
                                     <label><b>Justificação</b></label>
                                     <br>
@@ -345,46 +353,43 @@ a.pointer{
     </div>
 </section>
 
+<div class="modal fade" id="finished">
+    <div class="vertical-alignment-helper">
+        <div class="modal-dialog vertical-align-center">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <br>
+                    <h3>Perguntas concluídas!</h3>
+                    <p> A tua fração de perguntas certas foi: </p>
+                    <?php $color = @$cans/(@$wans + @$nans + @$cans) > 32.5 ? (@$cans/(@$wans + @$nans + @$cans) > 55 ? 'green' : 'olive') : 'maroon'; ?>
+                    <p id="grade" style="<?="color: $color"?>"> <b> <?= @$cans ?> / <?= (@$wans + @$nans + @$cans) ?> </b></p>
+                    <p> Perguntas erradas: <?= @$wans ?></p>
+                    <p> Perguntas por reponder: <?= @$nans ?></p>
+                    <p> As tuas respostas foram registadas com sucesso.</p>  
+                    <br> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="<?= $url; ?>/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
 <?= $this->Html->script('jquery.countdown.js'); ?>
 <script>
 
 all_ids = <?php echo json_encode(array_flip($question_ids)); ?>;
+console.log(all_ids);
 question_list = <?php echo json_encode($question_list[$pointer]); ?>;
+today = new Date();
 
-$('.submit').on('click', function(){
-  
-  id = $('.tab-pane.active').attr('id').match(/\d+/g);
-  question_nr = all_ids[id]+1;
-  solution = $('#solution'+id).val();
-  selected = $('.active input:checked').val();
-  $('#l'+id+'_'+solution).addClass('correct');
-  $('#a'+id).slideDown();
-  $(this).prop('disabled', true);
-  if(solution != selected){
-    $('#l'+id+'_'+selected).addClass('wrong');
-    $('#n'+question_nr).addClass('wrong');
-  
-  } else {
-    $('#n'+question_nr).addClass('correct');
-  }
-  
-  $.post( "<?= $url?>/reserved/qanswer", { 
-    question_id: id[0], 
-    answer: selected,
-  }).done(function(data) {
-    console.log('success');
-    eval(data);
-  });
-
-  doGraph(id);
-})
 
 <?php foreach($questions as $key => $value): ?>
     <?php $i = $value['id']; ?>
-
-    <?php if($question_list[$pointer][$i]['answer'] > 0 ): ?>
+    <?php if($question_list[$pointer][$i]['answer'] > 0 || @$end): ?>
     
         $('#l'+<?= $i ?>+'_<?=$value['correct']?>').addClass('correct');
         question_nr = all_ids[<?= $i ?>]+1;
@@ -400,11 +405,81 @@ $('.submit').on('click', function(){
     <?php endif; ?>
 <?php endforeach; ?>
 
+
+<?php if(@$end): ?>
+  $("#finished").modal();
+<?php elseif($timer): ?>
+  today.setMinutes(today.getMinutes() + <?= floor($timer) ?>);
+  today.setSeconds(today.getSeconds() + <?= ($timer - floor($timer)) * 60 ?>);
+  $("#timer").countdown(today).on('update.countdown', function(event) {
+        var $this = $(this);
+        $this.html(event.strftime('<span>%H:%M:%S</span>'));
+        $this.next().val((event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60).toFixed(2));
+  }); 
+  $("#timer").countdown(today).on('finish.countdown', function(event) {
+      unvalidated(-1, 0);
+  });
+<?php elseif(isset($timer)): ?>
+  $("#timer").countdown(today, {elapse: true})
+    .on('update.countdown', function(event) {
+        var $this = $(this);
+        if (event.elapsed) {
+           $this.html(event.strftime('<span>%H:%M:%S</span>'));
+           $this.next().val(event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60);
+        }
+  }); 
+<?php endif ?>
+
+// INITIAL VALUES //
 $('#q<?= $question_ids[0] ?>').addClass('active');
 $('#p<?= $question_ids[0] ?>').prop('disabled', true);
 $("#n1").addClass('active');
 $("#nn<?= end($question_ids) ?>").prop('disabled', true);
+// -------------- //
 
+function doGraph(id){ 
+  a1 = $('#a1_'+id).val() ? $('#a1_'+id).val() : 0;
+  a2 = $('#a2_'+id).val() ? $('#a2_'+id).val() : 0;
+  a3 = $('#a3_'+id).val() ? $('#a3_'+id).val() : 0;
+  a4 = $('#a4_'+id).val() ? $('#a4_'+id).val() : 0;
+  a5 = $('#a5_'+id).val() ? $('#a5_'+id).val() : 0;
+  solution = $('#solution'+id).val();
+  answer = question_list[id]['answer']!=0 ? question_list[id]['answer'] : $('.active input:checked').val(); 
+  if(!answer) answer = 0;
+
+  $('#a'+id+' #graph').sparkline([a1,a2,a3,a4,a5], { 
+      type: 'bar',
+      width: "97%",
+      height: "125px",
+      barWidth: "20",
+      barSpacing: "17",
+      colorMap: [
+          solution == 1 ? 'green' : (answer == 1) ? 'red' : '#999',
+          solution == 2 ? 'green' : (answer == 2) ? 'red' : '#999',
+          solution == 3 ? 'green' : (answer == 3) ? 'red' : '#999',
+          solution == 4 ? 'green' : (answer == 4) ? 'red' : '#999',
+          solution == 5 ? 'green' : (answer == 5) ? 'red' : '#999'
+      ] 
+  });
+
+  $('#a'+id+' #graph').fadeIn();
+}
+
+function unvalidated(pointer, timer){
+  $('input:checked').each(function(){
+        id = $(this).attr('name').match(/\d+/g);
+        question_list[id]['answer'] = $(this).val();
+  });
+
+  $.post( "<?= $url?>/reserved/qunvalidated", { 
+    answers: question_list
+  }).done(function(data) {
+    console.log('success');
+    document.location = ("<?= $url ?>/reserved/question/"+pointer+"/"+timer);
+  });
+}
+
+// CHANGE QUESTION //
 $('#selector').on('change', function(){
     id = parseInt($(this).val());
     if(id <= <?= count($question_ids) ?> && id > 0){
@@ -436,59 +511,9 @@ $('a.number').on('click', function () {
   $(this).addClass('active');
   $('#selector').val(id);
 })
+// -------------- //
 
-function doGraph(id){ 
-
-  a1 = $('#a1_'+id).val() ? $('#a1_'+id).val() : 0;
-  a2 = $('#a2_'+id).val() ? $('#a2_'+id).val() : 0;
-  a3 = $('#a3_'+id).val() ? $('#a3_'+id).val() : 0;
-  a4 = $('#a4_'+id).val() ? $('#a4_'+id).val() : 0;
-  a5 = $('#a5_'+id).val() ? $('#a5_'+id).val() : 0;
-  solution = $('#solution'+id).val();
-  answer = question_list[id]['answer']!=0 ? question_list[id]['answer'] : $('.active input:checked').val(); 
-
-
-  $('#a'+id+' #graph').sparkline([a1,a2,a3,a4,a5], { 
-      type: 'bar',
-      width: "97%",
-      height: "125px",
-      barWidth: "20",
-      barSpacing: "17",
-      colorMap: [
-          solution == 1 ? 'green' : (answer == 1) ? 'red' : '#999',
-          solution == 2 ? 'green' : (answer == 2) ? 'red' : '#999',
-          solution == 3 ? 'green' : (answer == 3) ? 'red' : '#999',
-          solution == 4 ? 'green' : (answer == 4) ? 'red' : '#999',
-          solution == 5 ? 'green' : (answer == 5) ? 'red' : '#999'
-      ] 
-  });
-
-  $('#a'+id+' #graph').fadeIn();
-}
-
-today = new Date();
-
-<?php if($timer): ?>
-  $("#timer").countdown(today.setMinutes(today.getMinutes() + <?= $timer ?>) , {elapse: true})
-    .on('update.countdown', function(event) {
-        var $this = $(this);
-        if (event.elapsed) {
-            console.log("time is up!");
-        } else {
-            $this.html(event.strftime('<span>%H:%M:%S</span>'));
-        }
-  }); 
-<?php elseif($timer == 0): ?>
-  console.log('tastas');
-  $("#timer").countdown(today, {elapse: true})
-    .on('update.countdown', function(event) {
-        var $this = $(this);
-        if (event.elapsed) {
-           $this.html(event.strftime('<span>%H:%M:%S</span>'));
-        }
-  }); 
-<?php endif ?>
-
+// MARK AS FAVORITE //
 $('.favorite i').on('click', function() {
   id = $(this).attr('id').match(/\d+/g);
   if($(this).hasClass('fav'))
@@ -501,6 +526,49 @@ $('.favorite i').on('click', function() {
     fav: question_list[id]['fav'] ? 1 : 0
   }).done(function( data ){});
 })
+
+// VALIDATE QUESTION //
+$('.submit').on('click', function(){
+  
+  id = $('.tab-pane.active').attr('id').match(/\d+/g);
+  question_nr = all_ids[id]+1;
+  solution = $('#solution'+id).val();
+  selected = $('.active input:checked').val();
+  $('#l'+id+'_'+solution).addClass('correct');
+  $('#a'+id).slideDown();
+  $(this).prop('disabled', true);
+  if(solution != selected){
+    $('#l'+id+'_'+selected).addClass('wrong');
+    $('#n'+question_nr).addClass('wrong');
+  
+  } else {
+    $('#n'+question_nr).addClass('correct');
+  }
+  question_list[id]['answer'] = selected;
+  
+  $.post( "<?= $url?>/reserved/qanswer", { 
+    question_id: id[0], 
+    answer: selected,
+  }).done(function(data) {
+    eval(data);
+  });
+
+  doGraph(id);
+})
+
+// CHANGE SET OF QUESTIONS //
+$('#n_next').on('click', function() {
+  pointer = <?= $pointer ?> + 1;
+  timer = $('#minutes').val();
+  unvalidated(pointer, timer);
+})
+
+$('#n_prev').on('click', function() {
+  pointer = <?= $pointer ?> -1 ;
+  timer = $('#minutes').val();
+  unvalidated(pointer, timer);
+})
+// ---------------------- //
 
 </script>
 
