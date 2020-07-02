@@ -409,6 +409,8 @@ class ReservedController extends AppController
             ])->toArray();
             $course['price'] = 840;
             $course['name'] = 'Curso Anual';
+
+            $this->set(compact('annual_courses'));
         }
         if ($this->request->is('post')) {
 
@@ -449,8 +451,6 @@ class ReservedController extends AppController
                     }
                 }
             } else {
-
-                $id_tmp = $courses_id_order[$course_it];
 
                 $sale = $this->Products->Sales->newEntity();
                 $sale['users_id'] = $id;
@@ -497,7 +497,7 @@ class ReservedController extends AppController
             }
             return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $all_sales[0]->id]);
         }
-        $this->set(compact('groups', 'course', 'annual_courses'));
+        $this->set(compact('groups', 'course'));
     }
 
     public function waiting ($course_id = null, $annual = null)
