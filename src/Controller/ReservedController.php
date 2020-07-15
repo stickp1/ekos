@@ -99,12 +99,16 @@ class ReservedController extends AppController
 
     public function schedule($group_id = null)
     {
-       $id = $this->Auth->user('id');
+        $id = $this->Auth->user('id');
         if(!isset($id) || !isset($group_id))   return $this->redirect(['controller' => '/']);
 
         $user = $this->loadModel('Users')->get($id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
+            'contain' => [
+                'groups' => [
+                    'Courses'
+                ]
+            ]
+        ])->toArray();
 
         $groups = array();
         foreach ($user['groups'] as $key => $value) {
@@ -117,12 +121,23 @@ class ReservedController extends AppController
         }
 
         $group = $this->loadModel('Groups')->find('all', [
-            'conditions' => ['Groups.id' => $group_id],
-            'contain' => ['Lectures' => ['Users'], 'Courses']
+            'conditions' => [
+                'Groups.id' => $group_id
+            ],
+            'contain' => [
+                'Lectures' => [
+                    'Users'
+                ], 
+                'Courses'
+            ]
         ])->first();
 
         $themes_ = $this->loadModel('Themes')->find('all', [
-        'conditions' => ['courses_id' => $group['courses_id']]
+            'conditions' => [
+                'courses_id' => $group[
+                    'courses_id'
+                ]
+            ]
         ])->toArray();
         $themes = array();
         foreach ($themes_ as $key => $value) {
@@ -1219,6 +1234,7 @@ class ReservedController extends AppController
 
     // TEMPORARY FUNCTION FOR USER_FLASHCARDS TABLE MIGRATION.
     // MIGRATION SUCCESSFULY CONCLUDED! KEEP FUNCTION FOR A WHILE
+
     public function fcorrect()
     {
 
@@ -1450,6 +1466,88 @@ class ReservedController extends AppController
 
         $answer2['favorite'] = $this->request->data('answer');
         $answer2 = $this->UsersFlashcards->save($answer2);
+    }
+
+    public function forum($group_id = null)
+    {
+        $id = $this->Auth->user('id');
+        if(!isset($id))   return $this->redirect(['controller' => '/']);
+
+        $user = $this->loadModel('Users')->get($id, [
+            'contain' => [
+                'groups' => [
+                    'conditions' => [
+                        'deleted' => 0
+                    ],
+                    'Courses'
+                ]
+            ],
+        ])->toArray();
+
+        $courses = array();
+        foreach ($user['groups'] as $key => $value) {
+            $courses[$key] = $value['course']['id'];
+        }
+        
+        $groups = array();
+        foreach ($user['groups'] as $key => $value) {
+            $groups[$key] = $value['id'];
+        }
+
+        if($group_id != null && !in_array($group_id, $groups)){
+            $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
+            return $this->redirect(['action' => 'index']);
+        } elseif($group_id == null && !count($user['groups']) > 0)
+            $user['groups'] = 0;
+        elseif($group_id == null)
+            $group_id = $user['groups'][0]['id'];
+
+        if(@count($user['groups']) > 0){
+            $group = $this->loadModel('Groups')->find('all', [
+                'conditions' => [
+                    'id' => $group_id
+                ],
+                'contain' => [
+                    'Lectures' => [
+                        'Users'
+                    ]
+                ]
+            ])->first();
+
+            $surveys = $this->loadModel('Feed_user_surveys')->find('list', [
+                'conditions' => [
+                    'user_id' => $id, 
+                    'answered' => 0, 
+                    'course_id' => @$group['courses_id']
+                ], 
+                'keyField' => 'lecture_id', 
+                'valueField' => 'code'
+            ])->toArray();
+
+            $notifications = $this->loadModel('Notifications')->find('all', [
+                'conditions' => [
+                    'course_id' => @$group['courses_id'], 
+                    'active' => 1
+                ]
+            ])->toArray();
+
+            $themes = $this->loadModel('Themes')->find('all', [
+                'conditions' => [
+                    'courses_id' => @$group['courses_id']
+                ],
+                'contain' => [
+                    'Uploads' => [
+                        'conditions' => [
+                            'active' => 1, 
+                            'Uploads.city_id' => @$group['city_id']
+                        ]
+                    ]
+                ]
+            ])->indexBy('id')->toArray();      
+        }
+        
+
+        $this->set(compact( 'group', 'user', 'themes', 'notifications', 'surveys', 'courses'));
     }
 
 
