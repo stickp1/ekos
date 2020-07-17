@@ -130,6 +130,7 @@ var fav = [];
     $js_array = json_encode($flashcards);
     echo "var flashcards = ". $js_array . ";\n"; 
 ?>
+
 function favorite(){
     if($("#favsel").hasClass('fav'))
         $("#favsel").removeClass('fav');
@@ -145,7 +146,7 @@ function favorite(){
       id: flashcards[selected]['id'], 
       answer: fav[flashcards[selected]['id']]
     }).done(function( data ) {});
- }
+}
 
 function correct(){
   $('#n'+id).removeClass('wrong');

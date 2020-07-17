@@ -383,7 +383,7 @@ a.pointer{
 <script>
 
 all_ids = <?php echo json_encode(array_flip($question_ids)); ?>;
-console.log(all_ids);
+all_qids = <?php echo json_encode($question_ids); ?>;
 question_list = <?php echo json_encode($question_list[$pointer]); ?>;
 today = new Date();
 
@@ -438,6 +438,7 @@ $('#q<?= $question_ids[0] ?>').addClass('active');
 $('#p<?= $question_ids[0] ?>').prop('disabled', true);
 $("#n1").addClass('active');
 $("#nn<?= end($question_ids) ?>").prop('disabled', true);
+$('#report-param').val($('.tab-pane.active').attr('id').match(/\d+/g));
 // -------------- //
 
 function doGraph(id){ 
@@ -511,8 +512,14 @@ $('a.number').on('click', function () {
   id = $(this).attr('id').match(/\d+/g);
   $("a.number").removeClass('active');
   $(this).addClass('active');
-  $('#selector').val(id);
+  $('#selector').val(id); 
+  setTimeout(function(){
+    $('#report-param').val($('.tab-pane.active').attr('id').match(/\d+/g));
+  }, 5000);
+  console.log($('#report-param').val());
 })
+
+
 // -------------- //
 
 // MARK AS FAVORITE //

@@ -466,7 +466,7 @@ class FrontendController extends AppController
 
           $http = new Client();
           $response = $http->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => '6LdAL20UAAAAAO08rksDD8JnYgEMQBgqdA0py0zk',
+            'secret' => '6LciqvoUAAAAAE9FSoRVT_ln_q8Rlj4lpKuNPJiE',
             'response' => $this->request->getData('g-recaptcha-response')
           ]);
 
@@ -480,7 +480,7 @@ class FrontendController extends AppController
                   ->send("<p>Olá,</p><p>Foi submetido um novo report de erro ou sugestão de funcionalidade através do site da EKOS, com o seguinte conteúdo:
                           </p>
                           <p><b>Url: </b>".$this->request->getData('report-url')."</p>
-                          <p><b>Mensagem: </b>".nl2br($this->request->getData('report-message'))."</p>".((empty($this->request->getData('report-contact'))) ? "" : "<p><b>Contacto: </b>").$this->request->getData('report-contact')."</p>"
+                          <p><b>Mensagem: </b>".nl2br($this->request->getData('report-message'))."</p>".((empty($this->request->getData('report-contact'))) ? "" : "<p><b>Contacto: </b>").$this->request->getData('report-contact')."</p>".((empty($this->request->getData('report-param')))? "" : "<p><b> ID da pergunta/flashcard: </b>").$this->request->getData('report-param')."</p>"
                   );
                         
             $this->Flash->success(__('A mensagem foi enviada com sucesso. Obrigado pelo feedback!'));

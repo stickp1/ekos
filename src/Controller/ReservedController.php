@@ -1087,12 +1087,23 @@ class ReservedController extends AppController
 
     public function flashcards()
     {
-        if ($this->request->is('post')) {
+        $session = $this->getRequest()->getSession();
+        $themes = $session->read('flash_themes');
+        $wrong = $session->read('flash_wrong');
+
+        if ($this->request->is('post')){
+            $themes = $this->request->data('themes');
+            $wrong = $this->request->data('wrong');
+            $session->write('flash_themes', $themes);
+            $session->write('flash_wrong', $wrong);
+        }
+        
+        if(!is_null($themes) && !is_null($wrong)) {
 
             array_map([$this, 'loadModel'], ['UsersGroups', 'Courses', 'Flashcards']);
 
-            if(is_null($this->request->data('themes')))
-                return $this->redirect(['action' => 'fbank']);
+            //if(is_null($this->request->data('themes')))
+            //    return $this->redirect(['action' => 'fbank']);
 
             $user_id = $this->Auth->user('id');
             
@@ -1105,7 +1116,7 @@ class ReservedController extends AppController
                 'valueField' => 'groups_courses_id'
             ])->toArray();
 
-            if($this->request->data('wrong') == 0) {
+            if($wrong == 0) {
 
                 /*$flashcards = $this->Flashcards->find('all', [
                         'contain' => [
@@ -1130,7 +1141,7 @@ class ReservedController extends AppController
                     ],
                     'conditions'=>[
                         'Flashcards.active' => 1,
-                        'theme_id in' => $this->request->data('themes')
+                        'theme_id in' => $themes
                     ],
                     'order' => [
                         'UsersFlashcards.correct' => 'ASC',
@@ -1139,7 +1150,7 @@ class ReservedController extends AppController
                     ]
                 ])->toArray();
 
-            }elseif($this->request->data('wrong') == 1) {
+            } elseif($wrong == 1) {
                 
                 /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
@@ -1165,7 +1176,7 @@ class ReservedController extends AppController
                         ],
                         'conditions' => [
                             'Flashcards.active' => 1,
-                            'theme_id in' => $this->request->data('themes'),
+                            'theme_id in' => $themes,
                             'UsersFlashcards.correct !=' => 1
                         ],
                         'order' => [
@@ -1175,7 +1186,7 @@ class ReservedController extends AppController
                         ]
                 ])->toArray();
 
-            }elseif($this->request->data('wrong') == 2) {
+            } elseif($wrong == 2) {
                 
                 /*$flashcards = $this->loadModel('Flashcards')->find('all', [
                         'contain' => [
@@ -1201,7 +1212,7 @@ class ReservedController extends AppController
                         ],
                         'conditions' => [
                             'Flashcards.active' => 1,
-                            'theme_id in' => $this->request->data('themes'),
+                            'theme_id in' => $themes,
                             'UsersFlashcards.favorite' => 1
                         ],
                         'order' => [
