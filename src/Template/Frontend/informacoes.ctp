@@ -1,9 +1,10 @@
 <?php $url = $this->Url->build(["prefix" => false, "controller" => '/'], true); ?>
 <!-- Header -->
-<header style='background-image: url("<?= $url?>/img/banner4.jpg")'>
+<header style='background-image: url("<?= $url?>/img/sub_banner1.jpg")'>
     <div class="container text-center">
         <span class='prelabel'>EKOS - Formar para a especialidade</span>
-        <h1>Estamos aqui para ajudar.</h1>
+        <!--<h1>Estamos aqui para ajudar.</h1>-->
+        <h1>Tudo o que precisas para começar.</h1>
     </div>
 </header>
     
