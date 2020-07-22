@@ -196,7 +196,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                     
                 </div>
             </div>
-        </div>
+    </div>
     
     <div id='main_container'>
         <?= $this->fetch('content') ?>
@@ -569,7 +569,9 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
 </script>
 
 <style>
-
+.flash_timeout{
+    top: 0;
+}
 .fa-close{
     font-size: 1.3em;
     -webkit-text-stroke: 1.6px white;
@@ -626,14 +628,12 @@ div#main_container {
     transition: all 0.9s ease;
   }
 }
-
 #city .media:hover .layer p {
     transform: scale(1);
     transition: all 0.9s ease;
 }
 <?php if (!$scity): ?>
-.modal-backdrop
-{
+.modal-backdrop{
     opacity:0.7 !important;
 }
 <?php endif; ?>

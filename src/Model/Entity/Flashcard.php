@@ -30,6 +30,8 @@ class Flashcard extends Entity
         'front' => true,
         'verse' => true,
         'theme_id' => true,
-        'course_id' => true
+        'course_id' => true,
+        'user_ids' => true,
+        'active' => true
     ];
 }
