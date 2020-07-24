@@ -829,10 +829,10 @@ class ReservedController extends AppController
                             'Courses.id <' => 14,
                             'area IS NOT' => null
                         ],
-                        'Courses.id in' => [14, 17],
+                        'Courses.id in' => [17],
                         [
                             'Courses.id in ('.implode(',', $courses_).')', 
-                            'Courses.id <' => 14 
+                            'Courses.id <' => 15 
                         ]
                     ]
                 ],
@@ -1356,7 +1356,7 @@ class ReservedController extends AppController
         } else 
             $courses = null;
 
-       $this->set(compact('courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options', 'my_courses'));
+       $this->set(compact('user_id','courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options', 'my_courses'));
     }
 
     public function flashAnswer()
@@ -1419,7 +1419,7 @@ class ReservedController extends AppController
         $this->request->allowMethod(['post']);
         $user_id = $this->Auth->user('id');
 
-        if(isset($user_id)){
+        if($user_id){
             $this->loadModel('Flashcards');
             $flashcard = $this->Flashcards->newEntity([
                 'front' => $this->request->getData('front'),
