@@ -841,8 +841,13 @@ class ReservedController extends AppController
 
         if(!in_array(1, $courses_) && !in_array(14, $courses_) && !empty($courses_)){
             $courses->where([
-                'Courses.id in ('.implode(',', $courses_).')', 
-                'Courses.id <' => 14 
+                'OR' => [
+                    [
+                        'Courses.id in ('.implode(',', $courses_).')', 
+                        'Courses.id <' => 14 
+                    ],
+                    'Courses.id in' => [17],
+                ]
             ]);
         } elseif (empty($courses_))
             $courses = null;

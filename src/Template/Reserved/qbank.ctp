@@ -218,7 +218,7 @@ input[type='checkbox']:disabled, input[type="text"]:disabled{
 }
 .q-options input[type='text']{
     width:35px; 
-    height:25px; 
+    height:auto; 
     text-align: center;
     position:relative; 
     background-color: transparent;
