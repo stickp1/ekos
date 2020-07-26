@@ -1440,6 +1440,28 @@ class ReservedController extends AppController
             return $this->redirect(['controller' => '/']);
     }
 
+    public function flashWarning($contact = null)
+    {
+        $this->autoRender = false;
+      if ($this->request->is('post')) {
+        
+          if($this->request->getData('answer') == 1){
+
+            $email = new Email('default');
+            
+            $email->to('geral@ekos.pt')
+                  ->emailFormat('html')
+                  ->subject('EKOS - Flashcard Report')
+                  ->send("<p>Olá,</p><p>Foi submetido um novo pedido de remoção de flashcards através do site da EKOS, com a seguinte identificação:
+                          </p>
+                          <p><b> ID do flashcard: </b>".$this->request->getData('id')."</p>
+                          <p><b> Pedido efetuado pelo utilizador: </b>".$this->request->getData('name')." - ".$this->request->getData('identidade')."</p>");
+          } 
+      }
+      
+    }
+
+
     /**
      * Verifica se o diretório existe, se não ele cria.
      * @access public
