@@ -70,45 +70,53 @@
                       <div class="panel panel-info well well-sm" id="myFlashcards">
                         <table class='courses-list' style='margin-top: 20px; margin-bottom:20px'>
                             <?php foreach ($myFlashcards as $key => $themes): ?>
-                                <?php //if this flashcard is in courses - DO IT!! ?>
-                                <tr class='primary' id="my<?= $key?>">
-                                    <td width='40px'><input type="checkbox" id="my<?= $key?>" class='c c_my<?= $key?>' name='mycourses[]' value="<?= $key ?>"  ></td>
-                                    <td class='clickable'><?= $courses[$key]['name'] ?></td>
-                                    <td width='50px' class='clickable'><i class="fa fa-chevron-down" id='arrow_my<?= $key?>'></i></td>
-                                </tr>    
-                                <tr>
-                                    <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                        <div class='dependency dmy<?= $key?> closed'>
-                                            <table style='width: 100%;'>
-                                                <?php foreach ($themes as $theme_id => $theme_name) { ?>
-                                                <tr>
-                                                    <td style='padding: 5px' width='30px'><input type="checkbox" name="mythemes[]" value="<?= $theme_id ?>"  style='width:15px; height:15px' class="t_my<?= $key?> t"></td>
-                                                    <td style='padding: 5px'><span class='small'><?= $theme_name ?></td>
-                                                    <td style='padding: 5px: width: 50px'>
-                                                        <span class='small' style='color: 
-                                                          <?= 0.3 < 0.5 ? 'red' : ''?> 
-                                                          <?= 0.3 > 0.9 ? 'green' : ''?>' 
-                                                        >
-                                                          <?= $this->Number->toPercentage(0.3 * 100, 0);?>
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                <?php } ?>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <?php if(array_key_exists($key, $courses)): ?>
+                                    <tr class='primary' id="my<?= $key?>">
+                                        <td width='40px'><input type="checkbox" id="my<?= $key?>" class='c c_my<?= $key?>' name='mycourses[]' value="<?= $key ?>"  ></td>
+                                        <td class='clickable'><?= $courses[$key]['name'] ?></td>
+                                        <td width='50px' class='clickable'><i class="fa fa-chevron-down" id='arrow_my<?= $key?>'></i></td>
+                                    </tr>    
+                                    <tr>
+                                        <td colspan='3' style='padding:0; background-color: #f5f5f5'>
+                                            <div class='dependency dmy<?= $key?> closed'>
+                                                <table style='width: 100%;'>
+                                                    <?php foreach ($themes as $theme_id => $theme_name) { ?>
+                                                    <tr>
+                                                        <td style='padding: 5px' width='30px'><input type="checkbox" name="mythemes[]" value="<?= $theme_id ?>"  style='width:15px; height:15px' class="t_my<?= $key?> t"></td>
+                                                        <td style='padding: 5px'><span class='small'><?= $theme_name ?></td>
+                                                        <td style='padding: 5px: width: 50px'>
+                                                            <span class='small' style='color: 
+                                                              <?= 0.3 < 0.5 ? 'red' : ''?> 
+                                                              <?= 0.3 > 0.9 ? 'green' : ''?>' 
+                                                            >
+                                                              <?= $this->Number->toPercentage(0.3 * 100, 0);?>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <?php } ?>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endif ?>
                             <?php endforeach ?>
                         </table>
                       </div>
+                      <div id="newFlash">
+                          <a href="#" id="newFlash-btn" data-toggle="modal" data-target="#newFlash-modal" class="btn"><i class="fa fa-credit-card"></i></a>
+                          <br>
+                          <span style="left: 34px">Criar</span>
+                          <a href="#" id="editFlash-btn" onclick="event.preventDefault(); window.location.href='<?= $this->Url->build(["controller" => 'reserved', "action" => 'myflashcards'], true); ?>'" class="btn"><i class="fa fa fa-pencil-square-o"></i></a>
+                          <br>
+                          <span style="right: 35px">Editar</span>
+                      </div>
+                    <?php else: ?>
                     <?php endif ?>
+                    
                 </div>
-                <div id="newFlash">
-                  <a href="#" id="newFlash-btn" data-toggle="modal" data-target="#newFlash-modal" class="btn"><i class="fa fa-credit-card"></i></a>
-                  <br>
-                  <span>Criar novo flashcard</span>
-                </div>
-                <button class='btn btn-black' type="submit" >INICIAR SESSÃO DE TREINO</button> 
+                <div style="margin-top: 140px">
+                    <button class='btn btn-black' type="submit" >INICIAR SESSÃO DE TREINO</button>
+                </div> 
             </div>
         </div>
 
@@ -169,6 +177,9 @@
 </div>
 
 <style>
+.btn-black{
+  margin-top: 0;
+}
 .courses-list a span{
   opacity: 0.85;
 }
@@ -224,26 +235,55 @@ label {
   display: inline-flex;
   align-items: center;
 }
+#newFlash{
+  width: 170px;
+  height: 120px;
+  margin-right: 40px;
+  position: relative;
+  top: -45px;
+  border: 5px solid #152335;
+  border-radius: 20px;
+  float: right;
+}
 #newFlash > span{
   position: absolute;
-  bottom: -25px;
-  right: 0;
+  bottom: 5px;
 }
-#newFlash-btn{
+#newFlash > .btn{
   position: absolute;
-  bottom: 0;
-  right: 15px;
-  background: #FEB000;
-  width: 80px;
+  top: 30px;
+  width: 70px;
   padding-left:0;
   padding-right:0;
   padding-top:12px;
   height:52px;
-  border-radius: 60px;
+}
+#newFlash-btn{
+  left: 10px;
+  background: #FEB000;
+  border-radius: 0;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+#editFlash-btn{
+  right: 10px;
+  background: #152335;
+  border-radius: 0;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
 .fa-credit-card{
   font-size: 2em;
 }
+.fa-pencil-square-o{
+  font-size: 2em;
+  color: #F5F5F5;
+  margin-top: 1px;
+}
+.fa-pencil-square-o:hover{
+  color: #FEB000;
+}
+
 .form-group{
   margin-bottom: 20px;
 }

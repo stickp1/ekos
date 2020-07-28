@@ -3,6 +3,7 @@ namespace App\Controller\Backoffice;
 
 
 use App\Controller\Backoffice\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Questions Controller
@@ -19,7 +20,7 @@ class FlashcardsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($course_id = null)
+    public function index($course_id = null, $category = null)
     {
         $id = $this->Auth->user('id');
         $user = $this->loadModel('Users')->get($id, [
@@ -33,54 +34,61 @@ class FlashcardsController extends AppController
         }
         endif;
 
-        if(isset($course_id)):
+        if(!isset($category))
+            $category = 2;
 
-            if($user['role'] > 2):
-                $this->paginate = [
-                    'contain' => ['Courses'],
-                    'conditions' => ['course_id' => $course_id]
-                ];
+        $this->paginate = [
+            'NewFlashcardsTable' => [
+                'scope' => 'new_flashcards',
+            ],
+            'FlashcardsTable' => [
+                'scope' => 'old_flashcards',
+            ]
+        ];
 
-                $courses = $this->loadModel('Courses')->find('list')->toArray();
-
-            else:
-
-                $this->paginate = [
-                    'contain' => ['Courses'],
-                    'conditions' => ['course_id' => $course_id, 'course_id in ('.implode(',', $moderators).')']
-                ];
-
-                $courses = $this->loadModel('Courses')->find('list', ['conditions' => 'id in ('.implode(',', $moderators).')'])->toArray();
-
-            endif;
-
-
-        else:
-
-            if($user['role'] > 2):
-                $this->paginate = [
-                    'contain' => ['Courses']
-                ];
-
-                $courses = $this->loadModel('Courses')->find('list')->toArray();
-
-            else:
-                $this->paginate = [
-                    'contain' => ['Courses'],
-                    'conditions' => ['course_id in ('.implode(',', $moderators).')']
-                ];
-
-                $courses = $this->loadModel('Courses')->find('list', ['conditions' => 'id in ('.implode(',', $moderators).')'])->toArray();
-
-            endif;
-
-        endif;
+        TableRegistry::setConfig('NewFlashcardsTable', [
+            'className' => 'App\Model\Table\FlashcardsTable',
+            'table' => 'flashcards',
+            'entityClass' => 'App\Model\Entity\Flashcard'
+        ]);
 
         
         $themes = $this->loadModel('Themes')->find('list')->toArray();
-        $flashcards = $this->paginate($this->Flashcards);
 
-        $this->set(compact('flashcards', 'themes', 'courses'));
+        $user_cats = ['Flashcards privados', 'Flashcards públicos', 'Flashcards por validar'];
+
+        $flashcards = $this->Flashcards->find('all', [
+                'scope' => 'old_flashcards',
+                'contain' => 'Courses'
+            ])->where(['active !=' => 2]);
+
+        $pendingFlashcards = TableRegistry::getTableLocator()->get('NewFlashcardsTable')->find('all', [
+                'scope' => 'new_flashcards',
+                'contain' => 'Courses'
+            ])->where([
+                'active' => $category, 
+                'user_ids !=' => 'NULL'
+            ]);
+
+
+        if($course_id) {
+            $flashcards->where(['course_id' => $course_id]);
+            $pendingFlashcards->where(['course_id' => $course_id]);
+        }
+
+        if($user['role'] > 2)
+            $courses = $this->loadModel('Courses')->find('list')->toArray();
+        else {
+            $flashcards->where(['course_id in ('.implode(',', $moderators).')']);
+            $courses = $this->loadModel('Courses')->find('list', [
+                'conditions' => 'id in ('.implode(',', $moderators).')'
+            ])->toArray();
+        }
+
+        $flashcards = $this->paginate($flashcards);
+        $pendingFlashcards = $this->paginate($pendingFlashcards);
+
+        $this->set(compact('flashcards', 'pendingFlashcards', 'themes', 'courses', 'user_cats','category'));
     }
 
     /**
@@ -177,11 +185,14 @@ class FlashcardsController extends AppController
     {
         if($this->request->is('post')) {
             $flashcards = $this->Flashcards->get($id);
-            if ($flashcards['active'] == 1){$flashcards['active'] = 0;} else {$flashcards['active'] = 1;}
+            if ($flashcards['active'] == 1)
+                $flashcards['active'] = 0; 
+            else 
+                $flashcards['active'] = 1;
+
             $this->Flashcards->save($flashcards);
             return $this->redirect(['action' => 'index']);
         }
-
     }
 
     /**

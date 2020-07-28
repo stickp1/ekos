@@ -1313,27 +1313,6 @@ class ReservedController extends AppController
                 'group' => 'theme_id'
             ])->toArray();
 
-            /*
-            $myFlashcards = $this->Flashcards->find('list', [
-                'fields' => [
-                    'count' => 'count(theme_id)',
-                    'theme' => 'theme_id'
-                ], 
-                'conditions' => [
-                    'active' => 1,
-                    'Flashcards.user_ids' => $user_id
-                ],
-                'keyField' => 'theme',
-                'valueField' => 'count',
-                'group' => 'theme_id'
-            ])->toArray();
-            
-            $myFlashcards = $this->Flashcards->find('all', [
-                'conditions' => [
-                    'Flashcards.user_ids' => $user_id
-                ]
-            ])->count();
-            */
             $myAnswered = $this->Flashcards->UsersFlashcards->find('list', [
                 'fields' => [
                     'theme' => 'Flashcards.theme_id',
@@ -1356,7 +1335,7 @@ class ReservedController extends AppController
         } else 
             $courses = null;
 
-       $this->set(compact('courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options', 'my_courses'));
+       $this->set(compact('courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options'));
     }
 
     public function flashAnswer()
@@ -1421,18 +1400,82 @@ class ReservedController extends AppController
 
         if(isset($user_id)){
             $this->loadModel('Flashcards');
-            $flashcard = $this->Flashcards->newEntity([
-                'front' => $this->request->getData('front'),
-                'verse' => $this->request->getData('verse'),
-                'course_id' => $this->request->getData('course'),
-                'theme_id' => $this->request->getData('theme'),
-                'user_ids' => $user_id,
-                'active' => 2
-            ]);
-            $this->Flashcards->save($flashcard);
-            $this->Flash->success(__('O flashcard foi guardado!'));    
+            if($this->request->getData('id')) {
+                
+                $flashcard = $this->Flashcards->get($this->request->getData('id'));
+                $flashcard->front = $this->request->getData('front');
+                $flashcard->verse = $this->request->getData('verse');
+                $flashcard->course_id = $this->request->getData('course');
+                $flashcard->theme_id = $this->request->getData('theme');
+                $flashcard->active = 2;
+
+            } else {
+                
+                $flashcard = $this->Flashcards->newEntity([
+                    'front' => $this->request->getData('front'),
+                    'verse' => $this->request->getData('verse'),
+                    'course_id' => $this->request->getData('course'),
+                    'theme_id' => $this->request->getData('theme'),
+                    'user_ids' => $user_id,
+                    'active' => 2
+                ]);
+            }
+            
+            if($this->Flashcards->save($flashcard))
+                $this->Flash->success(__('O flashcard foi guardado!')); 
+            else
+                $this->Flash->error('Alguma coisa correu mal...');
         } else
             return $this->redirect(['controller' => '/']);
+    }
+
+    public function myflashcards()
+    {
+        $user_id = $this->Auth->user('id');
+        if(!isset($user_id))   
+            return $this->redirect(['controller' => '/']);
+
+        array_map([$this, 'loadModel'], ['UsersGroups', 'Courses', 'Flashcards']);
+
+        $courses_ = $this->UsersGroups->find('list', [
+            'contain' => 'Groups',
+            'conditions' => [
+                'users_id' => $user_id,
+                'Groups.deleted' => 0
+            ],
+            'valueField' => 'groups_courses_id'
+        ])->toArray();
+
+
+        $courses = $this->Courses->find('all', [
+            'conditions' => [
+                'id > ' => 1, 
+                'id <' => 14 
+            ], //não há flaschards do curso de verão
+            'contain' => 'Themes'
+        ]);
+
+        $options = $courses->combine('id', 'name');
+        $courses = $courses->indexBy('id')->toArray();
+
+        
+
+        $flashcards = $this->paginate($this->Flashcards->find('all', [
+                'contain' => [
+                    'Courses',
+                    'Themes'
+                ],
+                'conditions' => [
+                    'user_ids' => $user_id
+                ],
+                'order' => [
+                    'course_id' => 'ASC',
+                    'theme_id' => 'ASC'
+                ]
+            ])
+        );
+
+        $this->set(compact('courses_', 'flashcards', 'options', 'courses'));
     }
 
     /**

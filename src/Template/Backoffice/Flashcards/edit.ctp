@@ -10,6 +10,24 @@
 
             <?= $this->Form->create($flashcard, ['class' => 'form-horizontal']) ?>
 
+            <?php if($flashcard['user_ids']): ?>
+                <div class="col-sm-7 col-sm-offset-4">
+                    <div class="panel panel-warning well well-sm">
+                        <?php if($flashcard['active'] == 2): ?>
+                            <p>Este <i>flashcard</i> precisa de ser validado:</p>
+                        <?php else: ?>
+                            <p>Alterar visibilidade do <i>flashcard</i>:</p>
+                        <?php endif ?>
+                        <div>
+                            <input type="radio" name="active" value="1" <?= $flashcard['active']==1 ? 'checked' : '' ?>> tornar público
+                        </div>
+                        <div>
+                            <input type="radio" name="active" value="0" <?= $flashcard['active']==1 ? '' : 'checked' ?>> tornar disponível apenas para o utilizador
+                        </div>
+                    </div>
+                </div>
+            <?php endif ?>
+
 
             <div class="form-group">
                     <br>
