@@ -4,7 +4,7 @@
       <div class="container text-center">
         <span class='prelabel'>EKOS - Formar para a especialidade</span>
         <!--<h1>Testa o teu conhecimento.</h1>-->
-        <h1>Uma plataforma de treino.</h1>
+        <h1>A plataforma ideal para o teu treino.</h1>
       </div>
     </header>
 

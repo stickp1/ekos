@@ -829,10 +829,10 @@ class ReservedController extends AppController
                             'Courses.id <' => 14,
                             'area IS NOT' => null
                         ],
-                        'Courses.id in' => [14, 17],
+                        'Courses.id in' => [17],
                         [
                             'Courses.id in ('.implode(',', $courses_).')', 
-                            'Courses.id <' => 14 
+                            'Courses.id <' => 15 
                         ]
                     ]
                 ],
@@ -841,8 +841,13 @@ class ReservedController extends AppController
 
         if(!in_array(1, $courses_) && !in_array(14, $courses_) && !empty($courses_)){
             $courses->where([
-                'Courses.id in ('.implode(',', $courses_).')', 
-                'Courses.id <' => 14 
+                'OR' => [
+                    [
+                        'Courses.id in ('.implode(',', $courses_).')', 
+                        'Courses.id <' => 14 
+                    ],
+                    'Courses.id in' => [17],
+                ]
             ]);
         } elseif (empty($courses_))
             $courses = null;
@@ -1335,7 +1340,7 @@ class ReservedController extends AppController
         } else 
             $courses = null;
 
-       $this->set(compact('courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options'));
+       $this->set(compact('user_id','courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options'));
     }
 
     public function flashAnswer()
@@ -1398,7 +1403,7 @@ class ReservedController extends AppController
         $this->request->allowMethod(['post']);
         $user_id = $this->Auth->user('id');
 
-        if(isset($user_id)){
+        if($user_id){
             $this->loadModel('Flashcards');
             if($this->request->getData('id')) {
                 
@@ -1477,6 +1482,29 @@ class ReservedController extends AppController
 
         $this->set(compact('courses_', 'flashcards', 'options', 'courses'));
     }
+
+    public function flashWarning($contact = null)
+    {
+        $this->autoRender = false;
+      if ($this->request->is('post')) {
+        
+          if($this->request->getData('answer') == 1){
+
+            $email = new Email('default');
+            
+            $email->to('geral@ekos.pt')
+                  ->emailFormat('html')
+                  ->subject('EKOS - Flashcard Report')
+                  ->send("<p>Olá,</p><p>Foi submetido um novo pedido de remoção de flashcards através do site da EKOS, com a seguinte identificação:
+                          </p>
+                          <p><b> ID do flashcard: </b>".$this->request->getData('id')."</p>
+                          <p><b> Pedido efetuado pelo utilizador: </b>".$this->request->getData('name')." - ".$this->request->getData('identidade')."</p>");
+          } 
+      }
+      
+    }
+
+
 
     /**
      * Verifica se o diretório existe, se não ele cria.

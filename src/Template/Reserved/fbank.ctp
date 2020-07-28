@@ -65,7 +65,7 @@
                         <?php } ?>
                     </table>
                     <?php if(!empty($myFlashcards)): ?>
-                      <p>Os teus <i>Flashcards</i>:</p>
+                      <p>Os meus <i>Flashcards</i>:</p>
                       <a href='#' id="all-mythemes">Selecionar todos os temas</a>
                       <div class="panel panel-info well well-sm" id="myFlashcards">
                         <table class='courses-list' style='margin-top: 20px; margin-bottom:20px'>
