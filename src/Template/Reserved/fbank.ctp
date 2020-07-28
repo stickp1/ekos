@@ -111,10 +111,15 @@
                           <span style="right: 35px">Editar</span>
                       </div>
                     <?php else: ?>
+                        <div id="newFlashNone">
+                          <a href="#" id="newFlash-btn" data-toggle="modal" data-target="#newFlash-modal" class="btn"><i class="fa fa-credit-card"></i></a>
+                          <br>
+                          <span>Criar novo flashcard</span>
+                        </div>
                     <?php endif ?>
                     
                 </div>
-                <div style="margin-top: 140px">
+                <div id="startSession" >
                     <button class='btn btn-black' type="submit" >INICIAR SESSÃO DE TREINO</button>
                 </div> 
             </div>
@@ -258,6 +263,20 @@ label {
   padding-top:12px;
   height:52px;
 }
+#newFlashNone > .btn{
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  width: 80px;
+  height: 50px;
+}
+#newFlashNone > i{
+  margin-top: 4px;
+  margin-left: -3px;
+}
+#newFlashNone{
+  margin-bottom: 30px;
+  margin-top: 30px;
+}
 #newFlash-btn{
   left: 10px;
   background: #FEB000;
@@ -315,7 +334,15 @@ label {
 #myFlashcards input[type='checkbox']:checked {
   border: 1px solid #F5F5F5;
 }
+<?php if(!empty($myFlashcards)): ?>
 
+@media (max-width:991px) {
+  #startSession{
+    margin-top: 140px;
+  }
+}
+
+<?php endif ?>
 </style>
 
 <script>
