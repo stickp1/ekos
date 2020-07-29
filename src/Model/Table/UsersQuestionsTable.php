@@ -37,7 +37,7 @@ class UsersQuestionsTable extends Table
 
         $this->setTable('users_questions');
         $this->setDisplayField('id');
-        $this->setPrimaryKey('question_id', 'user_id');
+        $this->setPrimaryKey(['question_id', 'user_id']);
 
         $this->belongsTo('Questions', [
             'foreignKey' => 'question_id'

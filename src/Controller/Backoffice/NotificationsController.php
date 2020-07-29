@@ -207,12 +207,14 @@ class NotificationsController extends AppController
             }
         }
 
+        $course = $this->loadModel('Courses')->get($notification['course_id']);
+
         $body = $this->email_template('', $notification['value']);
 
         $email = new Email('default');
         $email->bcc($emails)
             ->emailFormat('html')
-            ->subject('EKOS - Nova notificação')
+            ->subject($course['name'].' | Nova notificação')
             ->send($body);
 
         $this->Flash->success(__('O aviso foi enviado por e-mail.'));

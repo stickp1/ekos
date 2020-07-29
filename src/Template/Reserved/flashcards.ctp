@@ -45,8 +45,17 @@
                   <i class="fa fa-angle-right"></i>
                 </a>
             </div>
-            <div class="col-md-1" id="favselDiv">
+            <!--<div class="col-md-1" id="favselDiv">
                 <i class="fa fa-star" id="favsel" onClick='favorite()'></i>   
+            </div>-->
+            <div class="col-md-2" id="favselDiv">
+                <i class="fa fa-star" id="favsel" onClick='favorite()'></i>
+                <span class="hovertext">Marcar como favorito!</span>
+            </div>
+            <div class="col-md-2" id="flashlessDiv">
+                <i class="fa fa-thumbs-down" style="margin-left:10px;" id="flashless" onClick='flashWarning()'></i>
+                <span class="hovertext">Ver menos flashcards como este!</span>
+
             </div>
         </div>
 
@@ -130,6 +139,7 @@ var fav = [];
     $js_array = json_encode($flashcards);
     echo "var flashcards = ". $js_array . ";\n"; 
 ?>
+
 function favorite(){
     if($("#favsel").hasClass('fav'))
         $("#favsel").removeClass('fav');
@@ -145,7 +155,40 @@ function favorite(){
       id: flashcards[selected]['id'], 
       answer: fav[flashcards[selected]['id']]
     }).done(function( data ) {});
- }
+}
+
+
+var less = []; 
+<?php 
+    foreach ($flashcards as $key => $value) { 
+        if (@$value['users_flashcard']['flashWarning'] == 1) 
+            echo "less[$value[id]] = 1;"; 
+        else 
+            echo " less[$value[id]] = 0;"; 
+    }
+    $js_array = json_encode($flashcards);
+    echo "var flashcards = ". $js_array . ";\n"; 
+?>
+
+function flashWarning(){
+    if($("#flashless").hasClass('less'))
+        $("#flashless").removeClass('less');
+    else
+        $("#flashless").addClass('less');
+    
+    if(less[flashcards[selected]['id']] == 1) 
+      less[flashcards[selected]['id']] = 0; 
+    else
+      less[flashcards[selected]['id']] = 1;
+    
+    $.post( "<?= $url?>/reserved/flash-warning", { 
+      id: flashcards[selected]['id'],
+      name: <?= $Auth['id']; ?>,
+      identidade: "<?= $Auth['first_name']." ".$Auth['last_name']; ?>", 
+      answer: less[flashcards[selected]['id']]
+    }).done(function( data ) {});
+}
+
 
 function correct(){
   $('#n'+id).removeClass('wrong');

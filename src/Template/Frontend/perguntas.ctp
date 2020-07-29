@@ -3,7 +3,8 @@
     <header style='background-image: url("<?= $url?>/img/banner4.jpg")'>
       <div class="container text-center">
         <span class='prelabel'>EKOS - Formar para a especialidade</span>
-        <h1>Testa o teu conhecimento.</h1>
+        <!--<h1>Testa o teu conhecimento.</h1>-->
+        <h1>A plataforma ideal para o teu treino.</h1>
       </div>
     </header>
 

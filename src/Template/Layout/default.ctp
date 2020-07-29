@@ -127,14 +127,15 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "faq"]) ?>'" href='#' class="dropdown-item">FAQs</a></li>
                         </ul>
                     </li>
-                    <!--
+                    
                     <li>
                         <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "banco"]) ?>" <?= $this->request->params['action'] == 'perguntas' ? "class='active'" : ""?> >Perguntas & Flashcards</a>
                     </li>
-                    -->
+                    <!--
                     <li>
                         <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "formacao"]) ?>" <?= $this->request->params['action'] == 'formacao' ? "class='active'" : ""?> >Formação Profissional</a>
                     </li>
+                    -->
                     <li class="dropdown-toggle">
                         <a class="page-scroll" href="#" data-toggle="modal" data-target="#login" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?> >Área Reservada</a>
                         <?php if(isset($Auth['id'])): ?>
@@ -166,6 +167,37 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         </div>
         <!-- /.container-fluid -->
     </nav>
+
+    <div class="modal fade" id="report">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h1 class="modal-title text-center">Erro/Sugestão</h1>
+                    </div>
+                    <div class="modal-body">
+                        <?= $this->Form->create('Form', ['url' => ['controller' => 'frontend', 'action' => 'report'], 'id' => 'report-form']) ?>
+                            <div id="textDiv">
+                                <input type="hidden" class="form-control" name="report-url" value=<?php echo $this->request->here; ?>/>
+                                <input type="hidden" class="form-control" name="report-param" id="report-param"/>
+                                <textarea class="form-control" id="report-message" name="report-message" rows="5" placeholder="Escreve aqui o erro/sugestão" required></textarea>
+                                <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
+                            </div>
+                            <div class="modal-footer row">
+                                <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
+                                </div>
+                                <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
+                                    <button type="submit" class="btn btn-black">Submeter</button>
+                                </div> 
+                            </div>
+                        <?= $this->Form->end() ?>
+                    </div>
+                    
+                </div>
+            </div>
+    </div>
     
     <div id='main_container'>
         <?= $this->fetch('content') ?>
@@ -389,36 +421,6 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         </div>
     <?php endif;?>
 
-        <div class="modal fade" id="report">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h1 class="modal-title text-center">Erro/Sugestão</h1>
-                    </div>
-                    <div class="modal-body">
-                        <?= $this->Form->create('Form', ['url' => ['controller' => 'frontend', 'action' => 'report'], 'id' => 'report-form']) ?>
-                            <div id="textDiv">
-                                <input type="hidden" class="form-control"name="report-url" value=<?php echo $this->request->here; ?>/>
-                                <textarea class="form-control" id="report-message" name="report-message" rows="5" placeholder="Escreve aqui o erro/sugestão" required></textarea>
-                                <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
-                            </div>
-                            <div class="modal-footer row">
-                                <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
-                                </div>
-                                <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
-                                    <button type="submit" class="btn btn-black">Submeter</button>
-                                </div> 
-                            </div>
-                        <?= $this->Form->end() ?>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-
         <div class="modal fade" id="suc">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -568,7 +570,9 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
 </script>
 
 <style>
-
+.flash_timeout{
+    top: 0;
+}
 .fa-close{
     font-size: 1.3em;
     -webkit-text-stroke: 1.6px white;
@@ -625,14 +629,12 @@ div#main_container {
     transition: all 0.9s ease;
   }
 }
-
 #city .media:hover .layer p {
     transform: scale(1);
     transition: all 0.9s ease;
 }
 <?php if (!$scity): ?>
-.modal-backdrop
-{
+.modal-backdrop{
     opacity:0.7 !important;
 }
 <?php endif; ?>

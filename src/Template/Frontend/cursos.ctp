@@ -4,6 +4,8 @@
     <div class="container text-center">
         <span class='prelabel'>EKOS - Formar para a especialidade</span>
         <h1>Um novo exame, uma nova abordagem.</h1>
+        <!--<h1>Uma nova abordagem à formação médica.</h1>-->
+
     </div>
 </header>
 

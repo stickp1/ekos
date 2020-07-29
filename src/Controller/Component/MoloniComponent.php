@@ -220,10 +220,10 @@ class MoloniComponent extends Component
         $products = array();
         foreach ($sale['products'] as $key => $product) {
             $products[$key]['product_id'] = $this->get_product($product['group_courses_id'], $product['course']['name']);
-            $products[$key]['price'] = $product['value']/1.23;
+            $products[$key]['price'] = $product['value'];
             $products[$key]['qty'] = 1;
             $products[$key]['name'] = $product['course']['name'];
-            $products[$key]['taxes'][0]['tax_id'] = 564042;
+            $products[$key]['taxes'][0]['tax_id'] = 1999381;
         }
 
         $token = $this->Session->read('moloni_token');

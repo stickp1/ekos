@@ -22,12 +22,16 @@ $(document).ready(function(){
     speed:   'fast',
     timeout: 0,
     before: function(){
-           $('a.active').removeClass('active');
-           id = $(this).attr("data-id");
-           $('#n'+id).addClass('active');
-           selected = id; 
-           $('#selector').val(parseInt(id)+1);
-           if(fav[flashcards[selected]['id']] == 1){  $("#favsel").addClass('fav');} else {  $("#favsel").removeClass('fav');}
+          $('a.active').removeClass('active');
+          id = $(this).attr("data-id");
+          $('#n'+id).addClass('active');
+          selected = id; 
+          $('#selector').val(parseInt(id)+1);
+          if(fav[flashcards[selected]['id']] == 1)  
+            $("#favsel").addClass('fav'); 
+          else 
+            $("#favsel").removeClass('fav');
+          $('#report-param').val(flashcards[selected]['id']);
            
            
      }
@@ -40,6 +44,8 @@ $(document).ready(function(){
   }
   // Keyboard Nav
   $(document).keydown(function (e) {
+
+    if($('.modal').hasClass('in')) return;
     var keyCode = e.keyCode || e.which;
     key = {left: 37, up: 38, right: 39, down: 40, enter: 13, space: 32, questionMark: 191 };
 

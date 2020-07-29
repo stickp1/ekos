@@ -261,7 +261,49 @@ a.navi:hover{
   font-size:18pt; 
   padding-top: 1px; 
   color: #929dab;
+  position: relative;
+  right:100px;
 }
+#flashlessDiv{
+  font-size:18pt; 
+  padding-top: 1px; 
+  color: #929dab;
+  position: relative;
+  right: 150px;
+}
+#flashless {
+  transition: all 0.2s ease-in-out;
+}
+#flashless:hover{
+  cursor: pointer;
+  color: white;
+}
+#flashless.less{
+  color: #FEB000;
+}
+
+#favselDiv .hovertext {
+  position:absolute;
+  right:35px;
+  top:30px;
+  visibility:hidden;
+  font-size:0.5em;
+}
+#favselDiv:hover .hovertext{
+  visibility:visible;
+}
+
+#flashlessDiv .hovertext {
+  position:absolute;
+  right:5px;
+  top:30px;
+  visibility:hidden;
+  font-size:0.5em;
+}
+#flashlessDiv:hover .hovertext{
+  visibility:visible;
+}
+
 #loader img{
   position: absolute;
   width: 100px;
