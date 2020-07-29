@@ -837,7 +837,8 @@ class ReservedController extends AppController
                         ]
                     ]
                 ],
-                'groupField' => 'courses_id'
+                'groupField' => 'courses_id',
+                'order' => 'Courses.name ASC'
             ]);
 
         if(!in_array(1, $courses_) && !in_array(14, $courses_) && !empty($courses_)){
@@ -1261,7 +1262,8 @@ class ReservedController extends AppController
                         'id > ' => 1, 
                         'id <' => 14 
                     ], //não há flaschards do curso de verão
-                    'contain' => 'Themes'
+                    'contain' => 'Themes',
+                    'order' => 'name ASC'
                 ]);
             // OTHER COURSES
             else
@@ -1279,7 +1281,7 @@ class ReservedController extends AppController
                         'user_id' => $user_id
                     ],
                     'Themes'
-                ]
+                ],
             ]);
 
             $myFlashcards = $this->Flashcards->find('list', [
@@ -1291,13 +1293,14 @@ class ReservedController extends AppController
                     'user_ids' => $user_id
                 ],
                 'fields' => [
-                    'courseId' => 'Courses.id',
-                    'themeId' => 'Themes.id',
-                    'themeName' => 'Themes.name'
+                    'Courses.id',
+                    'Themes.id',
+                    'Themes.name'
                 ],
-                'keyField' => 'themeId',
-                'valueField' => 'themeName', 
-                'groupField' => 'courseId' 
+                'keyField' => 'Themes.id',
+                'valueField' => 'Themes.name', 
+                'groupField' => 'Courses.id',
+                'order' => 'Courses.name ASC' 
             ])->toArray();     
 
             $answered = $this->Flashcards->UsersFlashcards->find('list', [

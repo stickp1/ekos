@@ -165,14 +165,18 @@ div#question-image{
 #question-slider a.pointer:first-child, #question-slider a.pointer:last-child{
   width: auto;
 }
+
 <?php if(count($question_list[$pointer])==100): ?>
+
 #question-slider a:last-child{
   width: auto;
 }
 #question-slider a:nth-last-child(2){
   width: auto;
 }
+
 <?php endif ?>
+
 .tab-pane{
   position: relative;
 }
@@ -196,8 +200,14 @@ a.pointer{
   font-size:18pt; 
   padding-top: 1px; 
   color: #929dab;
-
 }
+<?php if(isset($timer0) && $timer != -1): ?>
+
+.favorite{
+  top: -35px;
+}
+
+<?php endif ?>
 .favorite i{
   transition: all 0.2s ease-in-out;
 }
