@@ -231,7 +231,6 @@ label {
 #myFlashcards input[type='checkbox']:checked {
   border: 1px solid #F5F5F5;
 }
-
 </style>
 
 <script>

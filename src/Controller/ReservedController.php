@@ -18,6 +18,7 @@ use Cake\ORM\Query;
 
 
 
+
 /**
  * Classes Controller
  *
@@ -792,7 +793,7 @@ class ReservedController extends AppController
                         (in_array(3, $difficulty) && $corr <  $stat25) || $corr == 9999){
                         
                         if(array_intersect(explode(',', $value['theme_id']), $this->request->getData('themes'))){
-                            $question_list[$value['id']]['fav'] = @$value['users_question']['favorite'];
+                            $question_list[$value['id']]['fav'] = isset($value['users_question']['favorite']) ? $value['users_question']['favorite'] : 0;
                             $question_list[$value['id']]['answer'] = 0;
                             $question_list[$value['id']]['corr'] = ($corr == 9999 ? 0 : (($corr >= $stat75) ? 1 : ($corr >= $stat25 ? 2 : 3)));
                         }
@@ -805,7 +806,7 @@ class ReservedController extends AppController
                 $session->write('question_list', $question_list);
                 $session->write('question_pointer', $pointer);
                 $session->write('question_timer', $timer);
-                //$this->set(compact('question_list', 'pointer', 'timer'));
+                //$this->set(compact('questions_', 'question_list', 'pointer', 'timer'));
                 return $this->redirect(['action' => 'question', empty($question_list) ? null : $pointer, $timer]);
             } 
             return $this->redirect(['action' => 'question', null]);
@@ -981,6 +982,8 @@ class ReservedController extends AppController
                     $user_data[$k]['question_id'] = $v['id'];
                     $user_data[$k]['user_id'] = $user_id;
                     $user_data[$k]['correct'] = ($answer == $v['correct']);
+                    $user_data[$k]['favorite'] = $question_list[$pointer][$v['id']]['fav'];
+                    $user_data[$k]['last_time'] = Time::now();
                     $v['a'.$answer]++;
                 }
                 $user_data = $this->Questions->UsersQuestions->newEntities($user_data);
@@ -988,7 +991,7 @@ class ReservedController extends AppController
             }
 
             $session->write('question_pointer', $pointer);
-            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'timer0','cans', 'wans', 'nans'));
+            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'timer0','cans', 'wans', 'nans', 'user_data'));
        }
        $this->set(compact('courses'));  
     }
@@ -1001,46 +1004,52 @@ class ReservedController extends AppController
 
         $user_id = $this->Auth->user('id');
         
-        $session = $this->getRequest()->getSession();
-
-        $id = $this->request->getData('question_id');
-        $answer = $this->request->getData('answer');
+        if($user_id) {
         
-        $question = $this->Questions->get($id, [
-            'contain' => 'UsersQuestions',
-            'fields' => [
-                'id',
-                'correct',
-                'a1', 'a2', 'a3', 'a4', 'a5',
-                'UsersQuestions.last_time',
-                'UsersQuestions.correct',
-                'UsersQuestions.id'
-            ]
-        ]);
-        
-        if($answer != '')
-            $question['a'.$answer]++;
+            $session = $this->getRequest()->getSession();
 
-        if($question->users_question){
-            $question->users_question->correct = ($answer == $question['correct']);
-        } else {
-            $user_question = $this->Questions->UsersQuestions->newEntity();
-            $user_question['question_id'] = $id;
-            $user_question['user_id'] = $user_id;
-            $user_question['correct'] = ($answer == $question['correct']);
-            $question->users_question = $user_question;
+            $id = $this->request->getData('question_id');
+            $answer = $this->request->getData('answer');
+            
+            $question = $this->Questions->get($id, [
+                'contain' => 'UsersQuestions',
+                'fields' => [
+                    'id',
+                    'correct',
+                    'a1', 'a2', 'a3', 'a4', 'a5',
+                    'UsersQuestions.last_time',
+                    'UsersQuestions.correct',
+                    'UsersQuestions.id'
+                ]
+            ]);
+            
+            if($answer != '')
+                $question['a'.$answer]++;
+
+            if($question->users_question){
+                $question->users_question->correct = ($answer == $question['correct']);
+                $question->users_question->last_time = Time::now();
+            } else {
+                $user_question = $this->Questions->UsersQuestions->newEntity();
+                $user_question['question_id'] = $id;
+                $user_question['user_id'] = $user_id;
+                $user_question['correct'] = ($answer == $question['correct']);
+                $user_question['last_time'] = Time::now();
+                $question->users_question = $user_question;
+            }
+
+            $question_list = $session->read('question_list');
+            $pointer = $session->read('question_pointer');
+            
+            if(isset($question_list) && isset($pointer)){
+                $question_list[$pointer][$id]['answer'] = $answer;
+                $session->write('question_list', $question_list);
+            }
+
+            $question->setDirty('users_question', true);
+            $question->setDirty('a'.$answer, true);
+            $this->Questions->save($question);
         }
-
-        $question_list = $session->read('question_list');
-        $pointer = $session->read('question_pointer');
-        
-        if(isset($question_list) && isset($pointer)){
-            $question_list[$pointer][$id]['answer'] = $answer;
-            $session->write('question_list', $question_list);
-        }
-
-        $question->setDirty('users_question', true);
-        $this->Questions->save($question);
     }
 
     public function qunvalidated()
@@ -1084,6 +1093,7 @@ class ReservedController extends AppController
             $answer = $this->UsersQuestions->newEntity();
             $answer['question_id'] = $this->request->data('id');
             $answer['user_id'] = $user_id;
+            $answer['last_time'] = Time::now();
         } 
         
         $answer['favorite'] = $this->request->data('fav');
@@ -1501,7 +1511,6 @@ class ReservedController extends AppController
                           <p><b> Pedido efetuado pelo utilizador: </b>".$this->request->getData('name')." - ".$this->request->getData('identidade')."</p>");
           } 
       }
-      
     }
 
 

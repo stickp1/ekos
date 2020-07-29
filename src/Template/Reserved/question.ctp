@@ -1,5 +1,8 @@
 <?php $url = $this->Url->build(["prefix" => false, "controller" => '/'], true); ?>
 <style>
+section#services{
+  padding-bottom: 130px;
+}
 a.number, a.pointer{
   padding: 3px 5px;
   margin: 5px;
@@ -188,10 +191,8 @@ a.pointer{
 .favorite{
   position: absolute;
   z-index: 2;
-  right: 0;
   left: 0;
-  text-align: center;
-  bottom: -50px;
+  top: -85px;
   font-size:18pt; 
   padding-top: 1px; 
   color: #929dab;
@@ -207,8 +208,22 @@ a.pointer{
 .favorite .fav{
   color: #FEB000;
 }
+@media(max-width:500px){
+  .favorite span{
+    display: none;
+  }
+}
 #minutes{
   display: none;
+}
+#finishBtn{
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin-left: auto;
+  margin-right: auto;
+  bottom: -70px;
+  width: 180px;
 }
 </style>
 
@@ -336,7 +351,7 @@ a.pointer{
                                 <p style='text-align: center'> 
                                     <button class='prev btn-black btn' id='p<?= $i?>'> « </button>  
                                     <button class='submit btn-black btn' id='b<?= $i ?>' <?= $question_list[$pointer][$i]['answer'] > 0 ?  "disabled" : "" ?>> Validar 
-                                    </button> 
+                                    </button>
                                     <button class='next btn-black btn' id='nn<?= $i ?>'> » </button> 
                                 </p>
                                 <input type="hidden" id="solution<?= $i ?>" value="<?= $value['correct']?>"/>
@@ -346,6 +361,8 @@ a.pointer{
                             </div>
                         <?php endforeach ?>
                     </div>
+                    <button class='btn-black btn' id='finishBtn'> Terminar 
+                    </button> 
                 </div>
             </div>            
         </div>
@@ -386,7 +403,7 @@ all_ids = <?php echo json_encode(array_flip($question_ids)); ?>;
 all_qids = <?php echo json_encode($question_ids); ?>;
 question_list = <?php echo json_encode($question_list[$pointer]); ?>;
 today = new Date();
-
+console.log(question_list);
 
 <?php foreach($questions as $key => $value): ?>
     <?php $i = $value['id']; ?>
@@ -470,6 +487,7 @@ function doGraph(id){
 }
 
 function unvalidated(pointer, timer){
+  console.log(question_list);
   $('input:checked').each(function(){
         id = $(this).attr('name').match(/\d+/g);
         question_list[id]['answer'] = $(this).val();
@@ -580,6 +598,11 @@ $('#n_prev').on('click', function() {
   unvalidated(pointer, timer);
 })
 // ---------------------- //
+
+// TERMINATE //
+$('#finishBtn').on('click', function() {
+  unvalidated(<?= $pointer ?>, -1)
+})
 
 </script>
 
