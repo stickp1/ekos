@@ -39,7 +39,7 @@
                     <a href='/temas_modulos.pdf' target="_blank">    <i class="fa fa-download"></i> Organização Temática dos Módulos 
                     </a>
                 </p>
-                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px; display:none;', 'value' => $scity, 'id' => 'city_selector'])?>
+                <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px;', 'value' => $scity, 'id' => 'city_selector'])?>
                 </p>
                 <?php foreach($courses as $key => $value): ?>
                     <?php foreach ($value['groups'] as $key2 => $group): ?>
