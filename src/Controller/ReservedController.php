@@ -998,7 +998,6 @@ class ReservedController extends AppController
                     $user_data[$k]['question_id'] = $v['id'];
                     $user_data[$k]['user_id'] = $user_id;
                     $user_data[$k]['correct'] = ($answer == $v['correct']);
-                    $user_data[$k]['favorite'] = $question_list[$pointer][$v['id']]['fav'];
                     $user_data[$k]['last_time'] = Time::now();
                     $v['a'.$answer]++;
                 }
@@ -1308,13 +1307,14 @@ class ReservedController extends AppController
                     'user_ids' => $user_id
                 ],
                 'fields' => [
-                    'Courses.id',
-                    'Themes.id',
-                    'Themes.name'
+                    'course' => 'Courses.id',
+                    'theme' => 'Themes.id',
+                    'bla' => 'count(Themes.id)'
                 ],
-                'keyField' => 'Themes.id',
-                'valueField' => 'Themes.name', 
-                'groupField' => 'Courses.id',
+                'keyField' => 'theme',
+                'valueField' => 'bla', 
+                'group' => 'Themes.id',
+                'groupField' => 'course',
                 'order' => 'Courses.name ASC' 
             ])->toArray();     
 
@@ -1353,9 +1353,9 @@ class ReservedController extends AppController
                 ],
                 'contain' => 'Flashcards',
                 'conditions' => [
-                    'Flashcards.user_ids' => $user_id,
                     'UsersFlashcards.user_id' => $user_id,
-                    'correct' => 1
+                    'correct' => 1,
+                    'Flashcards.user_ids' => $user_id
                 ],
                 'keyField' => 'theme',
                 'valueField' => 'count',
@@ -1368,7 +1368,7 @@ class ReservedController extends AppController
         } else 
             $courses = null;
 
-       $this->set(compact('user_id','courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options'));
+       $this->set(compact('user_id','courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards','myAnswered','options'));
     }
 
     public function flashAnswer()

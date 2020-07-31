@@ -73,7 +73,7 @@
                                                 <table style='width: 100%;'>
                                                     <p>Esclarecimento de Dúvidas</p>
                                                     <div id="qAccordion">
-                                                        <?php foreach($messages as $key => $message) ?>
+                                                        <?php foreach($messages as $key => $message): ?>
                                                             <p>
                                                                 <a class="collapse" href="#" data-target="#<?='#m'.$key?>" data-toggle="collapse" aria-expanded="false">
                                                                   <?= $message['content']?>
@@ -138,9 +138,9 @@
                                     </td>
                                 </tr>
 
-                            <?php endif; ?>
+                            <?php endif ?>
                        
-                        <?php endforeach; ?>
+                        <?php endforeach ?>
                     
                     <?php endif;?>
                              

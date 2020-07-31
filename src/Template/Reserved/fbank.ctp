@@ -64,6 +64,7 @@
                         </tr>
                         <?php } ?>
                     </table>
+                    
                     <?php if(!empty($myFlashcards)): ?>
                       <p>Os meus <i>Flashcards</i>:</p>
                       <a href='#' id="all-mythemes">Selecionar todos os temas</a>
@@ -83,13 +84,13 @@
                                                     <?php foreach ($themes as $theme_id => $theme_name) { ?>
                                                     <tr>
                                                         <td style='padding: 5px' width='30px'><input type="checkbox" name="mythemes[]" value="<?= $theme_id ?>"  style='width:15px; height:15px' class="t_my<?= $key?> t"></td>
-                                                        <td style='padding: 5px'><span class='small'><?= $theme_name ?></td>
+                                                        <td style='padding: 5px'><span id="<?= $key ?>" class='small'><?= $theme_id ?></span></td>
                                                         <td style='padding: 5px: width: 50px'>
                                                             <span class='small' style='color: 
-                                                              <?= 0.3 < 0.5 ? 'red' : ''?> 
-                                                              <?= 0.3 > 0.9 ? 'green' : ''?>' 
+                                                              <?= @$myAnswered[$theme_id] / $myFlashcards[$key][$theme_id] < 0.5 ? 'red' : ''?> 
+                                                              <?= @$myAnswered[$theme_id] / $myFlashcards[$key][$theme_id] > 0.9 ? 'green' : ''?>'
                                                             >
-                                                              <?= $this->Number->toPercentage(0.3 * 100, 0);?>
+                                                              <?= $this->Number->toPercentage(@$myAnswered[$theme_id] / $myFlashcards[$key][$theme_id] * 100, 0);?>
                                                             </span>
                                                         </td>
                                                     </tr>
@@ -354,6 +355,13 @@ courses = [];
 <?php foreach($courses as $key => $course): ?>
   courses[<?=$course['id']?>] = <?= json_encode(array_column($course['themes'],'name', 'id')) ?>;
 <?php endforeach ?>
+
+themeNames = $('#myFlashcards table tr table tr td:nth-child(2) span');
+console.log(courses);
+$.each(themeNames, function(index, value){
+  $(this).text(courses[$(this).attr('id')][$(this).text()]);
+});
+
 
 setTimeout(function(){
   $('.message.success').hide();  
