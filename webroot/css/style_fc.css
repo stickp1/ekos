@@ -261,15 +261,25 @@ a.navi:hover{
   font-size:18pt; 
   padding-top: 1px; 
   color: #929dab;
-  position: relative;
-  right:100px;
+  position: absolute;
+  left: 100px;
+  top: 0;
 }
 #flashlessDiv{
   font-size:18pt; 
   padding-top: 1px; 
   color: #929dab;
-  position: relative;
-  right: 150px;
+  position: absolute;
+  right: 100px;
+  top: 0;
+}
+@media(max-width: 500px){
+	#favselDiv{
+		left: 50px;
+	}
+	#flashlessDiv{
+		right: 50px;
+	}
 }
 #flashless {
   transition: all 0.2s ease-in-out;

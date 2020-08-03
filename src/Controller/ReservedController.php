@@ -837,24 +837,24 @@ class ReservedController extends AppController
         ])->toArray();
 
         $courses = $this->Questions->Themes->find('list', [
-                'contain' => 'Courses',
-                'conditions' => [
-                    'OR' => [
-                        [
-                            'Courses.id >' => 1,
-                            'Courses.id <' => 14,
-                            'area IS NOT' => null
-                        ],
-                        'Courses.id in' => [17],
-                        [
-                            'Courses.id in ('.implode(',', $courses_).')', 
-                            'Courses.id <' => 15 
-                        ]
+            'contain' => 'Courses',
+            'conditions' => [
+                'OR' => [
+                    [
+                        'Courses.id >' => 1,
+                        'Courses.id <' => 14,
+                        'area IS NOT' => null
+                    ],
+                    'Courses.id in' => [17],
+                    [
+                        'Courses.id in ('.implode(',', $courses_).')', 
+                        'Courses.id <' => 15 
                     ]
-                ],
-                'groupField' => 'courses_id',
-                'order' => 'Courses.name ASC'
-            ]);
+                ]
+            ],
+            'groupField' => 'courses_id',
+            'order' => 'Courses.name ASC'
+        ]);
 
         if(!in_array(1, $courses_) && !in_array(14, $courses_) && !empty($courses_)){
             $courses->where([
@@ -926,8 +926,9 @@ class ReservedController extends AppController
         $course_names = $this->Courses->find('list')->toArray();
         $question_list = $session->read('question_list');
         $pointer = $session->read('question_pointer');
+        $timer = $session->read('question_timer_left');
 
-        $this->set(compact('courses', 'question_list', 'courses_', 'course_names', 'pointer', 'questions', 'answered'));
+        $this->set(compact('courses', 'question_list', 'courses_', 'course_names', 'pointer', 'timer', 'questions', 'answered'));
     }
 
     public function question($pointer = null, $timer = null)
@@ -946,7 +947,6 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
-
 
         $question_list = $session->read('question_list');
         $timer0 = $session->read('question_timer');
@@ -1094,25 +1094,41 @@ class ReservedController extends AppController
         $this->request->allowMethod(['post']);
         $this->loadModel('UsersQuestions');
         $user_id = $this->Auth->user('id');
+        $session = $this->getRequest()->getSession();
         
-        $answer = $this->UsersQuestions->find('all', [
-            'conditions' => [
-                'user_id' => $user_id,
-                'question_id' => $this->request->data('id')
-            ]
-        ]);
-        
-        if($answer->count()>0)
-            $answer = $answer->first();
-        else{
-            $answer = $this->UsersQuestions->newEntity();
-            $answer['question_id'] = $this->request->data('id');
-            $answer['user_id'] = $user_id;
-            $answer['last_time'] = Time::now();
-        } 
-        
-        $answer['favorite'] = $this->request->data('fav');
-        $answer = $this->UsersQuestions->save($answer);
+        if($user_id){
+
+            $answer = $this->UsersQuestions->find('all', [
+                'conditions' => [
+                    'user_id' => $user_id,
+                    'question_id' => $this->request->data('id')
+                ]
+            ]);
+            
+            if($answer->count()>0)
+                $answer = $answer->first();
+            else{
+                $answer = $this->UsersQuestions->newEntity();
+                $answer['question_id'] = $this->request->data('id');
+                $answer['user_id'] = $user_id;
+                $answer['last_time'] = Time::now();
+            } 
+            
+            $answer['favorite'] = $this->request->data('fav');
+            $answer = $this->UsersQuestions->save($answer);
+
+            $question_list = $session->read('question_list');
+            $pointer = $session->read('question_pointer');
+            $question_list[$pointer][$this->request->data('id')]['fav'] = $this->request->data('fav');
+            $session->write('question_list', $question_list);
+        }
+    }
+
+    public function qtimer(){
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $session = $this->getRequest()->getSession();
+        $session->write('question_timer_left', $this->request->getData('timer'));
     }
 
     public function flashcards()

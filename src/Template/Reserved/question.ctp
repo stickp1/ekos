@@ -371,7 +371,7 @@ a.pointer{
                             </div>
                         <?php endforeach ?>
                     </div>
-                    <button class='btn-black btn' id='finishBtn'> Terminar 
+                    <button class='btn-black btn' id='finishBtn' <?php echo $timer==-1 ? "style='display: none'" : "" ?>> Terminar 
                     </button> 
                 </div>
             </div>            
@@ -413,7 +413,6 @@ all_ids = <?php echo json_encode(array_flip($question_ids)); ?>;
 all_qids = <?php echo json_encode($question_ids); ?>;
 question_list = <?php echo json_encode($question_list[$pointer]); ?>;
 today = new Date();
-console.log(question_list);
 
 <?php foreach($questions as $key => $value): ?>
     <?php $i = $value['id']; ?>
@@ -433,16 +432,20 @@ console.log(question_list);
     <?php endif; ?>
 <?php endforeach; ?>
 
-
+// TIMER //
 <?php if($timer==-1): ?>
   $("#finished").modal();
 <?php elseif($timer0): ?>
   today.setMinutes(today.getMinutes() + <?= floor($timer) ?>);
   today.setSeconds(today.getSeconds() + <?= ($timer - floor($timer)) * 60 ?>);
   $("#timer").countdown(today).on('update.countdown', function(event) {
-        var $this = $(this);
-        $this.html(event.strftime('<span>%H:%M:%S</span>'));
-        $this.next().val((event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60).toFixed(2));
+        left = (event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60).toFixed(2);
+        $(this).html(event.strftime('<span>%H:%M:%S</span>'));
+        $(this).next().val(left);
+        if(left*10 == Math.floor(left*10))
+          $.post( "<?= $url?>/reserved/qtimer", {
+            timer: left
+          });
   }); 
   $("#timer").countdown(today).on('finish.countdown', function(event) {
       unvalidated(<?= $pointer ?>, -1);
@@ -452,13 +455,18 @@ console.log(question_list);
   today.setSeconds(today.getSeconds() - <?= ($timer - floor($timer)) * 60 ?>);
   $("#timer").countdown(today, {elapse: true})
     .on('update.countdown', function(event) {
-        var $this = $(this);
         if (event.elapsed) {
-           $this.html(event.strftime('<span>%H:%M:%S</span>'));
-           $this.next().val(event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60);
+          left = event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60;
+          $(this).html(event.strftime('<span>%H:%M:%S</span>'));
+          $(this).next().val(event.offset.hours * 60 + event.offset.minutes + event.offset.seconds/60);
+          if(left*10 == Math.floor(left*10))
+            $.post( "<?= $url?>/reserved/qtimer", {
+              timer: left
+            });
         }
   }); 
 <?php endif ?>
+// ----- //
 
 // INITIAL VALUES //
 $('#q<?= $question_ids[0] ?>').addClass('active');
@@ -497,7 +505,6 @@ function doGraph(id){
 }
 
 function unvalidated(pointer, timer){
-  console.log(question_list);
   $('input:checked').each(function(){
         id = $(this).attr('name').match(/\d+/g);
         question_list[id]['answer'] = $(this).val();
@@ -519,6 +526,7 @@ $('#selector').on('change', function(){
 })
 
 $('.prev').on('click', function(){
+  event.preventDefault();
   id = $('a.number.active').attr('id').match(/\d+/g);
   if(id > 1){
     id = id.join("") - 1;
@@ -528,6 +536,7 @@ $('.prev').on('click', function(){
 })
 
 $('.next').on('click', function(){
+  event.preventDefault();
   id = $('a.number.active').attr('id').match(/\d+/g);
   if(id < <?= count($question_ids) ?>){
     id = id.join("") - 0 + 1;

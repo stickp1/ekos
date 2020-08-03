@@ -45,9 +45,6 @@
                   <i class="fa fa-angle-right"></i>
                 </a>
             </div>
-            <!--<div class="col-md-1" id="favselDiv">
-                <i class="fa fa-star" id="favsel" onClick='favorite()'></i>   
-            </div>-->
             <div class="col-md-2" id="favselDiv">
                 <i class="fa fa-star" id="favsel" onClick='favorite()'></i>
                 <span class="hovertext">Marcar como favorito!</span>
@@ -188,7 +185,6 @@ function flashWarning(){
       answer: less[flashcards[selected]['id']]
     }).done(function( data ) {});
 }
-
 
 function correct(){
   $('#n'+id).removeClass('wrong');
