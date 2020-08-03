@@ -100,12 +100,16 @@ class ReservedController extends AppController
 
     public function schedule($group_id = null)
     {
-       $id = $this->Auth->user('id');
+        $id = $this->Auth->user('id');
         if(!isset($id) || !isset($group_id))   return $this->redirect(['controller' => '/']);
 
         $user = $this->loadModel('Users')->get($id, [
-            'contain' => ['groups' => ['Courses']]
-            ])->toArray();
+            'contain' => [
+                'groups' => [
+                    'Courses'
+                ]
+            ]
+        ])->toArray();
 
         $groups = array();
         foreach ($user['groups'] as $key => $value) {
@@ -118,12 +122,23 @@ class ReservedController extends AppController
         }
 
         $group = $this->loadModel('Groups')->find('all', [
-            'conditions' => ['Groups.id' => $group_id],
-            'contain' => ['Lectures' => ['Users'], 'Courses']
+            'conditions' => [
+                'Groups.id' => $group_id
+            ],
+            'contain' => [
+                'Lectures' => [
+                    'Users'
+                ], 
+                'Courses'
+            ]
         ])->first();
 
         $themes_ = $this->loadModel('Themes')->find('all', [
-        'conditions' => ['courses_id' => $group['courses_id']]
+            'conditions' => [
+                'courses_id' => $group[
+                    'courses_id'
+                ]
+            ]
         ])->toArray();
         $themes = array();
         foreach ($themes_ as $key => $value) {
@@ -822,24 +837,24 @@ class ReservedController extends AppController
         ])->toArray();
 
         $courses = $this->Questions->Themes->find('list', [
-                'contain' => 'Courses',
-                'conditions' => [
-                    'OR' => [
-                        [
-                            'Courses.id >' => 1,
-                            'Courses.id <' => 14,
-                            'area IS NOT' => null
-                        ],
-                        'Courses.id in' => [17],
-                        [
-                            'Courses.id in ('.implode(',', $courses_).')', 
-                            'Courses.id <' => 15 
-                        ]
+            'contain' => 'Courses',
+            'conditions' => [
+                'OR' => [
+                    [
+                        'Courses.id >' => 1,
+                        'Courses.id <' => 14,
+                        'area IS NOT' => null
+                    ],
+                    'Courses.id in' => [17],
+                    [
+                        'Courses.id in ('.implode(',', $courses_).')', 
+                        'Courses.id <' => 15 
                     ]
-                ],
-                'groupField' => 'courses_id',
-                'order' => 'Courses.name ASC'
-            ]);
+                ]
+            ],
+            'groupField' => 'courses_id',
+            'order' => 'Courses.name ASC'
+        ]);
 
         if(!in_array(1, $courses_) && !in_array(14, $courses_) && !empty($courses_)){
             $courses->where([
@@ -911,8 +926,9 @@ class ReservedController extends AppController
         $course_names = $this->Courses->find('list')->toArray();
         $question_list = $session->read('question_list');
         $pointer = $session->read('question_pointer');
+        $timer = $session->read('question_timer_left');
 
-        $this->set(compact('courses', 'question_list', 'courses_', 'course_names', 'pointer', 'questions', 'answered'));
+        $this->set(compact('courses', 'question_list', 'courses_', 'course_names', 'pointer', 'timer', 'questions', 'answered'));
     }
 
     public function question($pointer = null, $timer = null)
@@ -931,7 +947,6 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
-
 
         $question_list = $session->read('question_list');
         $timer0 = $session->read('question_timer');
@@ -983,7 +998,6 @@ class ReservedController extends AppController
                     $user_data[$k]['question_id'] = $v['id'];
                     $user_data[$k]['user_id'] = $user_id;
                     $user_data[$k]['correct'] = ($answer == $v['correct']);
-                    $user_data[$k]['favorite'] = $question_list[$pointer][$v['id']]['fav'];
                     $user_data[$k]['last_time'] = Time::now();
                     $v['a'.$answer]++;
                 }
@@ -1080,25 +1094,41 @@ class ReservedController extends AppController
         $this->request->allowMethod(['post']);
         $this->loadModel('UsersQuestions');
         $user_id = $this->Auth->user('id');
+        $session = $this->getRequest()->getSession();
         
-        $answer = $this->UsersQuestions->find('all', [
-            'conditions' => [
-                'user_id' => $user_id,
-                'question_id' => $this->request->data('id')
-            ]
-        ]);
-        
-        if($answer->count()>0)
-            $answer = $answer->first();
-        else{
-            $answer = $this->UsersQuestions->newEntity();
-            $answer['question_id'] = $this->request->data('id');
-            $answer['user_id'] = $user_id;
-            $answer['last_time'] = Time::now();
-        } 
-        
-        $answer['favorite'] = $this->request->data('fav');
-        $answer = $this->UsersQuestions->save($answer);
+        if($user_id){
+
+            $answer = $this->UsersQuestions->find('all', [
+                'conditions' => [
+                    'user_id' => $user_id,
+                    'question_id' => $this->request->data('id')
+                ]
+            ]);
+            
+            if($answer->count()>0)
+                $answer = $answer->first();
+            else{
+                $answer = $this->UsersQuestions->newEntity();
+                $answer['question_id'] = $this->request->data('id');
+                $answer['user_id'] = $user_id;
+                $answer['last_time'] = Time::now();
+            } 
+            
+            $answer['favorite'] = $this->request->data('fav');
+            $answer = $this->UsersQuestions->save($answer);
+
+            $question_list = $session->read('question_list');
+            $pointer = $session->read('question_pointer');
+            $question_list[$pointer][$this->request->data('id')]['fav'] = $this->request->data('fav');
+            $session->write('question_list', $question_list);
+        }
+    }
+
+    public function qtimer(){
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $session = $this->getRequest()->getSession();
+        $session->write('question_timer_left', $this->request->getData('timer'));
     }
 
     public function flashcards()
@@ -1293,13 +1323,14 @@ class ReservedController extends AppController
                     'user_ids' => $user_id
                 ],
                 'fields' => [
-                    'Courses.id',
-                    'Themes.id',
-                    'Themes.name'
+                    'course' => 'Courses.id',
+                    'theme' => 'Themes.id',
+                    'bla' => 'count(Themes.id)'
                 ],
-                'keyField' => 'Themes.id',
-                'valueField' => 'Themes.name', 
-                'groupField' => 'Courses.id',
+                'keyField' => 'theme',
+                'valueField' => 'bla', 
+                'group' => 'Themes.id',
+                'groupField' => 'course',
                 'order' => 'Courses.name ASC' 
             ])->toArray();     
 
@@ -1338,9 +1369,9 @@ class ReservedController extends AppController
                 ],
                 'contain' => 'Flashcards',
                 'conditions' => [
-                    'Flashcards.user_ids' => $user_id,
                     'UsersFlashcards.user_id' => $user_id,
-                    'correct' => 1
+                    'correct' => 1,
+                    'Flashcards.user_ids' => $user_id
                 ],
                 'keyField' => 'theme',
                 'valueField' => 'count',
@@ -1353,7 +1384,7 @@ class ReservedController extends AppController
         } else 
             $courses = null;
 
-       $this->set(compact('user_id','courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards', 'options'));
+       $this->set(compact('user_id','courses', 'answered', 'courses_', 'flashcards', 'answered', 'myFlashcards','myAnswered','options'));
     }
 
     public function flashAnswer()
@@ -1496,6 +1527,88 @@ class ReservedController extends AppController
         $this->set(compact('courses_', 'flashcards', 'options', 'courses'));
     }
 
+    public function forum($group_id = null)
+    {
+        $id = $this->Auth->user('id');
+        if(!isset($id))   return $this->redirect(['controller' => '/']);
+
+        $user = $this->loadModel('Users')->get($id, [
+            'contain' => [
+                'groups' => [
+                    'conditions' => [
+                        'deleted' => 0
+                    ],
+                    'Courses'
+                ]
+            ],
+        ])->toArray();
+
+        $courses = array();
+        foreach ($user['groups'] as $key => $value) {
+            $courses[$key] = $value['course']['id'];
+        }
+        
+        $groups = array();
+        foreach ($user['groups'] as $key => $value) {
+            $groups[$key] = $value['id'];
+        }
+
+        if($group_id != null && !in_array($group_id, $groups)){
+            $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
+            return $this->redirect(['action' => 'index']);
+        } elseif($group_id == null && !count($user['groups']) > 0)
+            $user['groups'] = 0;
+        elseif($group_id == null)
+            $group_id = $user['groups'][0]['id'];
+
+        if(@count($user['groups']) > 0){
+            $group = $this->loadModel('Groups')->find('all', [
+                'conditions' => [
+                    'id' => $group_id
+                ],
+                'contain' => [
+                    'Lectures' => [
+                        'Users'
+                    ]
+                ]
+            ])->first();
+
+            $surveys = $this->loadModel('Feed_user_surveys')->find('list', [
+                'conditions' => [
+                    'user_id' => $id, 
+                    'answered' => 0, 
+                    'course_id' => @$group['courses_id']
+                ], 
+                'keyField' => 'lecture_id', 
+                'valueField' => 'code'
+            ])->toArray();
+
+            $notifications = $this->loadModel('Notifications')->find('all', [
+                'conditions' => [
+                    'course_id' => @$group['courses_id'], 
+                    'active' => 1
+                ]
+            ])->toArray();
+
+            $themes = $this->loadModel('Themes')->find('all', [
+                'conditions' => [
+                    'courses_id' => @$group['courses_id']
+                ],
+                'contain' => [
+                    'Uploads' => [
+                        'conditions' => [
+                            'active' => 1, 
+                            'Uploads.city_id' => @$group['city_id']
+                        ]
+                    ]
+                ]
+            ])->indexBy('id')->toArray();      
+        }
+        
+
+        $this->set(compact( 'group', 'user', 'themes', 'notifications', 'surveys', 'courses'));
+    }
+
     public function flashWarning($contact = null)
     {
         $this->autoRender = false;
@@ -1515,7 +1628,6 @@ class ReservedController extends AppController
           } 
       }
     }
-
 
 
     /**

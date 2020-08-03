@@ -37,7 +37,7 @@ class UsersFlashcardsTable extends Table
 
         $this->setTable('users_flashcards');
         $this->setDisplayField('id');
-        $this->setPrimaryKey('id');
+        $this->setPrimaryKey(['flashcard_id', 'user_id']);
 
         $this->belongsTo('Flashcards', [
             'foreignKey' => 'flashcard_id'

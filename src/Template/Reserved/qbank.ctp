@@ -94,7 +94,7 @@
                     </div>
                     <?php if(isset($question_list) && isset($pointer)): ?>
                     <p class="small" style="margin-top: 30px">
-                        <a href="<?= $this->Url->build(["action" => "question", $pointer]) ?>" >
+                        <a href="<?= $this->Url->build(["action" => "question", $pointer, $timer]) ?>" >
                             <i class="fa  fa-play-circle"></i> 
                             <b>Continuar Sessão de Treino</b> 
                         </a>
