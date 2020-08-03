@@ -41,6 +41,12 @@
                             <?php endforeach; ?>
                         </div> 
                     </div>
+                    <div class="agreeTerms">
+                        <input type="checkbox" required>Declaro que li e aceito os termos e condições de formação descritos no Regulamento da Atividade Formativa da EKOS.
+                    </div>
+                    <div style="margin-top:15px;">
+                    <a href='/regulamento.pdf' target="_blank">    <i class="fa fa-download"></i> Regulamento </a>
+                    </div>                          
                     <input type='hidden' name='payment_type' value='2' />
                     <button class='btn btn-black' type='submit' >INSCREVER</button>
                 </form>
@@ -98,6 +104,50 @@
 }
 .btn-black{
   margin-top: 50px;
+}
+input[type='checkbox']{
+        -webkit-appearance: none;
+        width: 30px;
+        height: 30px;
+        outline: none;
+        border: 2px solid gray;
+        margin-left: 3px
+}
+input[type='checkbox']:before{
+        content: '';
+        display: block;
+        width: 50%;
+        height: 50%;
+        margin: 25% auto;
+}
+input[type="checkbox"]:checked:before{
+        background: #FEB000;
+}
+input[type='checkbox']:checked{
+    border: 2px solid #152335;
+}
+input[type='checkbox']:disabled{
+    border: 2px solid grey;
+    background: grey!important;
+}
+.agreeTerms{
+    padding-top: 45px;
+    position:relative;
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+    align-items: baseline;
+    height:90%;
+    font-size:12pt;
+    margin-left:50px;
+    text-align: left;
+}
+.agreeTerms input[type='checkbox']{
+    width:20px; 
+    height:20px; 
+    position:relative; 
+    top:5px;
+    margin-right: 5px;
 }
 </style>
 
