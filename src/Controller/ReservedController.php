@@ -1041,17 +1041,12 @@ class ReservedController extends AppController
             if($answer != '')
                 $question['a'.$answer]++;
 
-            if($question->users_question){
-                $question->users_question->correct = ($answer == $question['correct']);
-                $question->users_question->last_time = Time::now();
-            } else {
-                $user_question = $this->Questions->UsersQuestions->newEntity();
-                $user_question['question_id'] = $id;
-                $user_question['user_id'] = $user_id;
-                $user_question['correct'] = ($answer == $question['correct']);
-                $user_question['last_time'] = Time::now();
-                $question->users_question = $user_question;
-            }
+            $user_question = $this->Questions->UsersQuestions->newEntity();
+            $user_question['question_id'] = $id;
+            $user_question['user_id'] = $user_id;
+            $user_question['correct'] = ($answer == $question['correct']);
+            $user_question['last_time'] = Time::now();
+            $question->users_question = $user_question;
 
             $question_list = $session->read('question_list');
             $pointer = $session->read('question_pointer');
