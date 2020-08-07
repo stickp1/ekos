@@ -366,7 +366,7 @@ $('.t').on('change', function(){
 
 $(window).resize(optionStyle);
 
-$(document).ready(optionStyle());
+$(document).ready(optionStyle);
 </script>
 
   

@@ -9,6 +9,7 @@ use CakePdf\Pdf\CakePdf;
 use Cake\Datasource\ConnectionManager;
 use Cake\Database\Schema\TableSchema;
 use Cake\I18n\Time;
+use Cake\I18n\I18n;
 use Cake\Mailer\Email;
 use Cake\Routing\Router;
 use Cake\ORM\Query;
@@ -1519,6 +1520,26 @@ class ReservedController extends AppController
         $this->set(compact('courses_', 'flashcards', 'options', 'courses'));
     }
 
+    public function flashWarning($contact = null)
+    {
+        $this->autoRender = false;
+      if ($this->request->is('post')) {
+        
+          if($this->request->getData('answer') == 1){
+
+            $email = new Email('default');
+            
+            $email->to('geral@ekos.pt')
+                  ->emailFormat('html')
+                  ->subject('EKOS - Flashcard Report')
+                  ->send("<p>Olá,</p><p>Foi submetido um novo pedido de remoção de flashcards através do site da EKOS, com a seguinte identificação:
+                          </p>
+                          <p><b> ID do flashcard: </b>".$this->request->getData('id')."</p>
+                          <p><b> Pedido efetuado pelo utilizador: </b>".$this->request->getData('name')." - ".$this->request->getData('identidade')."</p>");
+          } 
+      }
+    }
+
     public function forum($group_id = null)
     {
         $id = $this->Auth->user('id');
@@ -1565,23 +1586,6 @@ class ReservedController extends AppController
                 ]
             ])->first();
 
-            $surveys = $this->loadModel('Feed_user_surveys')->find('list', [
-                'conditions' => [
-                    'user_id' => $id, 
-                    'answered' => 0, 
-                    'course_id' => @$group['courses_id']
-                ], 
-                'keyField' => 'lecture_id', 
-                'valueField' => 'code'
-            ])->toArray();
-
-            $notifications = $this->loadModel('Notifications')->find('all', [
-                'conditions' => [
-                    'course_id' => @$group['courses_id'], 
-                    'active' => 1
-                ]
-            ])->toArray();
-
             $themes = $this->loadModel('Themes')->find('all', [
                 'conditions' => [
                     'courses_id' => @$group['courses_id']
@@ -1597,55 +1601,136 @@ class ReservedController extends AppController
             ])->indexBy('id')->toArray();      
         }
 
-        $messages = [
-            [
-                'content' => 'this course sucks man',
-                'children' => [
-                    'Amen broda',
-                    'Fuck you all',
-                    'Underrated comment'
-                ]
-            ],
-            [
-                'content' => 'content evades persuasion',
-                'children' => [
-                    'laundry evades contamination',
-                    'grass leaps towards rumination',
-                    'i seek eternal dissertation'
-                ]
-            ],
-            [
-                'content' => 'moon',
-                'children' => [
-                    'is lawn',
-                    'is shine',
-                    'is mane'
-                ]
-            ],
-        ];
-        
+        $messages = [];
 
-        $this->set(compact( 'group', 'user', 'themes', 'notifications', 'surveys', 'courses', 'messages'));
+        $messages = $this->loadModel('ThemeMessages')->find('all', [
+            'contain' => 'Users',
+            'conditions' => 'parent_id is NULL',
+            'fields' => [
+                'id',
+                'parent_id',
+                'lft',
+                'rght',
+                'title',
+                'message',
+                'theme_id',
+                'user' => "concat(Users.first_name,' ',Users.last_name)",
+                'date_created',
+                'date_last',
+                'upvotes'
+            ]
+        ]);
+
+        $messages = $messages->groupBy('theme_id')->toArray();
+        foreach($messages as $theme => $messageList)
+            foreach($messageList as $message)
+                $message['children'] = $this->ThemeMessages->childCount($message); 
+
+        $replyPermission = 1;
+
+        I18n::setLocale('pt_PT');
+
+        $this->set(compact('replyPermission','group', 'user', 'themes', 'courses', 'messages'));
     }
 
-    public function flashWarning($contact = null)
+    public function messageGet()
+    {
+        
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $user_id = $this->Auth->user('id');
+
+        if($user_id)
+        {
+            $this->loadModel('ThemeMessages');
+            $messages = $this->ThemeMessages->find('children', [
+                'for' => $this->request->getData('parent'),
+                'contain' => 'Users',
+                'fields' => [
+                    'id',
+                    'user' => "concat(Users.first_name,' ',Users.last_name)",
+                    'date_created',
+                    'upvotes',
+                    'title',
+                    'message'
+                ]
+            ]);
+            I18n::setLocale('pt_PT');
+            foreach($messages as $message)
+                $message['date_created'] = $message['date_created']->timeAgoInWords();
+
+            $this->response->body(json_encode($messages));
+        }
+        else
+            return $this->redirect(['controller' => '/']);
+    }
+
+    public function messageCreate()
     {
         $this->autoRender = false;
-      if ($this->request->is('post')) {
-        
-          if($this->request->getData('answer') == 1){
+        $this->request->allowMethod(['post']);
+        $user_id = $this->Auth->user('id');
 
-            $email = new Email('default');
-            
-            $email->to('geral@ekos.pt')
-                  ->emailFormat('html')
-                  ->subject('EKOS - Flashcard Report')
-                  ->send("<p>Olá,</p><p>Foi submetido um novo pedido de remoção de flashcards através do site da EKOS, com a seguinte identificação:
-                          </p>
-                          <p><b> ID do flashcard: </b>".$this->request->getData('id')."</p>
-                          <p><b> Pedido efetuado pelo utilizador: </b>".$this->request->getData('name')." - ".$this->request->getData('identidade')."</p>");
-          } 
-      }
+        $continue = true;
+
+        if($user_id)
+        {
+            $this->loadModel('ThemeMessages');
+            $now = Time::now();
+
+            if(!$this->request->getData('parent'))
+            {
+                $message = $this->ThemeMessages->newEntity([
+                    'theme_id' => $this->request->getData('theme_id'),
+                    'user_id' => $user_id,
+                    'title' => $this->request->getData('title'),
+                    'message' => $this->request->getData('message'),
+                    'date_created' => $now,
+                    'date_last' => $now
+                ]);
+            } 
+            else 
+            {
+                $message = $this->ThemeMessages->newEntity([
+                    'theme_id' => $this->request->getData('theme_id'),
+                    'user_id' => $user_id,
+                    'message' => $this->request->getData('message'),
+                    'date_created' => $now,
+                    'date_last' => $now
+                ]);
+                $message->parent_id = $this->request->getData('parent');
+                
+                $parent = $this->ThemeMessages->get($this->request->getData('parent'));
+                $parent->date_last = $now;
+                
+                if(!$this->ThemeMessages->save($parent)) 
+                    $continue = false;
+            }
+            if($continue && $this->ThemeMessages->save($message))
+                $this->Flash->success(__('A mensagem foi submetida!')); 
+            else
+                $this->Flash->error('Alguma coisa correu mal...');
+        }
+    }
+
+    public function messageUpvote()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $user_id = $this->Auth->user('id');
+
+        if($user_id && $this->request->getData('id'))
+        {
+            $this->loadModel('ThemeMessages');
+  
+            $message = $this->ThemeMessages->get($this->request->getData('id'));
+            $message->upvotes += 1;
+                
+            if($this->ThemeMessages->save($message))
+                $this->Flash->success(__('A mensagem foi submetida!')); 
+            else
+                $this->Flash->error('Alguma coisa correu mal...');
+        }
     }
 
 

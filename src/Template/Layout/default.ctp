@@ -169,34 +169,34 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
     </nav>
 
     <div class="modal fade" id="report">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h1 class="modal-title text-center">Erro/Sugestão</h1>
-                    </div>
-                    <div class="modal-body">
-                        <?= $this->Form->create('Form', ['url' => ['controller' => 'frontend', 'action' => 'report'], 'id' => 'report-form']) ?>
-                            <div id="textDiv">
-                                <input type="hidden" class="form-control" name="report-url" value=<?php echo $this->request->here; ?>/>
-                                <input type="hidden" class="form-control" name="report-param" id="report-param"/>
-                                <textarea class="form-control" id="report-message" name="report-message" rows="5" placeholder="Escreve aqui o erro/sugestão" required></textarea>
-                                <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
-                            </div>
-                            <div class="modal-footer row">
-                                <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
-                                </div>
-                                <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
-                                    <button type="submit" class="btn btn-black">Submeter</button>
-                                </div> 
-                            </div>
-                        <?= $this->Form->end() ?>
-                    </div>
-                    
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h1 class="modal-title text-center">Erro/Sugestão</h1>
                 </div>
+                <div class="modal-body">
+                    <?= $this->Form->create('Form', ['url' => ['controller' => 'frontend', 'action' => 'report'], 'id' => 'report-form']) ?>
+                        <div id="textDiv">
+                            <input type="hidden" class="form-control" name="report-url" value=<?php echo $this->request->here; ?>/>
+                            <input type="hidden" class="form-control" name="report-param" id="report-param"/>
+                            <textarea class="form-control" id="report-message" name="report-message" rows="5" placeholder="Escreve aqui o erro/sugestão" required></textarea>
+                            <textarea class="form-control" id="report-contact" name="report-contact" rows=1 placeholder="Contacto (opcional)"></textarea>
+                        </div>
+                        <div class="modal-footer row">
+                            <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
+                            </div>
+                            <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
+                                <button type="submit" class="btn btn-black">Submeter</button>
+                            </div> 
+                        </div>
+                    <?= $this->Form->end() ?>
+                </div>
+                
             </div>
+        </div>
     </div>
     
     <div id='main_container'>
