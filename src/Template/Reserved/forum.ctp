@@ -10,6 +10,7 @@
                               <li <?=  @$this->request->params['action'] == 'index' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "index"]) ?>">Cursos</a></li>
                               <li <?=  @$this->request->params['action'] == 'qbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "qbank"]) ?>">Perguntas</a></li>
                               <li <?=  @$this->request->params['action'] == 'fbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "fbank"]) ?>">Flashcards</a></li>
+                              <li <?=  @$this->request->params['action'] == 'forum' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "forum"]) ?>">Dúvidas</a></li>
                               <?php if(in_array(16, $courses) || in_array(15, $courses)): ?> <li <?=  @$this->request->params['action'] == 'ebank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "ebank"]) ?>">Exames</a></li> <?php endif; ?>
                               <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>
                           </ul>
@@ -43,19 +44,17 @@
                   
                     <?php if($user['groups']): ?>
                         
-                        <?php foreach ($group['lectures'] as $key => $lecure): ?>
+                        <?php foreach ($group['lectures'] as $key => $lecture): ?>
                             
                             <?php $themes_ = explode(',', $lecture['themes']); ?>
                             
                             <?php if($lecture['themes'] != ''): ?>
                                 
                                 <?php foreach ($themes_ as $theme_id): ?>
-                                    <tr class='primary' id="<?= $value2?>" >
+                                    
+                                    <tr class='primary' id="<?= $theme_id?>" >
                                         <td>
-                                            <?= $themes[$theme_id]['name'] ?>   
-                                            <span class='small'>
-                                                <?= isset($surveys[$lecture['id']]) ? '<a href="'.$this->Url->build(["controller" => "frontend", "action" => "feedback", $surveys[$lecture['id']]]).'"><i class="fa fa-exclamation-triangle"></i></a>':''?>
-                                            </span>
+                                            <?= $themes[$theme_id]['name'] ?>
                                         </td>
                                         <td> 
                                             <span class='small' style='color: #FEB000'>
@@ -63,52 +62,34 @@
                                             </span>
                                         </td>
                                         <td width='50px'>
-                                            <i class="fa fa-chevron-down" id='arrow_<?= $value2?>'>
+                                            <i class="fa fa-chevron-down" id='arrow_<?= $theme_id?>'>
                                             </i>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                            <div class='dependency d<?= $value2?> closed'>
-                                                <table style='width: 100%;'>
-                                                    <p>Esclarecimento de Dúvidas</p>
-                                                    <div id="qAccordion">
-                                                        <?php foreach($messages as $key => $message): ?>
-                                                            <p>
-                                                                <a class="collapse" href="#" data-target="#<?='#m'.$key?>" data-toggle="collapse" aria-expanded="false">
-                                                                  <?= $message['content']?>
-                                                                </a>
-                                                            </p>
-                                                            <div class="collapse" data-parent="#qAccordion" id="<?='#m'.$key?>" aria-expanded="false">
-                                                                <?= $message['children'] ?>
-                                                            </div>
-                                                        <?php endforeach ?>
-                                                    </div>
-                                                    <tr class='class-list' style='border-top: 1px solid #152335; border-bottom: 1px solid #152335'>
-                                                        <td colspan='2'>
-                                                            <span style='margin-right: 25px'>
-                                                                <?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('dd.MM.yyyy') : '' ?>
-                                                            </span>
-                                                            <span style='margin-right: 25px'>
-                                                                <?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
-                                                            </span>
-                                                            <span style='margin-right: 25px'>
-                                                                <?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span><span style='margin-right: 25px'><?= $lecture['place']?>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    <?php if(count($themes[$theme_id]['uploads']) > 0): ?>
-                                                        <?php foreach ($themes[$theme_id]['uploads'] as $value3): ?>
-                                                            <tr>
-                                                                <td style='padding: 5px 5px 5px 30px'><span class='small'> <?= $this->Html->link('<i class="fa fa-download" style="margin-right:10px;"></i>'.$value3['name'], ['action' => 'file', $value3['id'], $value3['name']], ['escape' => false, 'target' => '_blank']) ?> </span>
-                                                                </td>
-                                                            </tr>
-                                                        <?php endforeach ?>
-                                                    <?php else: ?>
+                                            <div class='dependency d<?= $theme_id?> closed'>
+                                                <table class="messageList">
+                                                    <?php foreach($messages as $key => $message): ?>
                                                         <tr>
-                                                            <td style='padding: 5px 5px 5px 30px'><span class='small'><em>Sem ficheiros para descarregar.</em></span></td>
+                                                            <td>
+                                                                <a href="#">
+                                                                  <?= $message['content'] ?>
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <?= count($message['children']) ?>
+                                                            </td>
                                                         </tr>
-                                                    <?php endif ?>
+                                                        <tr>
+                                                            <td>
+                                                                <span>Última publicação por zé . há 7 horas</span> 
+                                                            </td> 
+                                                            <td>
+                                                                <span>respostas</span>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach ?>
                                                 </table>
                                             </div>
                                         </td>
@@ -117,20 +98,20 @@
 
                             <?php else: ?>
                   
-                                <tr class='primary' id="<?= $value['id']?>" >
-                                    <td><span><?= $value['description']?></span></td>
+                                <tr class='primary' id="<?= $lecture['id']?>" >
+                                    <td><span><?= $lecture['description']?></span></td>
                                     <td> </td>
-                                    <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $value['id']?>'></i></td>
+                                    <td width='50px'><i class="fa fa-chevron-down" id='arrow_<?= $lecture['id']?>'></i></td>
                                 </tr>
                                 <tr>
                                     <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                        <div class='dependency d<?= $value['id']?> closed'>
+                                        <div class='dependency d<?= $lecture['id']?> closed'>
                                             <table style='width: 100%;'>
                                                 <tr class='class-list' style='border-top: 1px solid #152335; border-bottom: 1px solid #152335'>
                                                     <td colspan='2'>
-                                                        <span style='margin-right: 25px'><?= $value->has('datetime') ?$value['datetime']->i18nFormat('dd.MM.yyyy') : '' ?></span>
-                                                        <span style='margin-right: 25px'><?= $value->has('datetime') ? $value['datetime']->i18nFormat('HH')."h" : '' ?><?= $value->has('datetime') ? $value['datetime']->i18nFormat('mm'): '' ?></span>
-                                                        <span style='margin-right: 25px'><?= $value['user']['first_name']." ".$value['user']['last_name']?></span><span style='margin-right: 25px'><?= $value['place']?></span>
+                                                        <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('dd.MM.yyyy') : '' ?></span>
+                                                        <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?></span>
+                                                        <span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span><span style='margin-right: 25px'><?= $lecture['place']?></span>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -158,6 +139,40 @@ table.courses-list tr td:nth-child(2){
   width: 100px;
   text-align: right;
 }
+#services {
+    padding-bottom: 180px;
+}
+table.messageList{
+    width: 90%; 
+    margin: auto; 
+    border: 1px solid black;
+
+    border-collapse: unset;
+    margin-bottom: 10px;
+}
+table.messageList tr:nth-child(even){
+    border-bottom: 1px solid black;
+}
+table.messageList td{
+    padding: 10px;
+}
+table.messageList td span{
+    font-size:12px;
+}
+table.messageList tr:nth-child(odd) td{
+    padding-bottom: 0;
+}
+table.messageList tr:nth-child(even) td{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+table.messageList tr td:last-child{
+    text-align: center;
+}
+table.messageList tr:last-child{
+    border-bottom: none;
+}
+
 </style>
 
 

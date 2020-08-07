@@ -1490,7 +1490,6 @@ class ReservedController extends AppController
             'valueField' => 'groups_courses_id'
         ])->toArray();
 
-
         $courses = $this->Courses->find('all', [
             'conditions' => [
                 'id > ' => 1, 
@@ -1501,8 +1500,6 @@ class ReservedController extends AppController
 
         $options = $courses->combine('id', 'name');
         $courses = $courses->indexBy('id')->toArray();
-
-        
 
         $flashcards = $this->paginate($this->Flashcards->find('all', [
                 'contain' => [
@@ -1599,9 +1596,36 @@ class ReservedController extends AppController
                 ]
             ])->indexBy('id')->toArray();      
         }
+
+        $messages = [
+            [
+                'content' => 'this course sucks man',
+                'children' => [
+                    'Amen broda',
+                    'Fuck you all',
+                    'Underrated comment'
+                ]
+            ],
+            [
+                'content' => 'content evades persuasion',
+                'children' => [
+                    'laundry evades contamination',
+                    'grass leaps towards rumination',
+                    'i seek eternal dissertation'
+                ]
+            ],
+            [
+                'content' => 'moon',
+                'children' => [
+                    'is lawn',
+                    'is shine',
+                    'is mane'
+                ]
+            ],
+        ];
         
 
-        $this->set(compact( 'group', 'user', 'themes', 'notifications', 'surveys', 'courses'));
+        $this->set(compact( 'group', 'user', 'themes', 'notifications', 'surveys', 'courses', 'messages'));
     }
 
     public function flashWarning($contact = null)
