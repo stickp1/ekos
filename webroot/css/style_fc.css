@@ -294,10 +294,11 @@ a.navi:hover{
 
 #favselDiv .hovertext {
   position:absolute;
-  right:35px;
+  right:20px;
   top:30px;
   visibility:hidden;
   font-size:0.5em;
+  width: 120px;
 }
 #favselDiv:hover .hovertext{
   visibility:visible;
@@ -305,15 +306,23 @@ a.navi:hover{
 
 #flashlessDiv .hovertext {
   position:absolute;
-  right:5px;
+  right:20px;
   top:30px;
   visibility:hidden;
   font-size:0.5em;
+  width: 120px;
 }
 #flashlessDiv:hover .hovertext{
   visibility:visible;
 }
-
+@media(max-width: 991px){
+	#favselDiv .hovertext{
+		right: -30px;
+	}
+	#flashlessDiv .hovertext{
+		right: -30px;
+	}
+}
 #loader img{
   position: absolute;
   width: 100px;
