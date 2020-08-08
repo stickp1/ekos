@@ -1473,6 +1473,17 @@ class ReservedController extends AppController
             return $this->redirect(['controller' => '/']);
     }
 
+    public function flashDelete()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $flashcard = $this->loadModel('Flashcards')->get($this->request->getData('id'));
+        if ($this->Flashcards->delete($flashcard))
+            $this->Flash->success(__('O flashcard foi eliminado')); 
+        else 
+            $this->Flash->error(__('Ocorreu um erro. Por favor, tenta novamente.'));
+    }
+
     public function myflashcards()
     {
         $user_id = $this->Auth->user('id');

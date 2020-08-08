@@ -52,8 +52,8 @@
                                                 <td id="<?= $question->theme_id ?>"><?= $question->theme['name']?></td>
                                                 
                                                 <td style='text-align:right'> 
-                                                    <a href="#" id="edit<?= $question->id ?>" class="editFlash" style="margin-right:10px" data-toggle="modal" data-target="#editFlash-modal" class="btn"><i class="fa fa-edit"></i></a>
-                                                    <?= $this->Form->postLink('<i class="fa fa-trash" style="margin-right:10px"></i>', ['action' => 'delete', $question->id], ['escape' => false, 'confirm' => __('Tens a certeza que pretendes eliminar o flashcard?')]) ?>
+                                                    <a href="#" id="edit<?= $question->id ?>" class="editFlash" style="margin-right:10px" data-toggle="modal" data-target="#editFlash-modal"><i class="fa fa-edit"></i></a>
+                                                    <a href="#" id="del<?= $question->id ?>" class="delFlash" style="margin-right:10px"><i class="fa fa-trash"></i></a>
                                                 </td>
                                             </tr>
                                         <?php endforeach ?> 
@@ -248,6 +248,17 @@ $('.editFlash').on('click', function(){
     $('#editFlash-modal select[name="course"]').val($('#tr'+id+' td:nth-child(3)').attr('id'));
     $('#editFlash-modal select[name="course"]').change();
     $('#editFlash-modal select[name="theme"]').val($('#tr'+id+' td:nth-child(4)').attr('id'));
+});
+
+$('.delFlash').on('click', function(){
+    flash_id = $(this).attr('id').match(/\d+/g);
+    console.log(flash_id[0]);
+    if(confirm("Tens a certeza que pretender eliminar o flashcard?"))
+      $.post( "<?= $url?>/reserved/flash-delete", {
+        id: flash_id[0]
+      }).done(function(data){
+        location.reload();
+      });
 });
 
 setTimeout(function(){
