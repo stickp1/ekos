@@ -36,7 +36,7 @@
               		  <div class='col-md-6'>
               			    <div class="form-group">
                             <div class="label" style='float:left'>Contacto</div>
-                            <input type="text" class="form-control" placeholder="Inserir email ou telefone" name='contacto' <?= isset($contact) ? "value='$contact[contacto]'" : "" ?> required/>
+                            <input type="text" class="form-control" placeholder="Inserir email" name='contacto' <?= isset($contact) ? "value='$contact[contacto]'" : "" ?> required/>
                         </div>
               		  </div>
             	  </div>
