@@ -779,6 +779,7 @@ class ReservedController extends AppController
                         'UsersQuestions.favorite'
                     ],
                     'conditions'=> $all,
+                    'limit' => 1000,
                     'order' => [
                         'UsersQuestions.correct' => 'ASC',
                         'UsersQuestions.last_time' => 'ASC',
@@ -1004,10 +1005,11 @@ class ReservedController extends AppController
                 }
                 $user_data = $this->Questions->UsersQuestions->newEntities($user_data);
                 $user_data = $this->Questions->UsersQuestions->saveMany($user_data);
+                $this->set(compact('user_data'));
             }
 
             $session->write('question_pointer', $pointer);
-            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'timer0','cans', 'wans', 'nans', 'user_data'));
+            $this->set(compact('question_list', 'questions', 'pointer', 'question_ids', 'timer', 'timer0','cans', 'wans', 'nans'));
        }
        $this->set(compact('courses'));  
     }
@@ -1120,7 +1122,8 @@ class ReservedController extends AppController
         }
     }
 
-    public function qtimer(){
+    public function qtimer()
+    {
         $this->autoRender = false;
         $this->request->allowMethod(['post']);
         $session = $this->getRequest()->getSession();
@@ -1472,6 +1475,17 @@ class ReservedController extends AppController
                 $this->Flash->error('Alguma coisa correu mal...');
         } else
             return $this->redirect(['controller' => '/']);
+    }
+
+    public function flashDelete()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $flashcard = $this->loadModel('Flashcards')->get($this->request->getData('id'));
+        if ($this->Flashcards->delete($flashcard))
+            $this->Flash->success(__('O flashcard foi eliminado')); 
+        else 
+            $this->Flash->error(__('Ocorreu um erro. Por favor, tenta novamente.'));
     }
 
     public function myflashcards()
