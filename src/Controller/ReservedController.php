@@ -779,7 +779,6 @@ class ReservedController extends AppController
                         'UsersQuestions.favorite'
                     ],
                     'conditions'=> $all,
-                    'limit' => 1000,
                     'order' => [
                         'UsersQuestions.correct' => 'ASC',
                         'UsersQuestions.last_time' => 'ASC',
@@ -1712,8 +1711,10 @@ class ReservedController extends AppController
             ]
         ])->limit(5)->page($page);
 
-        foreach($messages as $message)
-                $message['date_last'] = $message['date_last']->timeAgoInWords();
+        foreach($messages as $message){
+            $message['children'] = $this->ThemeMessages->childCount($message); 
+            $message['date_last'] = $message['date_last']->timeAgoInWords();
+        }
 
         $this->response->body(json_encode($messages));
     }

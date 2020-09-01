@@ -480,7 +480,7 @@ function getMessageTable(theme, page){
             );
             $('.messageList tbody tr:nth-last-child(2) td:first-child a').text(value['title']);
             $('.messageList tbody tr:nth-last-child(2) td:first-child a').attr('id', 'message' + value['id']);
-            $('.messageList tbody tr:nth-last-child(2) td:last-child').text('Algumas....');
+            $('.messageList tbody tr:nth-last-child(2) td:last-child').text(value['children']);
             $('.messageList tbody tr:last-child td:first-child span:first-child').text('Última publicação por ' + value['user'] + ' ·');
             $('.messageList tbody tr:last-child td:first-child span:last-child').text(value['date_last']);
             $('.messageList tbody tr:last-child td:last-child span').text('respostas');
@@ -500,7 +500,6 @@ $('#tempReplies').on('click', '.fa-thumbs-up', function () {
 });
 
 $('.primary').on('click', function(){
-    console.log('vtou');
   id = $(this).attr('id');
   if($('.dependency#d'+id).hasClass('closed')){
     $('.dependency').addClass('closed');
