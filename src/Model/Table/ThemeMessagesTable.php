@@ -26,10 +26,6 @@ class ThemeMessagesTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        //$this->belongsTo('Themes', [
-        //    'foreignKey' => 'question_id'
-        //]);
-
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);

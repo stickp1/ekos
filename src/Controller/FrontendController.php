@@ -572,9 +572,4 @@ class FrontendController extends AppController
         header("Content-Disposition: inline; filename=".$upload['url']);
         readfile('http://ekos.pt/img/uploads/'.$upload['url']);
     }
-
-    public function example()
-    {
-      
-    }
 }

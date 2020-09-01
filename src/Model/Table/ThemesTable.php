@@ -45,6 +45,9 @@ class ThemesTable extends Table
         $this->hasMany('Uploads', [
             'foreignKey' => 'theme_id'
         ]);
+        $this->hasMany('ThemeMessages', [
+            'foreignKey' => 'theme_id'
+        ]);
     }
 
     /**

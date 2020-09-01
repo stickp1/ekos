@@ -816,7 +816,7 @@ class ReservedController extends AppController
                     }
                 }
            
-                $question_list = array_chunk($question_list, $this->request->getData('number'), true);
+                $question_list = array_chunk(array_slice($question_list, 0, 1000, true), $this->request->getData('number'), true);
                 $pointer = 0;
                 $timer = isset($timer) ? ($timer == 1 ? $this->request->getData('time-lim') : 0) : null;
                 $session->write('question_list', $question_list);
@@ -1540,16 +1540,19 @@ class ReservedController extends AppController
       }
     }
 
-    public function forum($group_id = null)
+    public function forum($group_id = null, $course_id = null, $theme_anchor = null)
     {
         $id = $this->Auth->user('id');
         if(!isset($id))   return $this->redirect(['controller' => '/']);
+
+        $maxPerPage = 5; 
 
         $user = $this->loadModel('Users')->get($id, [
             'contain' => [
                 'groups' => [
                     'conditions' => [
-                        'deleted' => 0
+                        'deleted' => 0,
+                        'courses_id not in' => [1, 15, 16, 17]
                     ],
                     'Courses'
                 ]
@@ -1557,24 +1560,34 @@ class ReservedController extends AppController
         ])->toArray();
 
         $courses = array();
-        foreach ($user['groups'] as $key => $value) {
+        foreach ($user['groups'] as $key => $value)
             $courses[$key] = $value['course']['id'];
-        }
         
         $groups = array();
-        foreach ($user['groups'] as $key => $value) {
-            $groups[$key] = $value['id'];
-        }
+        foreach ($user['groups'] as $key => $value)
+            $groups[$value['courses_id']] = $value['id'];
 
-        if($group_id != null && !in_array($group_id, $groups)){
+        if($group_id && !in_array($group_id, $groups))
+        {
             $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
             return $this->redirect(['action' => 'index']);
-        } elseif($group_id == null && !count($user['groups']) > 0)
+        } 
+        elseif(!$group_id && !count($user['groups']) > 0)
+        {
             $user['groups'] = 0;
-        elseif($group_id == null)
-            $group_id = $user['groups'][0]['id'];
+        }
+        elseif(!$group_id)
+        {   
+            if($course_id)
+            { 
+                $group_id = $groups[$course_id];
+                $this->set(compact('theme_anchor'));
+            }
+            else $group_id = $user['groups'][0]['id'];
+        }
 
-        if(@count($user['groups']) > 0){
+        if(@count($user['groups']) > 0)
+        {
             $group = $this->loadModel('Groups')->find('all', [
                 'conditions' => [
                     'id' => $group_id
@@ -1590,18 +1603,8 @@ class ReservedController extends AppController
                 'conditions' => [
                     'courses_id' => @$group['courses_id']
                 ],
-                'contain' => [
-                    'Uploads' => [
-                        'conditions' => [
-                            'active' => 1, 
-                            'Uploads.city_id' => @$group['city_id']
-                        ]
-                    ]
-                ]
             ])->indexBy('id')->toArray();      
         }
-
-        $messages = [];
 
         $messages = $this->loadModel('ThemeMessages')->find('all', [
             'contain' => 'Users',
@@ -1609,15 +1612,13 @@ class ReservedController extends AppController
             'fields' => [
                 'id',
                 'parent_id',
-                'lft',
-                'rght',
                 'title',
-                'message',
                 'theme_id',
                 'user' => "concat(Users.first_name,' ',Users.last_name)",
-                'date_created',
                 'date_last',
-                'upvotes'
+            ],
+            'order' => [
+                'date_last' => 'DESC'
             ]
         ]);
 
@@ -1628,9 +1629,7 @@ class ReservedController extends AppController
 
         $replyPermission = 1;
 
-        I18n::setLocale('pt_PT');
-
-        $this->set(compact('replyPermission','group', 'user', 'themes', 'courses', 'messages'));
+        $this->set(compact('maxPerPage','replyPermission','group', 'user', 'themes', 'courses', 'messages'));
     }
 
     public function messageGet()
@@ -1643,8 +1642,13 @@ class ReservedController extends AppController
         if($user_id)
         {
             $this->loadModel('ThemeMessages');
-            $messages = $this->ThemeMessages->find('children', [
-                'for' => $this->request->getData('parent'),
+            $messages = $this->ThemeMessages->find('all', [
+                'conditions' => [
+                    'OR' => [
+                        'parent_id' => $this->request->getData('parent'),
+                        'ThemeMessages.id' => $this->request->getData('parent')
+                    ]
+                ],
                 'contain' => 'Users',
                 'fields' => [
                     'id',
@@ -1653,9 +1657,12 @@ class ReservedController extends AppController
                     'upvotes',
                     'title',
                     'message'
+                ],
+                'order' => [
+                    'date_created' => 'ASC'
                 ]
+
             ]);
-            I18n::setLocale('pt_PT');
             foreach($messages as $message)
                 $message['date_created'] = $message['date_created']->timeAgoInWords();
 
@@ -1663,6 +1670,38 @@ class ReservedController extends AppController
         }
         else
             return $this->redirect(['controller' => '/']);
+    }
+
+    public function messageTableGet()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $theme_id = $this->request->getData('theme');
+        $page = $this->request->getData('page');
+
+        $messages = $this->loadModel('ThemeMessages')->find('all', [
+            'contain' => 'Users',
+            'conditions' => [
+                'parent_id is NULL',
+                'theme_id' => $theme_id
+            ],
+            'fields' => [
+                    'id',
+                    'user' => "concat(Users.first_name,' ',Users.last_name)",
+                    'date_last',
+                    'upvotes',
+                    'title',
+                    'message'
+            ],
+            'order' => [
+                'date_last' => 'DESC'
+            ]
+        ])->limit(5)->page($page);
+
+        foreach($messages as $message)
+                $message['date_last'] = $message['date_last']->timeAgoInWords();
+
+        $this->response->body(json_encode($messages));
     }
 
     public function messageCreate()
@@ -1688,6 +1727,11 @@ class ReservedController extends AppController
                     'date_created' => $now,
                     'date_last' => $now
                 ]);
+
+                $email_body = "<p>Foi submetida uma nova dúvida relativamente a uma aula em que és formador.</p>
+                    <p><b>Título da dúvida: </b>".$message->title."</p>
+                    <p><b>Conteúdo da dúvida: </b>".$message->message."</p>
+                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href=".Router::url(['action' => 'forum',0, $this->request->getData('course'), $this->request->getData('theme_id')], true).">Responder</a>";
             } 
             else 
             {
@@ -1705,12 +1749,49 @@ class ReservedController extends AppController
                 
                 if(!$this->ThemeMessages->save($parent)) 
                     $continue = false;
+
+                 $email_body = "<p>Foi submetida uma nova resposta a uma dúvida que estás a seguir.</p>
+                    <p><b>Título da dúvida original: </b>".$parent->title."</p>
+                    <p><b>Conteúdo da mensagem: </b>".$message->message."</p>
+                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href=".Router::url(['action' => 'forum',0, $this->request->getData('course'), $this->request->getData('theme_id')], true).">Ver conversa</a>";
             }
-            if($continue && $this->ThemeMessages->save($message))
-                $this->Flash->success(__('A mensagem foi submetida!')); 
+            if($continue && $this->ThemeMessages->save($message)){
+
+                $users = $this->loadModel('ThemeMessages')->find('list', [
+                    'contain' => 'Users',
+                    'conditions' => [
+                        'OR' => [
+                            'parent_id' => $this->request->getData('parent'),
+                            'ThemeMessages.id' => $this->request->getData('parent')
+                        ]
+                    ],
+                    'fields' => [
+                        'theme' => 'ThemeMessages.id',
+                        'contact' => 'Users.email'
+                    ],
+                    'valueField' => 'contact'
+                ]);
+
+                $usersNot = $users->where(['notify' => 1]);
+
+                $users = array_diff($users, $usersNot);
+                $users = ['crisb7@hotmail.com'];
+
+                $email = new Email('default');
+            
+                $email->bcc($users)
+                      ->emailFormat('html')
+                      ->subject('EKOS - Nova mensagem')
+                      ->send($this->email_template("", $email_body));
+
+
+                $this->Flash->success(__('A mensagem foi submetida!'));
+            }
             else
                 $this->Flash->error('Alguma coisa correu mal...');
         }
+        else
+            return $this->redirect(['controller' => '/']);
     }
 
     public function messageUpvote()
@@ -1732,7 +1813,6 @@ class ReservedController extends AppController
                 $this->Flash->error('Alguma coisa correu mal...');
         }
     }
-
 
     /**
      * Verifica se o diretório existe, se não ele cria.
@@ -1852,7 +1932,8 @@ class ReservedController extends AppController
 
      }
 
-     private function email_template($name, $body) {
+    private function email_template($name, $body) 
+    {
 
         return '<body bgcolor="#FFFFFF" style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; height: 100%; margin: 0; padding: 0; width: 100% !important;">
                   <style>
@@ -1910,7 +1991,7 @@ class ReservedController extends AppController
                               <tbody>
                                 <tr style="font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; margin: 0; padding: 0;">
                                   <td style="font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; margin: 0; padding: 0;">
-                                    <h3 style="color: #000; font-family: \'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', Helvetica, Arial, \'Lucida Grande\', sans-serif; font-size: 27px; font-weight: 500; line-height: 1.1; margin: 0; margin-bottom: 15px; padding: 0;"> Olá '.$name.',</h3>
+                                    <h3 style="color: #000; font-family: \'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', Helvetica, Arial, \'Lucida Grande\', sans-serif; font-size: 27px; font-weight: 500; line-height: 1.1; margin: 0; margin-bottom: 15px; padding: 0;"> Olá'.$name.',</h3>
                                     <div style="font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.6; margin: 0; margin-bottom: 10px; padding: 0;">
                                      '.$body.'
                                      </div>
@@ -1932,5 +2013,6 @@ class ReservedController extends AppController
 
                 </html>';
     }
+
 
 }

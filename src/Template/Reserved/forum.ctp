@@ -61,16 +61,15 @@
                                     </tr>
                                     <tr class="messageList" id="t<?= $theme_id ?>">
                                         <td colspan='3' style='padding:0; background-color: #f5f5f5'>
-                                            <div class='dependency d<?= $theme_id?> closed'>
-                                                <?php if(array_key_exists($theme_id, $messages)): ?>
+                                            <div class='dependency closed' id='d<?= $theme_id?>'>
+                                                <?php if(isset($messages[$theme_id])): ?>
+                                                    <?php $pageNr = ceil(count($messages[$theme_id]) / $maxPerPage); ?>
+                                                    <input type="hidden" class="pageInfo" id="<?= $pageNr ?>" value=1>
                                                     <table class="messageList">
                                                         <?php foreach($messages[$theme_id] as $key => $message): ?>
+                                                            <?php if($key == $maxPerPage) break ?>
                                                             <tr>
                                                                 <td>
-                                                                    <input type="hidden" name="message" value="<?= $message['message'] ?>">
-                                                                    <input type="hidden" name="user" value="<?= $message['user'] ?>">
-                                                                    <input type="hidden" name="date" value="<?= $message['date_last']->timeAgoInWords() ?>">
-                                                                    <input type="hidden" name="upvotes" value="<?= $message['upvotes'] ?>">
                                                                     <a href="#" class="messageToggle" id="message<?= $message['id'] ?>">
                                                                       <?= $message['title'] ?>
                                                                     </a>
@@ -89,6 +88,12 @@
                                                             </tr>
                                                         <?php endforeach ?>
                                                     </table>
+                                                    <button class="nextPage changePage <?= $pageNr>1 ? '' : 'invisible'?>">
+                                                        <i class="fa fa-arrow-right"></i>
+                                                    </button>
+                                                    <button class="prevPage changePage <?= $pageNr>1 ? '' : 'invisible'?>">
+                                                        <i class="fa fa-arrow-left"></i>
+                                                    </button>
                                                 <?php endif ?>
                                                 <button class="btn btn-black newMessage">Nova dúvida</button>
                                             </div>
@@ -125,14 +130,14 @@
                 <button><i class="fa fa-arrow-left"></i></button>
             </div>
             <?php if($replyPermission): ?>
-                <div id="replyList" tabindex='-1' class='col-md-8 col-xs-10' style="display: none">
+                <div id="replyList" tabindex='-1' class='col-md-7 col-xs-10' style="display: none">
                     <div id="tempReplies"></div>
                     <textarea id="replyMessage" name="replyMessage"></textarea>
                     <button class="btn btn-black submitReplyMessage">Submeter resposta</button>
+                    <button class="closeReplies"><i class="fa fa-close"></i></button>
                 </div>
+
             <?php endif ?>
-            <button class='btn btn-black' id="logout" onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => "Users", "action" => "logout"]) ?>'" >LOGOUT
-            </button>
         </div>
     </div>
 </section>
@@ -168,6 +173,9 @@
 </div>
 
 <style>
+.invisible{
+    display: none;
+}
 #services {
     padding-bottom: 180px;
 }
@@ -229,8 +237,27 @@ table.messageList tr:last-child{
     color: #f5f5f5;
     /*display: none;*/
 }
+.changePage{
+    float: right;
+    height: 30px;
+    width: 27px;
+    margin-right: 10px;
+    border: 0.5px solid #152335;
+    background-color: #F5F5F5;
+    border-radius: 2px;
+}
+.nextPage{
+    margin-right: 40px;
+}
+.changePage .fa{
+    -webkit-text-stroke: 1px #F5F5F5;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
 #replyList{
     outline: none !important;
+    padding-left: 0;
 }
 #replyList #tempReplies div.well{
     width: 500px;
@@ -248,6 +275,10 @@ table.messageList tr:last-child{
 #replyList #tempReplies div.well span{
     float: left;
 }
+#replyList #tempReplies div.well span.date{
+    font-size: 12px;
+    margin-top: 4px;
+}
 #replyList #tempReplies div.well div:last-child{
     text-align: justify;
     margin-top: 20px;
@@ -260,6 +291,9 @@ table.messageList tr:last-child{
     width: 500px;
     border-radius: 10px;
     margin-top: 20px;
+    padding: 5px;
+    resize: vertical;
+
 }
 #replyList .submitReplyMessage{
     width: 150px;
@@ -269,6 +303,23 @@ table.messageList tr:last-child{
     right: 0;
     left: 0;
     margin: auto;
+}
+#replyList button.closeReplies{
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 25px;
+    width: 30px;
+}
+#replyList button.closeReplies:hover{
+    background: #FEB000;
+    border-radius: 1px;
+    border: 0.5px solid black;
+    padding-top: 2px;
+}
+#replyList button.closeReplies .fa-close{
+    -webkit-text-stroke: inherit;
+    color: #152335;
 }
 div#themeTable{
     -moz-transition: all 1s ease-out;
@@ -353,27 +404,38 @@ div#themeTable{
     text-align: center;
 }
 
+
 </style>
 
 <script src="<?= $url; ?>/bower_components/ckeditor/ckeditor.js"></script>
 <script>
 
-messageId = 0;
-themeId = 0;
-childFocus = false;
-breakpoint = 974;
-smallScreen = window.innerWidth <= breakpoint;
+MESSAGEID = 0;
+THEMEID = 0;
+BREAKPOINT = 974;
+SMALLSCREEN = window.innerWidth <= BREAKPOINT;
 
 setTimeout(function(){
   $('.message.success').hide();  
   $('#mainNav').addClass('flash_timeout');
 }, 5000);
 
+
+$(document).ready(function(){
+    <?php if(@$theme_anchor): ?>
+        $('#<?= $theme_anchor ?>').trigger('click');
+        $('html, body').animate({
+            scrollTop: $('#<?= $theme_anchor ?>').offset().top
+        }, 1000);
+    <?php endif ?>
+});
+
+
 function repliesTemplate(messageId){
     var replies = "<div id='" + messageId + "' class='well well-sm'>" +
         "<div></div>" +
         "<span></span>" +
-        "<span></span>" +
+        "<span class='date'></span>" +
         "<i class='fa fa-thumbs-up'></i><br><hr>" +
         "<span class='upvotes'></span>" +
         "<div></div>" +
@@ -381,30 +443,53 @@ function repliesTemplate(messageId){
     return replies;
 }
 
-function closeReplies(){
-    $('#backArrow').hide();
-    $('#replyList').hide();
-    $('#themeTable').addClass('col-md-10').addClass('col-md-offset-1').removeClass('col-md-4');
-}
-
 function displayStyle(){
     if($('#replyList').is(':visible')) {
-        if($(this).width() > breakpoint) {
+        if($(this).width() > BREAKPOINT) {
             $('#themeTable').show();
             $('#backArrow').hide();
-            smallScreen = false   
+            $('#replyList .closeReplies').show();
+            SMALLSCREEN = false   
         } else {
-            smallScreen = true;
+            SMALLSCREEN = true;
             $('#themeTable').hide(); 
             $('#backArrow').show();
+            $('#replyList .closeReplies').hide();
         }
     }
 }
 
+function getMessageTable(theme, page){
+    $('div#d'+theme+' .messageList tbody').hide(1000);
+    $.post("<?= $url?>/reserved/message-table-get", {
+    page: page,
+    theme: theme
+    }).done(function(data) {
+
+        $('div#d'+theme+' .messageList tbody').empty();
+        $.each(JSON.parse(data), function(index, value){
+            $('div#d'+theme+' .messageList tbody').append(
+                "<tr>" + 
+                    "<td> <a href='#' class='messageToggle'></a> </td>" + 
+                    "<td></td>" + 
+                "</tr>" + 
+                "<tr>" +
+                    "<td> <span></span> <span></span> </td>" +
+                    "<td> <span></span> </td>" +
+                "</tr>"
+            );
+            $('.messageList tbody tr:nth-last-child(2) td:first-child a').text(value['title']);
+            $('.messageList tbody tr:nth-last-child(2) td:first-child a').attr('id', 'message' + value['id']);
+            $('.messageList tbody tr:nth-last-child(2) td:last-child').text('Algumas....');
+            $('.messageList tbody tr:last-child td:first-child span:first-child').text('Última publicação por ' + value['user'] + ' ·');
+            $('.messageList tbody tr:last-child td:first-child span:last-child').text(value['date_last']);
+            $('.messageList tbody tr:last-child td:last-child span').text('respostas');
+        });
+        $('div#d'+theme+' .messageList tbody').show(1000);
+    })
+}
+
 $('#tempReplies').on('click', '.fa-thumbs-up', function () {
-    console.log($(this));
-    console.log($(this).siblings('.upvotes').text());
-    console.log($(this).siblings('.upvotes').text() + 1);
     $(this).siblings('.upvotes').text(
         (isNaN(parseInt($(this).siblings('.upvotes').text())) ?
         0 : parseInt($(this).siblings('.upvotes').text())) + 1);
@@ -415,11 +500,12 @@ $('#tempReplies').on('click', '.fa-thumbs-up', function () {
 });
 
 $('.primary').on('click', function(){
+    console.log('vtou');
   id = $(this).attr('id');
-  if($('.dependency.d'+id).hasClass('closed')){
+  if($('.dependency#d'+id).hasClass('closed')){
     $('.dependency').addClass('closed');
     $('.fa-chevron-up').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-    $('.dependency.d'+id).removeClass('closed');
+    $('.dependency#d'+id).removeClass('closed');
     $('#arrow_'+id).removeClass('fa-chevron-down').addClass('fa-chevron-up');
   } else {
     $('.dependency').addClass('closed');
@@ -427,37 +513,28 @@ $('.primary').on('click', function(){
   }
 });
 
-$('.messageToggle').on('click', function(){
+$('.messageList').on('click', '.messageToggle', function(){
     event.preventDefault();
-    messageId = $(this).attr('id').match(/\d+/g);
-    themeId = $(this).parents('tr.messageList').attr('id').match(/\d+/g);
-    title = $(this).text();
-    message = $(this).siblings('input[name="message"]').val();
-    user = $(this).siblings('input[name="user"]').val();
-    date = $(this).siblings('input[name="date"]').val();
-    upvotes = $(this).siblings('input[name="upvotes"]').val();
-    $("#logout").hide();
-    if(window.innerWidth > breakpoint) {
+    MESSAGEID = $(this).attr('id').match(/\d+/g);
+    THEMEID = $(this).parents('tr.messageList').attr('id').match(/\d+/g);
+    if(window.innerWidth > BREAKPOINT) {
         $('#themeTable').removeClass('col-md-10')
             .removeClass('col-md-offset-1')
-            .addClass('col-md-4');
+            .addClass('col-md-5');
+        $('#replyList .closeReplies').show();
     } else {
-        $("#themeTable").toggle(1000)
+        $("#themeTable").toggle(500)
             .removeClass('col-md-10')
             .removeClass('col-md-offset-1')
-            .addClass('col-md-4');
+            .addClass('col-md-5');
         $('#backArrow').show();
+        $('#replyList .closeReplies').hide();
     }
+    $('#replyList').hide(1000);
     $.post( "<?= $url?>/reserved/message-get", { 
-        parent: messageId[0] 
+        parent: MESSAGEID[0] 
     }).done(function(data) {
         $('#replyList #tempReplies').empty();
-        $('#replyList #tempReplies').append(repliesTemplate(messageId));
-        $('#replyList #tempReplies div.well div:first-child').text(title);
-        $('#replyList #tempReplies div.well div:last-child').text(message);
-        $('#replyList #tempReplies div.well span:nth-child(2)').text(user);
-        $('#replyList #tempReplies div.well span:nth-child(3)').html('&nbsp·&nbsp' + date);
-        $('#replyList #tempReplies div.well span.upvotes').text(upvotes);
 
         $.each(JSON.parse(data), function(index, value){
             $('#replyList #tempReplies').append(repliesTemplate(value['id']));
@@ -467,31 +544,19 @@ $('.messageToggle').on('click', function(){
             $('#replyList #tempReplies div.well:last-child span:nth-child(3)').html('&nbsp·&nbsp' + value['date_created']);
             $('#replyList #tempReplies div.well:last-child span.upvotes').text(value['upvotes']);
         });
-        $('#replyList').show();
-        $('#replyList').focus();
+        $('#replyList').show(500);
+        $('html, body').animate({
+            scrollTop: $('div.col-md-10.col-md-offset-1').offset().top
+        }, 500);
     });
 });
-
-$('#replyList').on('focusout', function(){
-    if(!childFocus && !smallScreen)
-        closeReplies();
-    else {
-        childFocus = false;
-    }
-})
-
-$('#replyList textarea, #replyList button').on('mousedown', function(e){
-    console.log('mousedowning child');
-    childFocus = true;
-})
 
 $('.closeReplies').on('click', function(){
     console.log('yo');
     $('#backArrow').hide();
     $('#replyList').hide();
-    $('#themeTable').addClass('col-md-10').addClass('col-md-offset-1').removeClass('col-md-4');
+    $('#themeTable').addClass('col-md-10').addClass('col-md-offset-1').removeClass('col-md-5');
     $('#themeTable').show();
-    $('#logout').show();
 })
 
 $('.newMessage').on('click', function(){
@@ -506,13 +571,12 @@ $('.submitNewMessage').on('click', function(){
     theme_id = $('input[name="newTheme"]').val();
     title = $('textarea[name="newTitle"]').val();
     message = $('textarea[name="newMessage"]').val();
-    console.log(theme_id);
-    console.log(title);
-    console.log(message);
+    course = 
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: theme_id,
         title: title,
-        message: message
+        message: message,
+        course: <?= $group['courses_id'] ?>
     }).done(function(data) {
         location.reload();
     });
@@ -520,16 +584,37 @@ $('.submitNewMessage').on('click', function(){
 
 $('.submitReplyMessage').on('click', function(){
     message = $(this).siblings('#replyList textarea').val();
-    console.log(themeId[0]);
-    console.log(messageId[0]);
+    console.log(THEMEID[0]);
+    console.log(MESSAGEID[0]);
     console.log(message);
     $.post( "<?= $url?>/reserved/message-create", { 
-        theme_id: themeId[0],
-        parent: messageId[0],
-        message: message
+        theme_id: THEMEID[0],
+        parent: MESSAGEID[0],
+        message: message,
+        course: <?= $group['courses_id'] ?>
     }).done(function(data) {
         location.reload();
     });
+})
+
+$('.nextPage').on('click', function(){
+    pageInfo = $(this).siblings('.pageInfo');
+    page = parseInt(pageInfo.val()) + 1;
+    theme = $(this).parent('.dependency').attr('id').match(/\d+/g);
+    if(page <= pageInfo.attr('id')){
+        pageInfo.val(page);
+        getMessageTable(theme[0], page)
+    }
+})
+
+$('.prevPage').on('click', function(){
+    pageInfo = $(this).siblings('.pageInfo');
+    page = parseInt(pageInfo.val()) - 1;
+    theme = $(this).parent('.dependency').attr('id').match(/\d+/g);
+    if(page >= 1){
+        pageInfo.val(page);
+        getMessageTable(theme[0], page)
+    }
 })
 
 $(window).resize(displayStyle);

@@ -35,7 +35,7 @@ class CoursesController extends AppController
      */
     public function view($id = null)
     {
-         $course = $this->Courses->get($id, [
+        $course = $this->Courses->get($id, [
             'contain' => [
                 'Themes', 
                 'Groups' => [
@@ -72,7 +72,6 @@ class CoursesController extends AppController
         $this->set(compact('course'));
     }
 
-
     public function toggleGroup($course = null, $id = null)
     {
         if($this->request->is('post')) {
@@ -81,7 +80,6 @@ class CoursesController extends AppController
             $this->loadModel('Groups')->save($group);
             return $this->redirect(['action' => 'view', $group['courses_id']]);
         }
-
     }
 
     public function addGroup($id)
@@ -128,8 +126,6 @@ class CoursesController extends AppController
         return $this->redirect(['action' => 'view', $course]);
     }
 
-
-
     public function toggleTheme($course = null, $id = null)
     {
         if($this->request->is('post')) {
@@ -138,7 +134,6 @@ class CoursesController extends AppController
             $this->loadModel('Themes')->save($theme);
             return $this->redirect(['action' => 'view', $theme['courses_id']]);
         }
-
     }
 
     public function addTheme($id)
@@ -247,44 +242,66 @@ class CoursesController extends AppController
         return $this->redirect(['action' => 'edit-group', $course, $user_group['groups_id']]);
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    // public function add()
-    // {
-    //     $course = $this->Courses->newEntity();
-    //     if ($this->request->is('post')) {
-    //         $course = $this->Courses->patchEntity($course, $this->request->getData());
-    //         if ($this->Courses->save($course)) {
-    //             $this->Flash->success(__('The course has been saved.'));
+    /*
+    public function newYearGroups()
+    {
 
-    //             return $this->redirect(['action' => 'index']);
-    //         }
-    //         $this->Flash->error(__('The course could not be saved. Please, try again.'));
-    //     }
-    //     $this->set(compact('course'));
-    // }
+        $this->loadModel('Lectures');
+        $currentGroups = $this->loadModel('Groups')->find('all', [
+            'conditions' => [
+                'courses_id not in' => [1, 14, 15, 16, 17, 18],
+                'active' => 1,
+                'deleted' => 0
+            ],
+            'fields' => [
+                'id',
+                'name',
+                'courses_id',
+                'active',
+                'deleted',
+                'city_id'
+            ]
+        ]);
 
+        if ($currentGroups->count() <= 50){
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Course id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    // public function delete($id = null)
-    // {
-    //     $this->request->allowMethod(['post', 'delete']);
-    //     $course = $this->Courses->get($id);
-    //     if ($this->Courses->delete($course)) {
-    //         $this->Flash->success(__('The course has been deleted.'));
-    //     } else {
-    //         $this->Flash->error(__('The course could not be deleted. Please, try again.'));
-    //     }
+            foreach($currentGroups as $group){
+                
+                $newGroup = $this->Groups->newEntity();
+                $newGroup->name = $group->name;
+                $newGroup->courses_id = $group->courses_id;
+                $newGroup->active = 0;
+                $newGroup->city_id = $group->city_id;
+                $newGroup = $this->Groups->save($newGroup);
+                if(!$newGroup)
+                    $this->Flash->error(__('Ocorreu um erro.'));
+                
+                $lectures = $this->Lectures->find('all', [
+                    'conditions' => [
+                        'group_id' => $group->id
+                    ],
+                    'fields' => [
+                        'group_id',
+                        'description',
+                        'teacher',
+                        'themes'
+                    ]
+                ]);
+                
+                foreach($lectures as $lecture){
+                    $newLecture = $this->Lectures->newEntity();
+                    $newLecture->group_id = $newGroup->id;
+                    $newLecture->description = $lecture->description;
+                    $newLecture->teacher = $lecture->teacher;
+                    $newLecture->themes = $lecture->themes;
+                    $newLecture = $this->Lectures->save($newLecture);
+                    if(!$newLecture)
+                        $this->Flash->error(__('Ocorreu um erro.'));
+                }
+            }
+        }
 
-    //     return $this->redirect(['action' => 'index']);
-    // }
+        $this->Flash->success(__('Os grupos e aulas foram criados com sucesso (provavelmente).'));
+    }
+    */
 }
