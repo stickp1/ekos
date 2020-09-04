@@ -336,10 +336,10 @@ table.messageList tr:last-child{
     color: #152335;
 }
 div#themeTable{
-    -moz-transition: all 1s ease-out;
-    -webkit-transition: all 1s ease-out;
-    -o-transition: all 1s ease-out;
-    transition: all 1s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    -webkit-transition: all 0.5s ease-out;
+    -o-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
     position: relative;
 }
 #newMessage textarea{
@@ -444,7 +444,7 @@ function displayStyle(){
 }
 
 function getMessageTable(theme, page){
-    $('div#d'+theme+' .messageList tbody').hide(1000);
+    $('div#d'+theme+' .messageList tbody').hide(300, function(){$(this).show(300)});
     $.post("<?= $url?>/reserved/message-table-get", {
     page: page,
     theme: theme
@@ -469,7 +469,7 @@ function getMessageTable(theme, page){
             $('.messageList tbody tr:last-child td:first-child span:last-child').text(value['date_last']);
             $('.messageList tbody tr:last-child td:last-child span').text('respostas');
         });
-        $('div#d'+theme+' .messageList tbody').show(1000);
+        $('div#d'+theme+' .messageList tbody').show(200);
     })
 }
 
@@ -508,19 +508,20 @@ $('.messageList').on('click', '.messageToggle', function(){
             .addClass('col-md-5');
         $('#replyList .closeReplies').show();
     } else {
-        $("#themeTable").toggle(500)
+        $('#themeTable').hide(500)
             .removeClass('col-md-10')
             .removeClass('col-md-offset-1')
             .addClass('col-md-5');
         $('#backArrow').show();
         $('#replyList .closeReplies').hide();
     }
-    $('#replyList').hide(1000);
+    if($('#replyList').is(':visible'))
+        $('#replyList').hide(500);
+    else $('#replyList').hide();
     $.post( "<?= $url?>/reserved/message-get", { 
         parent: MESSAGEID[0] 
     }).done(function(data) {
         $('#replyList #tempReplies').empty();
-        console.log(JSON.parse(data));
         parent_user_id = 0;
         $.each(JSON.parse(data), function(index, value){
             $('#replyList #tempReplies').append(repliesTemplate(value['id']));
@@ -537,7 +538,6 @@ $('.messageList').on('click', '.messageToggle', function(){
             }
             if(value['role'] == 1)
                 $('#replyList #tempReplies div.well:last-child').addClass('moderator');
-
         });
         $('#replyList').show(500);
         $('html, body').animate({
@@ -547,7 +547,6 @@ $('.messageList').on('click', '.messageToggle', function(){
 });
 
 $('.closeReplies').on('click', function(){
-    console.log('yo');
     $('#backArrow').hide();
     $('#replyList').hide();
     $('#themeTable').addClass('col-md-10').addClass('col-md-offset-1').removeClass('col-md-5');
