@@ -20,6 +20,8 @@ class ThemeMessagesTable extends Table
     {
         parent::initialize($config);
 
+        $user_id = $_SESSION['Auth']['User']['id'];
+
         $this->addBehavior('Tree');
 
         $this->setTable('theme_messages');
@@ -29,6 +31,10 @@ class ThemeMessagesTable extends Table
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);
+
+        $this->hasOne('VotesThemeMessages')
+            ->setForeignKey('theme_message_id')
+            ->setConditions(['ThemeMessages.user_id' => $user_id]);
     }
 
     /**

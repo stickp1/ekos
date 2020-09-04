@@ -23,17 +23,16 @@
             <div class="col-md-10 col-md-offset-1" style='padding-top: 75px'>
                 <h1>Olá <?= $Auth['first_name']; ?>!</h1>
                 <p><label> a frequentar</label><br>
-                    <?php if($user['groups'] == 0): ?>
-                     <p>Ainda não te encontras inscrito em nenhum curso.</p>  
-                    <?php else: ?> 
+                    <?php if($user['groups']): ?>
                         <?php $groups_ = array(); ?>
                         <?php foreach ($user['groups'] as $key => $value): ?>
-                            <?php $groups_[$key] = $this->Html->link($value['course']['name'], ['action' => 'forum', $value['id']]); ?>
+                            <?php $groups_[$key] = $this->Html->link($value['course']['name'], ['action' => 'forum', $value['courses_id']]); ?>
                             <?php if(@$group['id'] == $value['id']) $groups_[$key] = '<b>'.$groups_[$key].'</b>'; ?>      
                         <?php endforeach ?>
                             <?php echo implode(' | ', $groups_); ?>
+                    <?php else: ?> 
+                        <p>Ainda não te encontras inscrito em nenhum curso.</p>  
                     <?php endif ?>
-
                 </p>
                 <br>
                 <br>
@@ -59,7 +58,7 @@
                                             </i>
                                         </td>
                                     </tr>
-                                    <tr class="messageList" id="t<?= $theme_id ?>">
+                                    <tr id="t<?= $theme_id ?>">
                                         <td colspan='3' style='padding:0; background-color: #f5f5f5'>
                                             <div class='dependency closed' id='d<?= $theme_id?>'>
                                                 <?php if(isset($messages[$theme_id])): ?>
@@ -215,23 +214,13 @@ table.messageList tr:last-child{
     left: 0;
     margin: auto;
 }
-.messageList input, .messageList textarea{
-    display: block;
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10px;
-}
-.messageList input#newTitle{
-    margin-top: 30px;
-}
 .dependency{
     padding-bottom: 100px;
 }
 .dependency.closed{
     padding-bottom: 0;
 }
-.messageList .btn.btn-black{
+.btn.btn-black.newMessage{
     bottom: 25px;
     background: #FEB000;
     color: #f5f5f5;
@@ -261,12 +250,18 @@ table.messageList tr:last-child{
 }
 #replyList #tempReplies div.well{
     width: 500px;
-    border: 1px solid #152335;
+    border: 1px solid #6B6B6B;
     padding: 10px;
     margin-right: auto;
     margin-left: auto;
     margin-bottom: 20px;
     font-size: 12pt;
+}
+.poster{
+    background: #FEB0006E;
+}
+.moderator{
+    background: #00000052;
 }
 #replyList #tempReplies div.well div:first-child{
     font-size: 16pt;
@@ -285,7 +280,27 @@ table.messageList tr:last-child{
 }
 #replyList #tempReplies div.well hr{
     margin: 0 0 10px 0;
-    border: 0.5px solid #00000021;
+    border: 0.5px solid #6B6B6B59;
+}
+#replyList #tempReplies div.well span.upvotes{
+    float: right;
+    font-weight: bold;
+    color: #6B6B6B;
+    margin-top: -10px;
+    margin-right: 10px;
+    width: 15px;
+    text-align: center;
+}
+.fa-thumbs-up{
+    float: right;
+    margin-right: 10px;
+    color: #6B6B6B;
+}
+.fa-thumbs-up:hover{
+    color: #FEB000;
+}
+.fa-thumbs-up.upvoted{
+    color: #FEB000;
 }
 #replyList textarea{
     width: 500px;
@@ -293,7 +308,6 @@ table.messageList tr:last-child{
     margin-top: 20px;
     padding: 5px;
     resize: vertical;
-
 }
 #replyList .submitReplyMessage{
     width: 150px;
@@ -364,14 +378,6 @@ div#themeTable{
     #newMessage .modal-footer .col-sm-offset-6{
         margin-top: 10px;
     }
-    #newMessage .modal-footer .g-recaptcha{
-        margin-top:15px;
-        padding: 0;
-    }
-    #newMessage .modal-footer .g-recaptcha div{
-        margin: auto;
-        margin-bottom: 15px;
-    }
 }
 #backArrow i:hover{
     color: #FEB000;
@@ -383,28 +389,6 @@ div#themeTable{
     height: 50px;
     width: 50px;
 }
-.fa-thumbs-up{
-    float: right;
-    margin-right: 10px;
-    color: #00000021;
-}
-.fa-thumbs-up:hover{
-    color: #FEB000;
-}
-.fa-thumbs-up.upvoted{
-    color: #FEB000;
-}
-#replyList #tempReplies div.well span.upvotes{
-    float: right;
-    font-weight: bold;
-    color: #00000021;
-    margin-top: -10px;
-    margin-right: 10px;
-    width: 15px;
-    text-align: center;
-}
-
-
 </style>
 
 <script src="<?= $url; ?>/bower_components/ckeditor/ckeditor.js"></script>
@@ -490,13 +474,15 @@ function getMessageTable(theme, page){
 }
 
 $('#tempReplies').on('click', '.fa-thumbs-up', function () {
-    $(this).siblings('.upvotes').text(
-        (isNaN(parseInt($(this).siblings('.upvotes').text())) ?
-        0 : parseInt($(this).siblings('.upvotes').text())) + 1);
-    $(this).addClass('upvoted');
-    $.post( "<?= $url?>/reserved/message-upvote", { 
-        id: $(this).parents('div.well').attr('id'),
-    });
+    if(!$(this).hasClass('upvoted')){
+        $(this).siblings('.upvotes').text(
+            (isNaN(parseInt($(this).siblings('.upvotes').text())) ?
+            0 : parseInt($(this).siblings('.upvotes').text())) + 1);
+        $(this).addClass('upvoted');
+        $.post( "<?= $url?>/reserved/message-upvote", { 
+            id: $(this).parents('div.well').attr('id'),
+        });
+    }
 });
 
 $('.primary').on('click', function(){
@@ -515,7 +501,7 @@ $('.primary').on('click', function(){
 $('.messageList').on('click', '.messageToggle', function(){
     event.preventDefault();
     MESSAGEID = $(this).attr('id').match(/\d+/g);
-    THEMEID = $(this).parents('tr.messageList').attr('id').match(/\d+/g);
+    THEMEID = $(this).parents('.dependency').attr('id').match(/\d+/g);
     if(window.innerWidth > BREAKPOINT) {
         $('#themeTable').removeClass('col-md-10')
             .removeClass('col-md-offset-1')
@@ -534,7 +520,8 @@ $('.messageList').on('click', '.messageToggle', function(){
         parent: MESSAGEID[0] 
     }).done(function(data) {
         $('#replyList #tempReplies').empty();
-
+        console.log(JSON.parse(data));
+        parent_user_id = 0;
         $.each(JSON.parse(data), function(index, value){
             $('#replyList #tempReplies').append(repliesTemplate(value['id']));
             $('#replyList #tempReplies div.well:last-child div:first-child').text(value['title']);
@@ -542,6 +529,15 @@ $('.messageList').on('click', '.messageToggle', function(){
             $('#replyList #tempReplies div.well:last-child span:nth-child(2)').text(value['user']);
             $('#replyList #tempReplies div.well:last-child span:nth-child(3)').html('&nbsp·&nbsp' + value['date_created']);
             $('#replyList #tempReplies div.well:last-child span.upvotes').text(value['upvotes']);
+            if(value['voted'])
+                $('#replyList #tempReplies div.well:last-child i.fa-thumbs-up').addClass('upvoted');
+            if(value['parent_id'] == null || value['user_id'] == parent_user_id){
+                $('#replyList #tempReplies div.well:last-child').addClass('poster');
+                parent_user_id = value['user_id'];
+            }
+            if(value['role'] == 1)
+                $('#replyList #tempReplies div.well:last-child').addClass('moderator');
+
         });
         $('#replyList').show(500);
         $('html, body').animate({
@@ -559,7 +555,7 @@ $('.closeReplies').on('click', function(){
 })
 
 $('.newMessage').on('click', function(){
-    $('#newMessage input[name="newTheme"]').val($(this).parents('.messageList').attr('id').match(/\d+/g));
+    $('#newMessage input[name="newTheme"]').val($(this).parents('.dependency').attr('id').match(/\d+/g));
     setTimeout(function(){ 
         $("#newMessage").modal('show'); 
     }, 500);

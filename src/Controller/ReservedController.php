@@ -1553,7 +1553,7 @@ class ReservedController extends AppController
       }
     }
 
-    public function forum($group_id = null, $course_id = null, $theme_anchor = null)
+    public function forum($course_id = null, $theme_anchor = null)
     {
         $id = $this->Auth->user('id');
         if(!isset($id))   return $this->redirect(['controller' => '/']);
@@ -1565,39 +1565,54 @@ class ReservedController extends AppController
                 'groups' => [
                     'conditions' => [
                         'deleted' => 0,
-                        'courses_id not in' => [1, 15, 16, 17]
+                        'courses_id not in' => [15, 16, 17]
                     ],
                     'Courses'
                 ]
-            ],
+            ]
         ])->toArray();
 
         $courses = array();
         foreach ($user['groups'] as $key => $value)
-            $courses[$key] = $value['course']['id'];
+            $courses[$key] = $value['courses_id'];
+
+        if (array_intersect([1,14], $courses))
+        {
+            $courses = $this->Users->Groups->Courses->find('list', [
+                'conditions' => [
+                    'id not in' => [1, 14, 17, 18]
+                ],
+                'valueField' => 'id'
+            ])->toArray();
+            $user['groups'] = $this->Users->Groups->find('all', [
+                'conditions' => [
+                    'courses_id not in' => [1, 14, 15, 16, 17, 18],
+                    'active' => 1,
+                    'deleted' => 0
+                ],
+                'contain' => 'Courses',
+                'group' => 'Groups.courses_id',
+            ])->toArray();
+        }
         
-        $groups = array();
         foreach ($user['groups'] as $key => $value)
             $groups[$value['courses_id']] = $value['id'];
-
-        if($group_id && !in_array($group_id, $groups))
+        
+        if ($course_id && !in_array($course_id, $courses)) 
         {
             $this->Flash->error(__('Não tens permissão para aceder ao curso selecionado.'));
             return $this->redirect(['action' => 'index']);
+        }
+        elseif($course_id)
+        { 
+            $group_id = $groups[$course_id];
+            $this->set(compact('theme_anchor'));
         } 
-        elseif(!$group_id && !count($user['groups']) > 0)
-        {
-            $user['groups'] = 0;
-        }
-        elseif(!$group_id)
+        elseif(!$course_id && count($user['groups']) > 0)
         {   
-            if($course_id)
-            { 
-                $group_id = $groups[$course_id];
-                $this->set(compact('theme_anchor'));
-            }
-            else $group_id = $user['groups'][0]['id'];
+            $group_id = $user['groups'][0]['id'];
         }
+        
 
         if(@count($user['groups']) > 0)
         {
@@ -1607,6 +1622,7 @@ class ReservedController extends AppController
                 ],
                 'contain' => [
                     'Lectures' => [
+                        'conditions' => 'Lectures.description not like "%Aula Casos%"',
                         'Users'
                     ]
                 ]
@@ -1617,18 +1633,22 @@ class ReservedController extends AppController
                     'courses_id' => @$group['courses_id']
                 ],
             ])->indexBy('id')->toArray();      
-        }
+        } else
+            $user['groups'] = 0;
+
 
         $messages = $this->loadModel('ThemeMessages')->find('all', [
             'contain' => 'Users',
-            'conditions' => 'parent_id is NULL',
+            'conditions' => [
+                'parent_id is NULL'
+            ],
             'fields' => [
                 'id',
                 'parent_id',
                 'title',
                 'theme_id',
                 'user' => "concat(Users.first_name,' ',Users.last_name)",
-                'date_last',
+                'date_last'
             ],
             'order' => [
                 'date_last' => 'DESC'
@@ -1662,14 +1682,21 @@ class ReservedController extends AppController
                         'ThemeMessages.id' => $this->request->getData('parent')
                     ]
                 ],
-                'contain' => 'Users',
+                'contain' => [
+                    'Users',
+                    'VotesThemeMessages'
+                ],
                 'fields' => [
                     'id',
                     'user' => "concat(Users.first_name,' ',Users.last_name)",
                     'date_created',
                     'upvotes',
                     'title',
-                    'message'
+                    'message',
+                    'voted' => 'VotesThemeMessages.id',
+                    'parent_id',
+                    'ThemeMessages.user_id',
+                    'role' => 'Users.role'
                 ],
                 'order' => [
                     'date_created' => 'ASC'
@@ -1746,7 +1773,8 @@ class ReservedController extends AppController
                 $email_body = "<p>Foi submetida uma nova dúvida relativamente a uma aula em que és formador.</p>
                     <p><b>Título da dúvida: </b>".$message->title."</p>
                     <p><b>Conteúdo da dúvida: </b>".$message->message."</p>
-                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href=".Router::url(['action' => 'forum',0, $this->request->getData('course'), $this->request->getData('theme_id')], true).">Responder</a>";
+                    <p>Para responder, basta utilizares o botão abaixo.</p>
+                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href='".Router::url(['action' => 'forum', $this->request->getData('course'), $this->request->getData('theme_id')], true)."'>Responder</a>";
             } 
             else 
             {
@@ -1765,10 +1793,12 @@ class ReservedController extends AppController
                 if(!$this->ThemeMessages->save($parent)) 
                     $continue = false;
 
-                 $email_body = "<p>Foi submetida uma nova resposta a uma dúvida que estás a seguir.</p>
+                $email_body = "<p>Foi submetida uma nova resposta a uma dúvida que estás a seguir.</p>
                     <p><b>Título da dúvida original: </b>".$parent->title."</p>
                     <p><b>Conteúdo da mensagem: </b>".$message->message."</p>
-                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href=".Router::url(['action' => 'forum',0, $this->request->getData('course'), $this->request->getData('theme_id')], true).">Ver conversa</a>";
+                    <p>Para responder ou visualizar a conversa, basta utilizares o botão abaixo.</p>
+                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href='".Router::url(['action' => 'forum', $this->request->getData('course'), $this->request->getData('theme_id')], true)."'>Ver conversa</a>
+                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href='".Router::url(['action' => 'messageUnfollow', $user_id, $this->request->getData('parent')], true)."'>Deixar de seguir esta conversa</a>";
             }
             if($continue && $this->ThemeMessages->save($message)){
 
@@ -1814,19 +1844,41 @@ class ReservedController extends AppController
         $this->autoRender = false;
         $this->request->allowMethod(['post']);
         $user_id = $this->Auth->user('id');
+        $message_id = $this->request->getData('id');
 
-        if($user_id && $this->request->getData('id'))
+        if($user_id && $message_id)
         {
             $this->loadModel('ThemeMessages');
   
-            $message = $this->ThemeMessages->get($this->request->getData('id'));
+            $message = $this->ThemeMessages->get($message_id, [
+                'contain' => 'VotesThemeMessages'
+            ]);
             $message->upvotes += 1;
+            $message->VotesThemeMessages = $this->ThemeMessages->VotesThemeMessages->newEntity([
+                'user_id' => $user_id,
+                'theme_message_id' => $message_id,
+                'date_votes' => Time::now()
+            ]);
                 
-            if($this->ThemeMessages->save($message))
-                $this->Flash->success(__('A mensagem foi submetida!')); 
-            else
-                $this->Flash->error('Alguma coisa correu mal...');
+            if(!$this->ThemeMessages->save($message) || !$this->ThemeMessages->VotesThemeMessages->save($message->VotesThemeMessages))
+                $this->Flash->error('Alguma coisa correu mal ao votar...');    
         }
+    }
+
+    public function messageUnfollow($user_id, $parent_id){
+
+        $message = $this->loadModel('ThemeMessages')->find('all', [
+            'conditions' => [
+                'user_id' => $user_id,
+                'parent_id' => $parent_id,
+            ]
+        ])->first();
+        $message->notify = 1;
+        if($this->ThemeMessages->save($message))
+            $this->Flash->success(__('Deixaste de seguir esta conversa!'));
+        else
+            $this->Flash->success(__('Infelizmente não foi possível deixar de seguir esta conversa...'));
+        $this->redirect(['controller' => 'frontend']);
     }
 
     /**
