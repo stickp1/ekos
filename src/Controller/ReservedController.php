@@ -680,17 +680,17 @@ class ReservedController extends AppController
         if(in_array(15, $courses) || in_array(16, $courses)){
         	
         	$exams = $this->loadModel('Exams')->find('all', [
-            'conditions' => [
-                'id > ' => 1, 
-                'active' => 1
-            ],
-            'contain' => [
-                'UserExams' => [
-                    'conditions' => [
-                        'user_id' => $user_id
+                'conditions' => [
+                    'id > ' => 1, 
+                    'active' => 1
+                ],
+                'contain' => [
+                    'UserExams' => [
+                        'conditions' => [
+                            'user_id' => $user_id
+                        ]
                     ]
                 ]
-            ]
             ])->toArray();
             
            $this->set(compact('exams', 'courses'));
@@ -1185,75 +1185,13 @@ class ReservedController extends AppController
                 ]
             ]);
 
-            /*if($wrong == 0) {
-
-                $flashcards = $this->Flashcards->find('all', [
-                    'contain' => [
-                        'UsersFlashcards',
-                        'Themes'
-                    ],
-                    'conditions'=>[
-                        'OR' => [
-                            [
-                                'Flashcards.active' => 1,
-                                'theme_id in' => $themes
-                            ],
-                            [
-                                'Flashcards.user_ids' => $user_id,
-                                'theme_id in' => $mythemes 
-                            ]
-                        ]
-                    ],
-                    'order' => [
-                        'UsersFlashcards.correct' => 'ASC',
-                        'UsersFlashcards.last_time' => 'ASC',
-                        'rand()'
-                    ]
-                ])->toArray();
-
-            }*/
-            if($wrong == 1) {
-
+            if($wrong == 1) 
+            {
                 $flashcards->where(['UsersFlashcards.correct !=' => 1]);
-            
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
-                        'contain' => [
-                            'UsersFlashcards',
-                            'Themes'
-                        ],
-                        'conditions' => [
-                            'Flashcards.active' => 1,
-                            'theme_id in' => $themes,
-                            'UsersFlashcards.correct !=' => 1
-                        ],
-                        'order' => [
-                            'UsersFlashcards.correct' => 'ASC',
-                            'UsersFlashcards.last_time' => 'ASC',
-                            'rand()'
-                        ]
-                ])->toArray();*/
-
-            } elseif($wrong == 2) {
-
-                $flashcards->where(['UsersFlashcards.favorite' => 1]);
-
-                /*$flashcards = $this->loadModel('Flashcards')->find('all', [
-                        'contain' => [
-                            'UsersFlashcards',
-                            'Themes'
-                        ],
-                        'conditions' => [
-                            'Flashcards.active' => 1,
-                            'theme_id in' => $themes,
-                            'UsersFlashcards.favorite' => 1
-                        ],
-                        'order' => [
-                            'UsersFlashcards.correct' => 'ASC',
-                            'UsersFlashcards.last_time' => 'ASC',
-                            'rand()'
-                        ]
-                ])->toArray();*/
-            
+            } 
+            elseif($wrong == 2) 
+            {
+                $flashcards->where(['UsersFlashcards.favorite' => 1]);    
             }
 
             $flashcards = $flashcards->toArray();
@@ -1535,7 +1473,7 @@ class ReservedController extends AppController
 
     public function flashWarning($contact = null)
     {
-        $this->autoRender = false;
+      $this->autoRender = false;
       if ($this->request->is('post')) {
         
           if($this->request->getData('answer') == 1){
@@ -1556,7 +1494,11 @@ class ReservedController extends AppController
     public function forum($course_id = null, $theme_anchor = null)
     {
         $id = $this->Auth->user('id');
-        if(!isset($id))   return $this->redirect(['controller' => '/']);
+        if(!isset($id)){   
+            $e = 1;
+            $this->set(compact('e'));
+            return;
+        }
 
         $maxPerPage = 5; 
 
@@ -1592,6 +1534,7 @@ class ReservedController extends AppController
                 ],
                 'contain' => 'Courses',
                 'group' => 'Groups.courses_id',
+                'order' => 'Courses.name ASC'
             ])->toArray();
         }
         
@@ -1655,14 +1598,13 @@ class ReservedController extends AppController
             ]
         ]);
 
+
         $messages = $messages->groupBy('theme_id')->toArray();
         foreach($messages as $theme => $messageList)
             foreach($messageList as $message)
                 $message['children'] = $this->ThemeMessages->childCount($message); 
 
-        $replyPermission = 1;
-
-        $this->set(compact('maxPerPage','replyPermission','group', 'user', 'themes', 'courses', 'messages'));
+        $this->set(compact('maxPerPage','group', 'user', 'themes', 'courses', 'messages'));
     }
 
     public function messageGet()
@@ -1769,12 +1711,6 @@ class ReservedController extends AppController
                     'date_created' => $now,
                     'date_last' => $now
                 ]);
-
-                $email_body = "<p>Foi submetida uma nova dúvida relativamente a uma aula em que és formador.</p>
-                    <p><b>Título da dúvida: </b>".$message->title."</p>
-                    <p><b>Conteúdo da dúvida: </b>".$message->message."</p>
-                    <p>Para responder, basta utilizares o botão abaixo.</p>
-                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href='".Router::url(['action' => 'forum', $this->request->getData('course'), $this->request->getData('theme_id')], true)."'>Responder</a>";
             } 
             else 
             {
@@ -1792,13 +1728,6 @@ class ReservedController extends AppController
                 
                 if(!$this->ThemeMessages->save($parent)) 
                     $continue = false;
-
-                $email_body = "<p>Foi submetida uma nova resposta a uma dúvida que estás a seguir.</p>
-                    <p><b>Título da dúvida original: </b>".$parent->title."</p>
-                    <p><b>Conteúdo da mensagem: </b>".$message->message."</p>
-                    <p>Para responder ou visualizar a conversa, basta utilizares o botão abaixo.</p>
-                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href='".Router::url(['action' => 'forum', $this->request->getData('course'), $this->request->getData('theme_id')], true)."'>Ver conversa</a>
-                    <a class='btn' style='background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;' href='".Router::url(['action' => 'messageUnfollow', $user_id, $this->request->getData('parent')], true)."'>Deixar de seguir esta conversa</a>";
             }
             if($continue && $this->ThemeMessages->save($message)){
 
@@ -1811,24 +1740,46 @@ class ReservedController extends AppController
                         ]
                     ],
                     'fields' => [
-                        'theme' => 'ThemeMessages.id',
+                        'name' => 'Users.first_name',
                         'contact' => 'Users.email'
                     ],
-                    'valueField' => 'contact'
+                    'keyField' => 'name',
+                    'valueField' => 'contact',
+                    'group' => 'contact'
                 ]);
 
-                $usersNot = $users->where(['notify' => 1]);
+                $formadors = $this->loadModel('Lectures')->find('list', [
+                    'contain' => [
+                        'Users',
+                        'Groups'
+                    ],
+                    'conditions' => [
+                        'Groups.active' => 1,
+                        'Groups.deleted' => 0,
+                        'FIND_IN_SET('.$this->request->getData('theme_id').', Lectures.themes) > 0'
+                    ],
+                    'fields' => [
+                        'name' => 'Users.first_name',
+                        'contact' => 'Users.email'
+                    ],
+                    'keyField' => 'name',
+                    'valueField' => 'contact',
+                    'group' => 'contact'
+                ]);
 
-                $users = array_diff($users, $usersNot);
-                //$users = ['crisb7@hotmail.com'];
-
-                $email = new Email('default');
-            
-                $email->bcc($users)
+                $usersNot = $users->where(['notify' => 1])->toArray();
+                $users = array_diff(array_unique(array_merge($users->toArray(), $formadors->toArray())), $usersNot);
+                if(($key = array_search($user_id, $users)) !== false)
+                    unset($users[$key]);
+                //$users = ['Cristiano' => 'crisb7@hotmail.com'];
+                
+                foreach($users as $name => $address){
+                    $email = new Email('default');
+                    $email->to($address)
                       ->emailFormat('html')
                       ->subject('EKOS - Nova mensagem')
-                      ->send($this->email_template("", $email_body));
-
+                      ->send($this->email_template($name, $this->messageEmailBody($this->request->getData(), $user_id)));
+                }
 
                 $this->Flash->success(__('A mensagem foi submetida!'));
             }
@@ -1837,6 +1788,19 @@ class ReservedController extends AppController
         }
         else
             return $this->redirect(['controller' => '/']);
+    }
+
+    private function messageEmailBody($data, $user)
+    {
+        $email_body = '<p>Foi submetida uma nova resposta a uma dúvida que estás a seguir.</p>
+            <p><b>Título da dúvida original: </b>'.$data['title'].'</p>
+            <p><b>Conteúdo da mensagem: </b>'.$data['message'].'</p>
+            <p>Para responder ou visualizar a conversa, basta utilizares o botão abaixo.</p>
+            <a class="btn" style="background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;" href="'.Router::url(['action' => 'forum', $data['course'], $data['theme_id']], true).'">Ver conversa</a>
+            ';
+        if($data['parent'])
+            $email_body .= '<a class="btn" style="background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;" href="'.Router::url(['action' => 'messageUnfollow', $user, $data['parent']], true).'">Deixar de seguir esta conversa</a>';
+        return $email_body;
     }
 
     public function messageUpvote()
@@ -2058,7 +2022,7 @@ class ReservedController extends AppController
                               <tbody>
                                 <tr style="font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; margin: 0; padding: 0;">
                                   <td style="font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; margin: 0; padding: 0;">
-                                    <h3 style="color: #000; font-family: \'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', Helvetica, Arial, \'Lucida Grande\', sans-serif; font-size: 27px; font-weight: 500; line-height: 1.1; margin: 0; margin-bottom: 15px; padding: 0;"> Olá'.$name.',</h3>
+                                    <h3 style="color: #000; font-family: \'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', Helvetica, Arial, \'Lucida Grande\', sans-serif; font-size: 27px; font-weight: 500; line-height: 1.1; margin: 0; margin-bottom: 15px; padding: 0;"> Olá '.$name.',</h3>
                                     <div style="font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: normal; line-height: 1.6; margin: 0; margin-bottom: 10px; padding: 0;">
                                      '.$body.'
                                      </div>
@@ -2080,6 +2044,5 @@ class ReservedController extends AppController
 
                 </html>';
     }
-
 
 }

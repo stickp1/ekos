@@ -79,7 +79,7 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>
-                                                                    <span>Última publicação por <?= $message['user'] ?> · <?= $message['date_last']->timeAgoInWords() ?></span> 
+                                                                    <span>Last post by <?= $message['user'] ?> · <?= $message['date_last']->timeAgoInWords() ?></span> 
                                                                 </td> 
                                                                 <td>
                                                                     <span>respostas</span>
@@ -128,15 +128,12 @@
             <div class="col-xs-2 closeReplies" id="backArrow">
                 <button><i class="fa fa-arrow-left"></i></button>
             </div>
-            <?php if($replyPermission): ?>
-                <div id="replyList" tabindex='-1' class='col-md-7 col-xs-10' style="display: none">
-                    <div id="tempReplies"></div>
-                    <textarea id="replyMessage" name="replyMessage"></textarea>
-                    <button class="btn btn-black submitReplyMessage">Submeter resposta</button>
-                    <button class="closeReplies"><i class="fa fa-close"></i></button>
-                </div>
-
-            <?php endif ?>
+            <div id="replyList" tabindex='-1' class='col-md-7 col-xs-10' style="display: none">
+                <div id="tempReplies"></div>
+                <textarea id="replyMessage" name="replyMessage"></textarea>
+                <button class="btn btn-black submitReplyMessage">Submeter resposta</button>
+                <button class="closeReplies"><i class="fa fa-close"></i></button>
+            </div>
         </div>
     </div>
 </section>
@@ -229,14 +226,14 @@ table.messageList tr:last-child{
 .changePage{
     float: right;
     height: 30px;
-    width: 27px;
+    width: fit-content;
     margin-right: 10px;
     border: 0.5px solid #152335;
     background-color: #F5F5F5;
     border-radius: 2px;
 }
 .nextPage{
-    margin-right: 40px;
+    margin-right: 5%;
 }
 .changePage .fa{
     -webkit-text-stroke: 1px #F5F5F5;
@@ -258,10 +255,10 @@ table.messageList tr:last-child{
     font-size: 12pt;
 }
 .poster{
-    background: #FEB0006E;
+    background: #FEB0006E!important;
 }
 .moderator{
-    background: #00000052;
+    background: #3c5f8d61;
 }
 #replyList #tempReplies div.well div:first-child{
     font-size: 16pt;
@@ -269,6 +266,11 @@ table.messageList tr:last-child{
 }
 #replyList #tempReplies div.well span{
     float: left;
+}
+#replyList #tempReplies div.well span.moderatorTag{
+    font-size: 12px;
+    margin-top: 4px;
+    color: #ffd77d;
 }
 #replyList #tempReplies div.well span.date{
     font-size: 12px;
@@ -379,6 +381,12 @@ div#themeTable{
         margin-top: 10px;
     }
 }
+#backArrow i{
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 35%;
+}
 #backArrow i:hover{
     color: #FEB000;
 }
@@ -386,8 +394,26 @@ div#themeTable{
     display: none;
 }
 #backArrow button{
+    position: relative;
     height: 50px;
     width: 50px;
+    border: 1px solid #00000070;
+    border-radius: 2px;
+    background: #F5F5F5;
+}
+@media(max-width:615px){
+    #backArrow button{
+        width: 75%;
+    }
+    #replyList textarea{
+        width: 100%;
+    }
+    #replyList #tempReplies div.well{
+        width: 100%;
+    }
+    #replyList #tempReplies div.well span.date{
+        display: none;
+    }
 }
 </style>
 
@@ -419,6 +445,7 @@ function repliesTemplate(messageId){
     var replies = "<div id='" + messageId + "' class='well well-sm'>" +
         "<div></div>" +
         "<span></span>" +
+        "<span class='moderatorTag' display='none'>&nbsp&nbspFormador</span>" +
         "<span class='date'></span>" +
         "<i class='fa fa-thumbs-up'></i><br><hr>" +
         "<span class='upvotes'></span>" +
@@ -462,12 +489,12 @@ function getMessageTable(theme, page){
                     "<td> <span></span> </td>" +
                 "</tr>"
             );
-            $('.messageList tbody tr:nth-last-child(2) td:first-child a').text(value['title']);
-            $('.messageList tbody tr:nth-last-child(2) td:first-child a').attr('id', 'message' + value['id']);
-            $('.messageList tbody tr:nth-last-child(2) td:last-child').text(value['children']);
-            $('.messageList tbody tr:last-child td:first-child span:first-child').text('Última publicação por ' + value['user'] + ' ·');
-            $('.messageList tbody tr:last-child td:first-child span:last-child').text(value['date_last']);
-            $('.messageList tbody tr:last-child td:last-child span').text('respostas');
+            $('div#d'+theme+' .messageList tbody tr:nth-last-child(2) td:first-child a').text(value['title']);
+            $('div#d'+theme+' .messageList tbody tr:nth-last-child(2) td:first-child a').attr('id', 'message' + value['id']);
+            $('div#d'+theme+' .messageList tbody tr:nth-last-child(2) td:last-child').text(value['children']);
+            $('div#d'+theme+' .messageList tbody tr:last-child td:first-child span:first-child').text('Last post by ' + value['user'] + ' ·');
+            $('div#d'+theme+' .messageList tbody tr:last-child td:first-child span:last-child').text(value['date_last']);
+            $('div#d'+theme+' .messageList tbody tr:last-child td:last-child span').text('respostas');
         });
         $('div#d'+theme+' .messageList tbody').show(200);
     })
@@ -528,16 +555,19 @@ $('.messageList').on('click', '.messageToggle', function(){
             $('#replyList #tempReplies div.well:last-child div:first-child').text(value['title']);
             $('#replyList #tempReplies div.well:last-child div:last-child').text(value['message']);
             $('#replyList #tempReplies div.well:last-child span:nth-child(2)').text(value['user']);
-            $('#replyList #tempReplies div.well:last-child span:nth-child(3)').html('&nbsp·&nbsp' + value['date_created']);
+            $('#replyList #tempReplies div.well:last-child span.date').html('&nbsp&nbsp·&nbsp' + value['date_created']);
             $('#replyList #tempReplies div.well:last-child span.upvotes').text(value['upvotes']);
             if(value['voted'])
                 $('#replyList #tempReplies div.well:last-child i.fa-thumbs-up').addClass('upvoted');
             if(value['parent_id'] == null || value['user_id'] == parent_user_id){
                 $('#replyList #tempReplies div.well:last-child').addClass('poster');
+                $('#replyList #tempReplies div.well:last-child span.moderatorTag').hide();
                 parent_user_id = value['user_id'];
             }
-            if(value['role'] == 1)
+            else if(value['role'] >= 1){
                 $('#replyList #tempReplies div.well:last-child').addClass('moderator');
+                $('#replyList #tempReplies div.well:last-child span.moderatorTag').show();
+            }
         });
         $('#replyList').show(500);
         $('html, body').animate({
@@ -564,13 +594,12 @@ $('.submitNewMessage').on('click', function(){
     event.preventDefault();
     theme_id = $('input[name="newTheme"]').val();
     title = $('textarea[name="newTitle"]').val();
-    message = $('textarea[name="newMessage"]').val();
-    course = 
+    message = $('textarea[name="newMessage"]').val(); 
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: theme_id,
         title: title,
         message: message,
-        course: <?= $group['courses_id'] ?>
+        course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
     }).done(function(data) {
         location.reload();
     });
@@ -578,14 +607,11 @@ $('.submitNewMessage').on('click', function(){
 
 $('.submitReplyMessage').on('click', function(){
     message = $(this).siblings('#replyList textarea').val();
-    console.log(THEMEID[0]);
-    console.log(MESSAGEID[0]);
-    console.log(message);
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: THEMEID[0],
         parent: MESSAGEID[0],
         message: message,
-        course: <?= $group['courses_id'] ?>
+        course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
     }).done(function(data) {
         location.reload();
     });

@@ -127,15 +127,9 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                             <li><a onClick="window.location.href='<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "informacoes", "faq"]) ?>'" href='#' class="dropdown-item">FAQs</a></li>
                         </ul>
                     </li>
-                    
                     <li>
                         <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "banco"]) ?>" <?= $this->request->params['action'] == 'perguntas' ? "class='active'" : ""?> >Perguntas & Flashcards</a>
                     </li>
-                    <!--
-                    <li>
-                        <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "formacao"]) ?>" <?= $this->request->params['action'] == 'formacao' ? "class='active'" : ""?> >Formação Profissional</a>
-                    </li>
-                    -->
                     <li class="dropdown-toggle">
                         <a class="page-scroll" href="#" data-toggle="modal" data-target="#login" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?> >Área Reservada</a>
                         <?php if(isset($Auth['id'])): ?>
@@ -466,16 +460,6 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
             else
                 dropdown.addClass('open');
         }
-
-    /*
-        if(screenWidth <= 900){
-            if(dropdown.hasClass('open'))
-                window.location.href = $(this).attr('value');
-            else if ($(this).attr('value'))
-                dropdown.addClass('open');
-        }
-        if(screenWidth > 900 && $(this).attr('value'))
-            window.location.href = $(this).attr('value');*/
     });
 
     // Closes the Responsive Menu on Menu Item Click
@@ -547,7 +531,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
         }
     });    
 
-    <?php if(@$_GET['e'] == 1): ?>
+    <?php if(@$_GET['e'] == 1 || @$e == 1): ?>
         $("#login").modal();
     <?php endif ;?>
 
@@ -646,7 +630,7 @@ div#main_container {
 .navbar-nav>li.dropdown-toggle li{
     text-align:center;
 }  
-@media (max-width:768px) {
+@media (max-width:767px) {
     .navbar-nav .open .dropdown-menu > li > a {
     padding-left: 15px;
     }

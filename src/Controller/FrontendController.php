@@ -26,7 +26,7 @@ class FrontendController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($next_action = null)
     {
     
      $scity = $this->request->getCookie('city');
@@ -106,7 +106,7 @@ class FrontendController extends AppController
 
       usort( $courses, array( $this, 'sort' ) );
 
-      $this->set(compact('courses', 'courses2'));
+      $this->set(compact('courses', 'courses2', 'next_action'));
     }
 
 
