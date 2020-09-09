@@ -217,7 +217,9 @@
                                     </div>
                                     <p style='text-align: center'> 
                                         <button class='prev btn-black btn' id='p<?= $i ?>' type='button'> « 
-                                        </button>  
+                                        </button>
+                                        <button class='submit validate btn-black btn' id='b<?= $i ?>'> Validar 
+                                        </button>   
                                         <button type='button' class='next btn-black btn' id='nn<?= $i ?>'> » 
                                         </button> 
                                     </p>

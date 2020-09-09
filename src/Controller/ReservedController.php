@@ -1845,6 +1845,11 @@ class ReservedController extends AppController
         $this->redirect(['controller' => 'frontend']);
     }
 
+    public function videobank()
+    {
+        
+    }
+
     /**
      * Verifica se o diretório existe, se não ele cria.
      * @access public
