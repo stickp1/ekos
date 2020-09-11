@@ -660,7 +660,7 @@ class ReservedController extends AppController
             ]
         ])->toArray();
 
-        $this->set(compact('exam', 'user_exams', 'courses'));    
+        $this->set(compact('exam', 'user_exams', 'courses', 'id'));    
     }
 
 	public function ebank()
@@ -1847,7 +1847,23 @@ class ReservedController extends AppController
 
     public function videobank()
     {
-        
+        $user_id = $this->Auth->user('id');
+        if(!isset($user_id)){   
+            $e = 1;
+            $this->set(compact('e'));
+            return;
+        }
+
+        $courses = $this->loadModel('UsersGroups')->find('list', [
+            'contain' => 'Groups',
+            'conditions' => [
+                'users_id' => $user_id,
+                'Groups.deleted' => 0
+            ],
+            'valueField' => 'groups_courses_id'
+        ])->toArray();
+
+        $this->set(compact('courses'));
     }
 
     /**
@@ -1965,8 +1981,7 @@ class ReservedController extends AppController
         header("Content-type:application/pdf");
         header("Content-Disposition: inline; filename=Venda $id.pdf");
         @readfile($url);
-
-     }
+    }
 
     private function email_template($name, $body) 
     {
