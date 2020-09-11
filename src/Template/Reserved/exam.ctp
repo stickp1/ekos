@@ -69,8 +69,6 @@
                                     <p style='text-align: center'> 
                                         <button class='prev btn-black btn' id='p<?= $i ?>'> « 
                                         </button>  
-                                        <button class='submit validate btn-black btn' id='b<?= $i ?>'> Validar 
-                                        </button> 
                                         <button class='next btn-black btn' id='nn<?= $i ?>'> » 
                                         </button> 
                                     </p>
@@ -217,9 +215,9 @@
                                     </div>
                                     <p style='text-align: center'> 
                                         <button class='prev btn-black btn' id='p<?= $i ?>' type='button'> « 
-                                        </button>
-                                        <button class='submit validate btn-black btn' id='b<?= $i ?>'> Validar 
-                                        </button>   
+                                        </button>  
+                                        <button style='display: none' class='submit validate btn-black btn' id='b<?= $i ?>'> Validar 
+                                        </button> 
                                         <button type='button' class='next btn-black btn' id='nn<?= $i ?>'> » 
                                         </button> 
                                     </p>
@@ -337,6 +335,8 @@ $('.validate').on('click', function(){
   }
 })
 
+<?php if($user_exams['finished'] != 1): ?>
+
 $("#getting-started").countdown("<?= date('Y/m/d H:i:s', strtotime("+120 minutes", strtotime($user_exams['timestamp'])));?>" , {elapse: true})
   .on('update.countdown', function(event) {
       var $this = $(this);
@@ -345,7 +345,8 @@ $("#getting-started").countdown("<?= date('Y/m/d H:i:s', strtotime("+120 minutes
       } else {
           $this.html(event.strftime('<span>%H:%M:%S</span>'));
       }
-});        
+}); 
+<?php endif ?>       
 
 $("a.number").on('click', function () {
   $("a.number").removeClass('active');
@@ -370,6 +371,10 @@ $("#p1").prop('disabled', true);
 $("#nn<?= count($exam['questions'])?>").prop('disabled', true);
 $("#n1").trigger('click');
 $("#q1").addClass('active');
+
+<?php if(!in_array($exam['id'], [4, 5, 6, 7]) && $user_exams['finished'] == 1): ?>
+    $( ".validate" ).trigger( "click" );
+<?php endif ?>
 
 </script>
 
