@@ -31,8 +31,6 @@
         <div class="row" style='margin-bottom:40px'>
             <div class="col-md-8 col-md-offset-2">
                 <h1>O nosso curso anual.</h1>
-                <!--<p>Organizámos os módulos por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
-                </p>-->
                 <p>Organizado em <b>11 módulos</b> estruturados por <b>aparelhos funcionais</b>, que integram conhecimentos médicos e cirúrgicos complementares, de forma a potenciar a integração clínica que é o foco do exame. 
                 </p>
                 <p class='small download'>
@@ -347,7 +345,6 @@
                                                                           </span>
                                                                           <span style='margin-right: 25px'><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('HH')."h" : '' ?><?= $lecture->has('datetime') ? $lecture['datetime']->i18nFormat('mm'): '' ?> 
                                                                           </span>
-                                                                          <!--<span style='margin-right: 25px'><?= $lecture['user']['first_name']." ".$lecture['user']['last_name']?></span>-->
                                                                           <?php if(@in_array($summer['id'], $inscriptions_courses)): ?>
                                                                             <span style='margin-right: 25px'><?= $lecture['place'] ?></span>
                                                                           <?php endif; ?>

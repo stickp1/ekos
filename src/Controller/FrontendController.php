@@ -193,7 +193,42 @@ class FrontendController extends AppController
             'id >' => 1, 
             'id <' => 14
           ]
-      ]);
+      ])->toArray();
+
+      
+
+      // STUPID PROCESS -> SIMPLIFY IN THE FUTURE //
+      $courses_order = $this->Courses->find('list', [ 
+        'conditions' => [
+          'Courses.id > 1',
+          'Courses.id < 14'
+        ],
+        'valueField' => 'Courses.id'
+      ])->join([
+        'g' => [
+          'table' => 'Groups',
+          'type' => 'LEFT',
+          'conditions' => 'g.courses_id = courses.id'
+        ],
+        'l' => [
+          'table' => 'Lectures',
+          'type' => 'LEFT',
+          'conditions' => 'l.group_id = g.id'
+        ]
+      ])->order('l.datetime')->group('Courses.id')->toArray();
+
+      $i = 0;
+      foreach($courses_order as $key => $nothing)
+        foreach($courses as $incr => $value)
+          if($value['id'] == $key)
+          {
+            $temp = $courses[$i];
+            $courses[$i] = $courses[$incr];
+            $courses[$incr] = $temp;
+            $i++;
+          }
+      // STUPID PROCESS END //
+
 
       // Curso Verão -- Curso Clínico intensivo
       $summer = $this->Courses->find('all', [
