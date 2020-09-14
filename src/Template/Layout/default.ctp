@@ -363,8 +363,28 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                                 <div class="help-block with-errors"></div>
                             </div>
                             <div class="form-group">
-                                <div class="label">Apelido(s)</div>
+                                <div class="label">Apelido</div>
                                 <input type="text" class="form-control" placeholder="Inserir apelido(s)" name='last_name' data-minlength="3" data-error="O nome inserido não é válido."  required />
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label">Faculdade de Medicina</div>
+                                <input list="school" class="form-control" placeholder="Inserir local de estudo" name='school' required />
+                                    <datalist id="school">
+                                        <option value="FMUL | Universidade de Lisboa"/>
+                                        <option value="NMS-FCM | Universidade Nova de Lisboa"/>
+                                        <option value="FMUC | Universidade de Coimbra"/>
+                                        <option value="FCS-UBI | Universidade da Beira Interior"/>
+                                        <option value="ICBAS | Universidade do Porto"/>
+                                        <option value="FMUP | Universidade do Porto"/>
+                                        <option value="ECS-UM | Universidade do Minho"/>
+                                        <option value="DCBM-UAlg | Universidade do Algarve"/>
+                                    </datalist>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label">Ano de Realização da PNA</div>
+                                <input type="number" class="form-control" placeholder="Inserir ano da PNA" name='exam_year' data-minlength="4" min="2020" data-error="O ano inserido não é válido."  required />
                                 <div class="help-block with-errors"></div>
                             </div>
                             <div class="form-group">
@@ -396,6 +416,9 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                                 <div class="label">Número de Identificação Fiscal</div>
                                 <input type="text" class="form-control" placeholder="Inserir NIF" data-error="O NIF inserido não é válido. Insere 999999990, caso não desejes facultar NIF" data-remote='<?= $url;?>/users/validaNIF/' name='vat_number' required />
                                 <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="agreeTerms">
+                                <input type="checkbox" required>Declaro que li e concordo com os termos da política de privacidade e aceito ser contactado por e-mail no âmbito da oferta formativa da EKOS.
                             </div>
                             <div align="center">
                                 <button class="btn btn-black" type='submit'>CRIAR UTILIZADOR</button>
@@ -694,7 +717,34 @@ div#main_container {
         margin-bottom: 15px;
     }
 }
-
+input[type='checkbox']{
+        -webkit-appearance: none;
+        width:20px; 
+        height:20px; 
+        position:relative; 
+        top:5px;
+        margin-right: 5px;
+        outline: none;
+        border: 2px solid gray;
+        margin-left: 3px
+}
+input[type='checkbox']:before{
+        content: '';
+        display: block;
+        width: 50%;
+        height: 50%;
+        margin: 25% auto;
+}
+input[type="checkbox"]:checked:before{
+        background: #FEB000;
+}
+input[type='checkbox']:checked{
+    border: 2px solid #152335;
+}
+input[type='checkbox']:disabled{
+    border: 2px solid grey;
+    background: grey!important;
+}
 </style>
 </body>
 </html>
