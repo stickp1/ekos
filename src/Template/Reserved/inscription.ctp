@@ -148,6 +148,7 @@ input[type='checkbox']:disabled{
     position:relative; 
     top:5px;
     margin-right: 5px;
+    flex-shrink:0;
 }
 </style>
 
