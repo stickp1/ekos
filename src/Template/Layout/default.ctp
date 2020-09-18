@@ -369,22 +369,21 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                             </div>
                             <div class="form-group">
                                 <div class="label">Faculdade de Medicina</div>
-                                <input list="school" class="form-control" placeholder="Inserir local de estudo" name='school' required />
-                                    <datalist id="school">
-                                        <option value="FMUL | Universidade de Lisboa"/>
-                                        <option value="NMS-FCM | Universidade Nova de Lisboa"/>
-                                        <option value="FMUC | Universidade de Coimbra"/>
-                                        <option value="FCS-UBI | Universidade da Beira Interior"/>
-                                        <option value="ICBAS | Universidade do Porto"/>
-                                        <option value="FMUP | Universidade do Porto"/>
-                                        <option value="ECS-UM | Universidade do Minho"/>
-                                        <option value="DCBM-UAlg | Universidade do Algarve"/>
-                                    </datalist>
+                                <select class="form-control" placeholder="Inserir local de estudo" name='school' required>
+                                    <option value="1">FMUL | Universidade de Lisboa</option>
+                                    <option value="2">NMS-FCM | Universidade Nova de Lisboa</option>
+                                    <option value="3">FMUC | Universidade de Coimbra</option>
+                                    <option value="4">FCS-UBI | Universidade da Beira Interior</option>
+                                    <option value="5">ICBAS | Universidade do Porto</option>
+                                    <option value="6">FMUP | Universidade do Porto</option>
+                                    <option value="7">ECS-UM | Universidade do Minho</option>
+                                    <option value="8">DCBM-UAlg | Universidade do Algarve</option>
+                                </select>
                                 <div class="help-block with-errors"></div>
                             </div>
                             <div class="form-group">
                                 <div class="label">Ano de Realização da PNA</div>
-                                <input type="number" class="form-control" placeholder="Inserir ano da PNA" name='exam_year' data-minlength="4" min="2020" data-error="O ano inserido não é válido."  required />
+                                <input type="number" class="form-control" placeholder="Inserir ano da PNA" name='exam_year' data-minlength="4" min="2020" max="2030" data-error="O ano inserido não é válido."  required />
                                 <div class="help-block with-errors"></div>
                             </div>
                             <div class="form-group">
@@ -744,6 +743,9 @@ input[type='checkbox']:checked{
 input[type='checkbox']:disabled{
     border: 2px solid grey;
     background: grey!important;
+}
+#register select.form-control{
+    height: 40px;
 }
 </style>
 </body>

@@ -44,7 +44,9 @@ class User extends Entity
         'description' => true,
         'reset_char' => true,
         'active' => true,
-        'city_id' => true
+        'city_id' => true,
+        'school' => true,
+        'exam_year' => true
     ];
 
     /**
