@@ -576,7 +576,18 @@ class ReservedController extends AppController
     	    $total = count($exam['questions']);
     	    $correct = 0;
     	    $data = $this->request->getData();
-    	    
+            if(!$user_id) // in case session timesout
+            {
+                $user = $this->loadModel('Users')->get(array_shift($data)); 
+                $this->Auth->setUser($user);
+                $this->loadModel('Sessions')->deleteAll(['id' => $user->session_id]);
+                $user->session_id = $this->request->session()->id();
+                $user = $this->Users->save($user);
+                $user_id = $this->Auth->user('id');
+            }
+            else
+                array_shift($data);
+
     	    foreach($exam['questions'] as $key => $question)
                 if(array_key_exists('q'.$question['id'], $data) && $question['correct'] == $data['q'.$question['id']])
                     $correct += 1;
@@ -587,6 +598,7 @@ class ReservedController extends AppController
                     'exam_id' => $id
                 ]
             ])->first();
+
     	    $user_exams['answers'] = json_encode($data);
     	    $user_exams['result'] = $correct."/".$total;
     	    $user_exams['finished'] = 1;

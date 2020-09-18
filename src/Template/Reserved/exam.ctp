@@ -106,6 +106,7 @@
             </div>
             <div class="row" style='position:relative;'>
                 <?= $this->Form->create('exam', ['id' => 'exam_f']) ?>
+                <input type="hidden" name="userid" value="<?=$Auth['id']?>">
                 <div class="col-md-10 col-md-offset-1">
                     <div class="panel-body">
                         <div class="tab-content">
