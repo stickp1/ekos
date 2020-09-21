@@ -33,9 +33,10 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
     		<?php foreach($response['body']['data'] as $key=>$video): ?>
 
     			<div id="<?=$key?>" class="thumbvideo col-xs-4 col-sm-3 col-lg-2">
-					<div class="thumbvideo-frame">
+					<div class="thumbvideo-frame" onclick="dothat()">
 						<?= $video['embed']['html'] ?>
 					</div>
+					<div class="thumbvideo-framebtn"></div>
 					<div class="thumbvideo-buttons">
 						<button class="play-pause-btn"><i class="fa fa-play"></i></button>
 						<button class="mute-btn" ><i class="fa fa-volume-off"></i></button>
@@ -56,7 +57,43 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="fullvideo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h1 class="modal-title text-center">title</h1>
+                	<div id="fullvideo-frame">
+                		
+                	</div>
+            </div>
+            <div class="modal-body">
+                    <div id="fullvideo description" style="border: 1px solid green">
+                        <input type="hidden" name="newTheme">
+                        <textarea rows=2 name="newTitle" placeholder="Introduz aqui a tua dúvida resumidamente"></textarea>
+                        <textarea id="newMessage" rows=5 name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida" required></textarea>
+                    </div>
+                    <div id="fullvideo-controls" style="border: 1px solid red">
+                    	
+                    </div>
+                    <div id="fullvideo-related" style="border: 1px solid brown"></div>
+                    <div class="modal-footer row">
+                        <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
+                        </div>
+                        <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
+                            <button type="submit" class="btn btn-black submitNewMessage">Submeter</button>
+                        </div> 
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?php endif ?>
+
+
 
 
 <style>
@@ -64,18 +101,18 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 	background: #152133;
 }
 #mainNav{
-	background: #FEB;
+	background: #ffdf80;
 }
 div.panel.with-nav-tabs{
 	background: transparent;
 	border-bottom: 1px solid #FEB;
 }
 div.panel.with-nav-tabs li a{
-	color: #FEB;
+	color: #ffdf80;
 }
 section.footer{
 	color: #152133;
-	background: #FEB;
+	background: #ffdf80;
 }
 section.footer a{
 	color: inherit;
@@ -161,7 +198,7 @@ div.thumbvideo{
 div.thumbvideo .hover{
 	overflow: visible;
 }
-div.thumbvideo .thumbvideo-frame{
+div.thumbvideo .thumbvideo-frame, .thumbvideo-framebtn{
 	height: calc(100% - 5px);
 	width: calc(100% - 5px);
 	position: absolute;
@@ -176,7 +213,10 @@ div.thumbvideo .thumbvideo-frame{
 	right: 0;
 	margin: auto;
 }
-div.thumbvideo .thumbvideo-frame.hover{
+div.thumbvideo .thumbvideo-framebtn{
+	background: transparent;
+}
+div.thumbvideo .thumbvideo-frame.hover, .thumbvideo-framebtn.hover{
 	transform: scale(2);
 	z-index: 2;
 	border-radius: 10px 10px 0 0;
@@ -303,7 +343,7 @@ div.thumbvideo .thumbvideo-buttons button .fa{
 		timeoutId = null;
 		player = new Vimeo.Player(element[0]);
 		element.children('.thumbvideo-frame').addClass('hover');
-		element.children('.thumbvideo-buttons').addClass('display');
+		element.children('.thumbvideo-framebtn').addClass('hover');
 		element.children('.thumbvideo-buttons').addClass('hover');
 		element.children('.thumbvideo-buttons').children('.play-pause-btn').trigger('click');
 	}
@@ -311,7 +351,7 @@ div.thumbvideo .thumbvideo-buttons button .fa{
 	function pause(){
 		console.log('pausing...?');
 		element.children('.thumbvideo-frame').removeClass('hover');
-		element.children('.thumbvideo-buttons').removeClass('display');
+		element.children('.thumbvideo-framebtn').removeClass('hover');
 		element.children('.thumbvideo-buttons').removeClass('hover');
 		button = element.children('.thumbvideo-buttons').children('.play-pause-btn');
 		player.getPaused().then(function(paused){
@@ -366,32 +406,10 @@ div.thumbvideo .thumbvideo-buttons button .fa{
 
 	});
 
-	
-/*
+	$('.thumbvideo-framebtn').click(function(){
+		console.log($(this).siblings('.thumbvideo-frame'));
+	})
 
-	$('div.thumbvideo').hover(function(){
-		element = $(this);
-		player = new Vimeo.Player(element[0]);
-		setTimeout(play, 1000);
-		//$(this).siblings('.thumbvideo-buttons').show();	
-		//$(this).children('iframe').addClass('hovered');
-		
-		//player.play();
-		//player.setCurrentTime(50);
-		
-	}, function(){
-		element.children('.thumbvideo-frame').removeClass('hover');
-		element.children('.thumbvideo-buttons').removeClass('hover');
-		//element.parents('.showcase').removeClass('hover');
-		button = $(this).children('.thumbvideo-buttons').children('.play-pause-btn');
-		player.getPaused().then(function(paused){
-			console.log(paused);
-			if(!paused)
-				button.trigger('click');
-		})
-		//$(this).siblings('.thumbvideo-buttons').hide();	
-	});
-*/
 
 	$('.thumbvideo-buttons').on('click', '.play-pause-btn', function(){
 		if($(this).children('.fa').hasClass('fa-pause'))
