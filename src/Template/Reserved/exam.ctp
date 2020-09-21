@@ -147,7 +147,7 @@
     </section>
 
 <?php else: ?>
-
+    <?php $answers = json_decode($user_exams['answers'], true) ?>
     <?php if(empty($answers))
             foreach($exam['questions'] as $key => $value)
               $answers['q'.$value['id']] = 'wrong'; 
@@ -167,7 +167,7 @@
                             <div id="question-slider">
           				              <?php foreach ($exam['questions'] as $key => $value): ?>
                                     <?php $i = $key + 1; ?>
-                                    <a href="#q<?= $i?>" class='number <?= $value['correct'] != $answers['q'.$value['id']] ? 'wrong' : 'correct' ?>' data-toggle="tab" id='n<?= $i ?>'>
+                                    <a href="#q<?= $i?>" class='number <?= $value['correct'] != @$answers['q'.$value['id']] ? 'wrong' : 'correct' ?>' data-toggle="tab" id='n<?= $i ?>'>
                                         <?= $i ?>
                                     </a>
                                 <?php endforeach ?>
@@ -186,28 +186,33 @@
                                     <br> 
                                     <br>
                                     <?php if ($value['op1'] != ''): ?>
-                                        <input type='radio' value='1' class='radio-btn' <?= $answers['q'.$value['id']] == 1 ? 'checked="checked"' : '' ?> disabled /> 
-                                        <span <?= $value['correct'] == 1 ? 'class="correct"' : '' ?>> <?= $value['op1']; ?> <?= $value['correct'] != 1 && $answers['q'.$value['id']] == 1 ? 'class="wrong"' : '' ?>                            
+                                        <input type='radio' value='1' <?= @$answers['q'.$value['id']] == 1 ? 'checked="checked"' : '' ?> disabled /> 
+                                        <span <?= $value['correct'] == 1 ? 'class="correct"' : (@$answers['q'.$value['id']] == 1 ? 'class="wrong"' : '') ?>> 
+                                            <?= $value['op1']; ?>                             
                                         </span><br> 
                                     <?php endif ?>
                                     <?php if ($value['op2'] != ''): ?>
-                                        <input type='radio' value='2' <?= $answers['q'.$value['id']] == 2 ? 'checked="checked"' : '' ?> disabled /> 
-                                        <span <?= $value['correct'] != 2 && $answers['q'.$value['id']] == 2 ? 'class="wrong"' : '' ?> <?= $value['correct'] == 2 ? 'class="correct"' : '' ?>><?= $value['op2']; ?> 
+                                        <input type='radio' value='2' <?= @$answers['q'.$value['id']] == 2 ? 'checked="checked"' : '' ?> disabled /> 
+                                        <span <?= $value['correct'] == 2 ? 'class="correct"' : (@$answers['q'.$value['id']] == 2 ? 'class="wrong"' : '') ?>>
+                                            <?= $value['op2']; ?> 
                                         </span><br> 
                                     <?php endif ?>
                                     <?php if ($value['op3'] != ''): ?>
-                                        <input type='radio' value='3' <?= $answers['q'.$value['id']] == 3 ? 'checked="checked"' : '' ?> disabled /> 
-                                        <span <?= $value['correct'] != 3 && $answers['q'.$value['id']] == 3 ? 'class="wrong"' : '' ?><?= $value['correct'] == 3 ? 'class="correct"' : '' ?>><?= $value['op3']; ?> 
+                                        <input type='radio' value='3' <?= @$answers['q'.$value['id']] == 3 ? 'checked="checked"' : '' ?> disabled /> 
+                                         <span <?= $value['correct'] == 3 ? 'class="correct"' : (@$answers['q'.$value['id']] == 3 ? 'class="wrong"' : '') ?>>
+                                            <?= $value['op3']; ?> 
                                         </span><br> 
                                     <?php endif ?>
                                     <?php if ($value['op4'] != ''): ?> 
-                                        <input type='radio' value='4' <?= $answers['q'.$value['id']] == 4 ? 'checked="checked"' : '' ?> disabled /> 
-                                        <span <?= $value['correct'] != 4 && $answers['q'.$value['id']] == 4 ? 'class="wrong"' : '' ?><?= $value['correct'] == 4 ? 'class="correct"' : '' ?>><?= $value['op4']; ?> 
+                                        <input type='radio' value='4' <?= @$answers['q'.$value['id']] == 4 ? 'checked="checked"' : '' ?> disabled /> 
+                                         <span <?= $value['correct'] == 4 ? 'class="correct"' : (@$answers['q'.$value['id']] == 4 ? 'class="wrong"' : '') ?>>
+                                            <?= $value['op4']; ?> 
                                         </span><br> 
                                     <?php endif ?>
                                     <?php if ($value['op5'] != ''): ?>
-                                        <input type='radio' value='5' <?= $answers['q'.$value['id']] == 5 ? 'checked="checked"' : '' ?> disabled /> 
-                                        <span <?= $value['correct'] != 5 && $answers['q'.$value['id']] == 5 ? 'class="wrong"' : '' ?><?= $value['correct'] == 5 ? 'class="correct"' : '' ?>><?= $value['op5']; ?> 
+                                        <input type='radio' value='5' <?= @$answers['q'.$value['id']] == 5 ? 'checked="checked"' : '' ?> disabled /> 
+                                         <span <?= $value['correct'] == 5 ? 'class="correct"' : (@$answers['q'.$value['id']] == 5 ? 'class="wrong"' : '') ?>>
+                                            <?= $value['op5']; ?> 
                                         </span>
                                         <br> 
                                     <?php endif ?>
