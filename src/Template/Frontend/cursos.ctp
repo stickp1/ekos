@@ -407,7 +407,7 @@
            
         </div>
         <div class="col-sm-6 bibliography_box">
-            <h2>Análise Prova-Piloto.</h2>
+            <h2>Análise da Prova.</h2>
             <p>A EKOS preparou para ti a análise da prova-piloto, para te ajudar a orientar o estudo!</p>
             <button class='btn btn-black' style='margin-top:20px; width: 150px; color: #152335' onClick='window.location.href="<?= $this->Url->build(["prefix" => false, "controller" => 'analise-pp.pdf']); ?>"'>VER ANÁLISE</button>
         </div>
