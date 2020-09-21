@@ -10,7 +10,7 @@
 
     
   
-
+<!--
 <section id="recruting" class='text-center'>
       <div class="container">
         <div class="row">
@@ -23,7 +23,7 @@
         </div>
       </div>
     </section>
-
+-->
    
    <section id="recruting" class='bg-light text-center'>
       <div class="container">
