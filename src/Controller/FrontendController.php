@@ -184,6 +184,7 @@ class FrontendController extends AppController
                 'Groups.city_id' => $city_id
               ], 
               'Lectures' => [
+                'sort' => ['Lectures.datetime' => 'ASC'],
                 'Users'
               ]
             ], 
@@ -208,12 +209,18 @@ class FrontendController extends AppController
         'g' => [
           'table' => 'Groups',
           'type' => 'LEFT',
-          'conditions' => 'g.courses_id = courses.id'
+          'conditions' => [
+            'g.courses_id = courses.id',
+            'g.active' => 1
+          ]
         ],
         'l' => [
           'table' => 'Lectures',
           'type' => 'LEFT',
-          'conditions' => 'l.group_id = g.id'
+          'conditions' => [
+            'l.group_id = g.id',
+            'l.datetime is not null'
+          ]
         ]
       ])->order('l.datetime')->group('Courses.id')->toArray();
 
