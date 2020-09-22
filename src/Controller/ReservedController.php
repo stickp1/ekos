@@ -815,8 +815,8 @@ class ReservedController extends AppController
                         }
                     }
                 }
-           
-                $question_list = array_chunk(array_slice($question_list, 0, 1000, true), $this->request->getData('number'), true);
+                $question_number = $this->request->getData('number') ? $this->request->getData('number') : 10; 
+                $question_list = array_chunk(array_slice($question_list, 0, 1000, true), $question_number, true);
                 $pointer = 0;
                 $timer = isset($timer) ? ($timer == 1 ? $this->request->getData('time-lim') : 0) : null;
                 $session->write('question_list', $question_list);
@@ -1854,6 +1854,36 @@ class ReservedController extends AppController
             return;
         }
 
+        array_map([$this, 'loadModel'], ['Videos', 'VideoThemes', 'UsersGroups']);
+
+        $videos = $this->Videos->find('list', [
+            'groupField' => 'id',
+            'keyField' => 'title',
+            'valueField' => 'description'
+        ])->toArray();
+        $video_themes = $this->VideoThemes->find('list', [
+            'contain' => 'Themes',
+            'fields' => [
+                'video_id',
+                'theme_id',
+                'name' => 'Themes.name'
+            ],
+            'groupField' => 'video_id',
+            'keyField' => 'theme_id',
+            'valueField' => 'name'
+        ])->toArray();
+        $video_courses = $this->VideoThemes->find('list', [
+            'contain' => 'Courses',
+            'fields' => [
+                'video_id',
+                'course_id',
+                'name' => 'Courses.name'
+            ],
+            'groupField' => 'video_id',
+            'keyField' => 'course_id',
+            'valueField' => 'name'
+        ])->toArray();
+
         $courses = $this->loadModel('UsersGroups')->find('list', [
             'contain' => 'Groups',
             'conditions' => [
@@ -1863,7 +1893,7 @@ class ReservedController extends AppController
             'valueField' => 'groups_courses_id'
         ])->toArray();
 
-        $this->set(compact('courses'));
+        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses'));
     }
 
     /**
