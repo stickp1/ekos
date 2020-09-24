@@ -375,5 +375,5 @@ class CoursesController extends AppController
         $this->set(compact('allnewgroups', 'allnewlectures'));
         $this->Flash->success(__('Os grupos e aulas foram criados com sucesso (provavelmente).'));
     }
-    /*
+    */
 }
