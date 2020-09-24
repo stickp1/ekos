@@ -119,40 +119,21 @@ class FrontendController extends AppController
     public function sobre()
     {
     
-    	$scity = $this->request->getCookie('city');
-     if($scity) $city_id = $scity; else $city_id = 1;
+      $scity = $this->request->getCookie('city');
+      if($scity) 
+        $city_id = $scity == 3 ? 1 : $scity; 
+      else 
+        $city_id = 1;
      
-       $teachers = $this->loadModel('Users')->find('all', [
-            'contain' => ['Moderators' => ['sort' => ['Courses.name' => 'ASC'], 'Courses']], 
-            'order' => 'first_name',
-            'conditions' => ['role >' => 0, 'city_id' => $city_id]
-        ])->toArray();
+      $teachers = $this->loadModel('Users')->find('all', [
+          'contain' => ['Moderators' => ['sort' => ['Courses.name' => 'ASC'], 'Courses']], 
+          'order' => 'first_name',
+          'conditions' => ['role >' => 0, 'city_id' => $city_id]
+      ])->toArray();
 
-       //ORDENAR POR CURSO
-       // foreach ($users as $key => $value) {
-       //    foreach ($users[$key]['moderators'] as $key2 => $value2) {
-       //        $users[$key]['moderators'][$key2] = $value2['course']['name'];
-       //    }
-           
-       //     $user[$value['id']] = $value;
-       // }
-
-       // $moderators = $this->loadModel('Moderators')->find('all', ['contain' => ['Courses', 'Users'], 'order' => ['Courses.name', 'Users.first_name']])->toArray();
-
-       // $teachers = array();
-
-       // foreach ($moderators as $moderator) {
-       //     if(isset($user[$moderator['users_id']])):
-       //      array_push($teachers, $user[$moderator['users_id']]);
-       //      unset($user[$moderator['users_id']]);
-       //      endif;
-       // }
-
-        foreach ($teachers as $key => $teacher) {
-          foreach ($teacher['moderators'] as $key2 => $value) {
-            $teachers[$key]['moderators'][$key2] = $value['course']['name'];
-          }
-        }
+      foreach ($teachers as $key => $teacher) 
+        foreach ($teacher['moderators'] as $key2 => $value) 
+          $teachers[$key]['moderators'][$key2] = $value['course']['name'];
 
        $this->set(compact('teachers'));
     }

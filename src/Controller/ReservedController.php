@@ -424,7 +424,7 @@ class ReservedController extends AppController
                     ]
                 ]
             ])->toArray();
-            $course['price'] = 840;
+            $course['price'] = $city_id !=3 ? 840 : 620;
             $course['name'] = 'Curso Anual';
 
             $this->set(compact('annual_courses'));
@@ -438,15 +438,16 @@ class ReservedController extends AppController
             if($annual){
 
                 $courses_id_order = [10, 4, 5, 6, 11, 8, 3, 7, 9, 12, 13]; 
-                $courses_per_trimester = [2, 2, 3, 4];
+                $courses_per_trimester = [2, 4, 5];
+                $prices_per_trimester = $city_id != 3 ? [350, 300, 200] : [248, 222, 150];
                 $course_it = 0;
                 
-                for($trimester=0; $trimester<4; $trimester++){
+                for($trimester=0; $trimester<count($courses_per_trimester); $trimester++){
 
                     // generate one sale per trimester with value 210
                     $sale = $this->Products->Sales->newEntity();
                     $sale['users_id'] = $id;
-                    $sale['value'] = 210;
+                    $sale['value'] = $prices_per_trimester[$trimester];
                     $sale['payment_type'] = $this->request->getData('payment_type');
                     $sale = $this->Products->Sales->save($sale);
                     array_push($all_sales, $sale);
@@ -461,7 +462,7 @@ class ReservedController extends AppController
                         $product['group_courses_id'] = $id_tmp;
                         $product['sale_id'] = $sale->id;
                         $product['sales_users_id'] = $id;
-                        $product['value'] = floatval(210) / $courses_per_trimester[$trimester];
+                        $product['value'] = floatval($prices_per_trimester[$trimester]) / $courses_per_trimester[$trimester];
                         $this->Products->save($product);
 
                         $course_it++;
