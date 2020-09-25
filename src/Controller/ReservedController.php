@@ -451,7 +451,7 @@ class ReservedController extends AppController
             $course['price'] = $city_id !=3 ? 850 : 620;
             $course['name'] = 'Curso Anual';
 
-            $this->set(compact('annual_courses'));
+            $this->set(compact('annual_courses', 'courses'));
         }
         if ($this->request->is('post')) {
 
@@ -461,7 +461,33 @@ class ReservedController extends AppController
 
             if($annual){
 
-                $courses_id_order = [10, 4, 5, 6, 11, 8, 3, 7, 9, 12, 13]; 
+                $courses_id_order = $this->loadModel('Courses')->find('list', [ 
+                    'conditions' => [
+                      'Courses.id > 1',
+                      'Courses.id < 14'
+                    ],
+                    'valueField' => 'Courses.id'
+                    ])->join([
+                    'g' => [
+                      'table' => 'Groups',
+                      'type' => 'LEFT',
+                      'conditions' => [
+                        'g.courses_id = courses.id',
+                        'g.active' => 1,
+                        'g.city_id' => $city_id
+                      ]
+                    ],
+                    'l' => [
+                      'table' => 'Lectures',
+                      'type' => 'LEFT',
+                      'conditions' => [
+                        'l.group_id = g.id',
+                        'l.datetime is not null'
+                      ]
+                    ]
+                ])->order('l.datetime')->group('Courses.id')->toArray();
+                $courses_id_order = array_keys($courses_id_order);
+
                 $courses_per_trimester = [2, 4, 5];
                 $prices_per_trimester = $city_id != 3 ? [350, 300, 200] : [248, 222, 150];
                 $course_it = 0;

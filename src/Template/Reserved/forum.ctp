@@ -415,6 +415,10 @@ div#themeTable{
         display: none;
     }
 }
+.cke-editable{
+    font-family: "Source sans Pro";
+    font-size: 16px;
+}
 </style>
 
 <script src="<?= $url; ?>/bower_components/ckeditor/ckeditor.js"></script>
@@ -440,8 +444,10 @@ setTimeout(function(){
         { name: 'links', groups: [ 'links' ] },
         { name: 'insert', groups: [ 'insert' ] },
       ],
-      extraPlugins: 'notification'
+      extraPlugins: 'editorplaceholder'
     });
+
+
 
     newMessageEditor.on('required', function(e){
         editor.showNotification('This field is required', 'warning');
