@@ -408,7 +408,7 @@ class ReservedController extends AppController
 
         if($annual){
              
-            $courses = $this->Courses->find('list', [ 
+            $courses = $this->loadModel('Courses')->find('list', [ 
                 'conditions' => [
                   'Courses.id > 1',
                   'Courses.id < 14'

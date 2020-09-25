@@ -443,10 +443,6 @@ setTimeout(function(){
       extraPlugins: 'notification'
     });
 
-    var range = newMessageEditor.getSelection().getRanges()[ 0 ];
-    range.deleteContents();
-    range.select();
-
     newMessageEditor.on('required', function(e){
         editor.showNotification('This field is required', 'warning');
         e.cancel();
