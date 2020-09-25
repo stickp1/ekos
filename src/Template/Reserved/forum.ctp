@@ -152,7 +152,7 @@
                     <div id="textDiv">
                         <input type="hidden" name="newTheme">
                         <textarea rows=2 name="newTitle" placeholder="Introduz aqui a tua dúvida resumidamente"></textarea>
-                        <textarea id="newMessage" rows=5 name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida" required></textarea>
+                        <textarea rows=5 id="newMessageEditor" name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida" required></textarea>
                     </div>
                     <div class="modal-footer row">
                         <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
@@ -429,6 +429,40 @@ setTimeout(function(){
   $('.message.success').hide();  
   $('#mainNav').addClass('flash_timeout');
 }, 5000);
+
+/*$(function () {
+
+    var newMessageEditor = CKEDITOR.replace('newMessageEditor', {
+      allowedContent: true,
+      toolbarGroups: [
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph', groups: [ 'list', 'blocks'] },
+        { name: 'links', groups: [ 'links' ] },
+        { name: 'insert', groups: [ 'insert' ] },
+      ],
+      extraPlugins: 'notification'
+    });
+
+    var range = newMessageEditor.getSelection().getRanges()[ 0 ];
+    range.deleteContents();
+    range.select();
+
+    newMessageEditor.on('required', function(e){
+        editor.showNotification('This field is required', 'warning');
+        e.cancel();
+    });
+
+    CKEDITOR.replace('editor2', {
+      height: '375px',
+      allowedContent: true,
+      toolbarGroups: [{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+        { name: 'links', groups: [ 'links' ] },
+        { name: 'insert', groups: [ 'insert' ] },
+      ],
+    });
+
+});*/
 
 
 $(document).ready(function(){
