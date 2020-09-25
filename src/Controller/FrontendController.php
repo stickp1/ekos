@@ -151,9 +151,6 @@ class FrontendController extends AppController
 
       $scity = $this->request->getCookie('city');
       if($scity) $city_id = $scity; else $city_id = 1;
-
-      // when inscriptions of course with id 10 (Neurologia e Psiquiatria) open, open annual course inscriptions 
-      $annual_trigger_course_id = 10; 
        
       $courses = $this->Courses->find('all', [
           'order' => 'name', 
@@ -192,7 +189,8 @@ class FrontendController extends AppController
           'type' => 'LEFT',
           'conditions' => [
             'g.courses_id = courses.id',
-            'g.active' => 1
+            'g.active' => 1,
+            'g.city_id' => $city_id
           ]
         ],
         'l' => [
@@ -205,6 +203,7 @@ class FrontendController extends AppController
         ]
       ])->order('l.datetime')->group('Courses.id')->toArray();
 
+      $annual_trigger_course_id = array_key_first($courses_order);
       $i = 0;
       foreach($courses_order as $key => $nothing)
         foreach($courses as $incr => $value)
@@ -320,7 +319,7 @@ class FrontendController extends AppController
       foreach($courses as $course)
         $course['price'] = preg_replace('/\s/', '&nbsp', $course['price']);
 
-      $this->set(compact('courses', 'themes', 'count', 'courses2', 'courses3', 'summer', 'manage', 'annual_trigger_course_id'));
+      $this->set(compact('courses', 'themes', 'count', 'courses2', 'courses3', 'summer', 'manage', 'courses_order'));
     }
 
     public function informacoes()

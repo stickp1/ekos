@@ -408,8 +408,32 @@ class ReservedController extends AppController
 
         if($annual){
              
-            // ids of annual courses selection
-            $courses = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+            $courses = $this->Courses->find('list', [ 
+                'conditions' => [
+                  'Courses.id > 1',
+                  'Courses.id < 14'
+                ],
+                'valueField' => 'Courses.id'
+              ])->join([
+                'g' => [
+                  'table' => 'Groups',
+                  'type' => 'LEFT',
+                  'conditions' => [
+                    'g.courses_id = courses.id',
+                    'g.active' => 1,
+                    'g.city_id' => $city_id
+                  ]
+                ],
+                'l' => [
+                  'table' => 'Lectures',
+                  'type' => 'LEFT',
+                  'conditions' => [
+                    'l.group_id = g.id',
+                    'l.datetime is not null'
+                  ]
+                ]
+              ])->order('l.datetime')->group('Courses.id')->toArray();
+            $courses = array_keys($courses);
 
             $annual_courses = $this->Products->Courses->find('all', [
                 'order' => 'name',
@@ -424,7 +448,7 @@ class ReservedController extends AppController
                     ]
                 ]
             ])->toArray();
-            $course['price'] = $city_id !=3 ? 840 : 620;
+            $course['price'] = $city_id !=3 ? 850 : 620;
             $course['name'] = 'Curso Anual';
 
             $this->set(compact('annual_courses'));
