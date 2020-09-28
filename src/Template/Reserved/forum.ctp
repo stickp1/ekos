@@ -151,8 +151,10 @@
                 <?= $this->Form->create('Form', ['url' => ['controller' => 'reserved', 'action' => 'messageCreate'], 'id' => 'message-form']) ?>
                     <div id="textDiv">
                         <input type="hidden" name="newTheme">
+                        <div class="newMessageLabel">Título:</div>
                         <textarea rows=2 name="newTitle" placeholder="Introduz aqui a tua dúvida resumidamente"></textarea>
-                        <textarea rows=5 id="newMessageEditor" name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida" required></textarea>
+                        <div class="newMessageLabel">Conteúdo:</div><br>
+                        <textarea rows=5 id="newMessageEditor" name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida"></textarea>
                     </div>
                     <div class="modal-footer row">
                         <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
@@ -311,6 +313,11 @@ table.messageList tr:last-child{
     padding: 5px;
     resize: vertical;
 }
+#replyList #cke_replyMessage{
+    width: 500px;
+    margin: auto;
+    border-radius: 3px;
+}
 #replyList .submitReplyMessage{
     width: 150px;
     padding: 10px 0 10px 0;
@@ -366,6 +373,13 @@ div#themeTable{
     padding-left: 0;
     padding-right: 0;
 }
+.newMessageLabel{
+    font-size: 18px;
+    text-transform: uppercase;
+    width:100%;
+    text-align: left;
+    font-weight: bold;
+}
 @media (min-width: 768px){
     #newMessage .modal-footer .captcha-push{
         float: none;
@@ -405,7 +419,7 @@ div#themeTable{
     #backArrow button{
         width: 75%;
     }
-    #replyList textarea{
+    #replyList textarea, #replyList #cke_replyMessage{
         width: 100%;
     }
     #replyList #tempReplies div.well{
@@ -414,10 +428,6 @@ div#themeTable{
     #replyList #tempReplies div.well span.date{
         display: none;
     }
-}
-.cke-editable{
-    font-family: "Source sans Pro";
-    font-size: 16px;
 }
 </style>
 
@@ -434,37 +444,29 @@ setTimeout(function(){
   $('#mainNav').addClass('flash_timeout');
 }, 5000);
 
-/*$(function () {
+$(function () {
 
-    var newMessageEditor = CKEDITOR.replace('newMessageEditor', {
+    CKEDITOR.replace('newMessageEditor', {
       allowedContent: true,
       toolbarGroups: [
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
         { name: 'paragraph', groups: [ 'list', 'blocks'] },
         { name: 'links', groups: [ 'links' ] },
         { name: 'insert', groups: [ 'insert' ] },
-      ],
-      extraPlugins: 'editorplaceholder'
+      ]
     });
 
-
-
-    newMessageEditor.on('required', function(e){
-        editor.showNotification('This field is required', 'warning');
-        e.cancel();
-    });
-
-    CKEDITOR.replace('editor2', {
-      height: '375px',
+    CKEDITOR.replace('replyMessage', {
       allowedContent: true,
-      toolbarGroups: [{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+      toolbarGroups: [
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph', groups: [ 'list', 'blocks'] },
         { name: 'links', groups: [ 'links' ] },
         { name: 'insert', groups: [ 'insert' ] },
-      ],
+      ]
     });
 
-});*/
+});
 
 
 $(document).ready(function(){

@@ -1,11 +1,24 @@
-<?php $url = $this->Url->build(["prefix" => false, "controller" => '/'], true); ?>
+<?php $url = $this->Url->build(["prefix" => false, "controller" => '/'], true);
+
+use Vimeo\Vimeo;
+
+$client = new Vimeo("0af46bd862c619713814e571961d0c3f276fb58c", "I1w+gCaPsU49Wpy0JfsZCepYD/9hT88kJGkpnF4ko+MYhpTMYj+Un1kCpyFlGB8rvG59eAcIHKX103U8xP4zKBIzY1M612nXw+K/0hg5YITsvs/3eEFzbzojRXAIfKVg", "1c4b57b035d803815e1a0e13794815bc");
+
+$uri = 'http://api.vimeo.com/me/albums/7542594/videos';
+$response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'autoplay' => 1], 'GET');
+
+?>
+
 <!-- Header -->
     <header style='background-image: url("<?= $url?>/img/banner4.jpg")'>
       <div class="container text-center">
         <span class='prelabel'>EKOS - Formar para a especialidade</span>
-        <!--<h1>Testa o teu conhecimento.</h1>-->
-        <h1>A plataforma ideal para o teu treino.</h1>
+        <h1>Lançamento a 1 de Novembro</h1>
       </div>
+    </header>
+
+    <header id="trailer">
+        <?= $response['body']['embed']['html'] ?><br>
     </header>
 
     
@@ -56,7 +69,23 @@
     </section>
 
 
-
+<style>
+  header#trailer iframe{
+      width: 100%;
+      height: -webkit-fill-available;
+  }
+  header#trailer{
+    box-shadow: none;
+    background: #152133;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  @media(max-width:1580px){
+    header#trailer iframe{
+      height: 60vw;
+    }
+  }
+</style>
 <script>
 $('.primary').on('click', function(){
   id = $(this).attr('id');

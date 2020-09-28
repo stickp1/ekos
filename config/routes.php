@@ -57,7 +57,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/sobre/', ['controller' => 'Frontend', 'action' => 'sobre']);
     $routes->connect('/cursos/', ['controller' => 'Frontend', 'action' => 'cursos']);
     $routes->connect('/informacoes/', ['controller' => 'Frontend', 'action' => 'informacoes']);
-    $routes->connect('/banco/', ['controller' => 'Frontend', 'action' => 'perguntas']);
+    $routes->connect('/studio/', ['controller' => 'Frontend', 'action' => 'perguntas']);
     $routes->connect('/informacoes/:param', ['controller' => 'Frontend', 'action' => 'informacoes']);
     $routes->connect('/contactos/', ['controller' => 'Frontend', 'action' => 'contactos']);
     $routes->connect('/formacao/', ['controller' => 'Frontend', 'action' => 'formacao']);

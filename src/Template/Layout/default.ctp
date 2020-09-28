@@ -128,7 +128,7 @@ $cakeDescription = 'EKOS - Formar para a Especialidade';
                         </ul>
                     </li>
                     <li>
-                        <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "banco"]) ?>" <?= $this->request->params['action'] == 'perguntas' ? "class='active'" : ""?> >Perguntas & Flashcards</a>
+                        <a href="<?= $this->Url->build(["prefix" => false, "controller" => '/', "action" => "studio"]) ?>" <?= $this->request->params['action'] == 'perguntas' ? "class='active'" : ""?> >Ekos Studio</a>
                     </li>
                     <li class="dropdown-toggle">
                         <a class="page-scroll" href="#" data-toggle="modal" data-target="#login" <?= isset($Auth['id']) ? "value=\"".$this->Url->build(["prefix" => false, "controller" => "reserved", "action" => "index"])."\"" : "" ?> >Área Reservada</a>
