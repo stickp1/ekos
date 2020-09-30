@@ -10,18 +10,18 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
 ?>
 
 <!-- Header -->
-    <header style='background-image: url("<?= $url?>/img/banner5.jpg")'>
-      <div class="container text-center">
-        <span class='prelabel'>EKOS - Formar para a especialidade</span>
-        <h1>A plataforma ideal para o teu treino</h1>
-        <span class='prelabel'>Lançamento a 1 de Novembro</span>
+<header style='background-image: url("<?= $url?>/img/banner5.jpg")'>
+  <div class="container text-center">
+    <span class='prelabel'>EKOS - Formar para a especialidade</span>
+    <h1>A plataforma ideal para o teu treino</h1>
+    <span class='prelabel'>Lançamento a 1 de Novembro</span>
 
-      </div>
-    </header>
+  </div>
+</header>
 
-    <header id="trailer">
-        <?= $response['body']['embed']['html'] ?><br>
-    </header>
+<header id="trailer">
+    <?= $response['body']['embed']['html'] ?><br>
+</header>
 
     
   
@@ -72,27 +72,20 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
       </div>
     </section>
 
-    <div class="bibliography_box" style="height:100px">
-    </div>
-
     <section class='text-sm-left text-center no-gutters about'>
       <div class="row is-flex">
-          <div class="col-sm-6" style='background-image: url("<?= $url?>/img/Perguntas.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
-            
+          <div class="col-sm-6 studio studioL" style='background-image: url("<?= $url?>/img/Perguntas.jpg?>");'>
           </div>
-          <div class="col-sm-6 bibliography_box">
+          <div class="col-sm-6 bibliography_box" style="background:#f5f5f5; color:#152133">
               <h2>Perguntas.</h2>
               <p>De entre as mais de 1000 perguntas, escolhe as fáceis, as difíceis, as novas, as que erraste, as de Perturbação de Ansiedade generalizada, as tuas favoritas. Ou podes sempre escolher todas. Há sessões de 10, 25, 50 ou 100 perguntas (que podem ser estendidas indefinidamente). Podes ainda cronometrar cada sessão ou definir um tempo limite!</p>
           </div>
       </div>
     </section>
 
-    <div class="bibliography_box" style="height:100px">
-    </div>
-
     <section class='text-sm-left text-center no-gutters about'>
       <div class="row is-flex">
-          <div class="col-sm-6 bibliography_box">
+          <div class="col-sm-6 bibliography_box" style="background: white; color:#152133">
               <h2>Vídeos.</h2>
               <p>Vídeos curtos dirigidos a temas chave para reveres a matéria e aprenderes da melhor forma! Vídeos curtos dirigidos a temas chave para reveres a matéria e aprenderes da melhor forma!
               </p>
@@ -102,21 +95,18 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
               <br>
               
           </div>
-          <div class="col-sm-6" style='background-image: url("<?= $url?>/img/Videos.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
+          <div class="col-sm-6 studio studioR" style='background-image: url("<?= $url?>/img/Videos.jpg?>"); background-size: contain;background-color: white;background-repeat: no-repeat; background-position: center;justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%; margin-right:15px'>
             
           </div>
       </div>
     </section>
 
-    <div class="bibliography_box" style="height:100px">
-    </div>
-
     <section class='text-sm-left text-center no-gutters about'>
       <div class="row is-flex">
-          <div class="col-sm-6" style='background-image: url("<?= $url?>/img/Flashcards.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
+          <div class="col-sm-6 studio studioL" style='background-image: url("<?= $url?>/img/Flashcards.jpg?>"); background-size: contain;background-color: #f5f5f5;background-repeat: no-repeat; background-position: center;justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%; margin-left:15px'>
             
           </div>
-          <div class="col-sm-6 bibliography_box">
+          <div class="col-sm-6 bibliography_box" style="background: #f5f5f5; color: #152133">
               <h2>Flashcards.</h2>
               <p>Para perguntas curtas e específicas com respostas diretas podes utilizar o nosso extenso deck de flashcards, marcando cada flashcard como certo, errado ou favorito. Podes também adicionar os teus próprios flashcards, organizados por módulo e tema, que ficarão numa secção separada. Assim podes treinar alternadamente utilizando os nossos, os teus, ou todos juntos!
               
@@ -126,23 +116,18 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
       </div>
     </section>
 
-    <div class="bibliography_box" style="height:100px">
-    </div>
-
     <section class='text-sm-left text-center no-gutters about'>
       <div class="row is-flex">
-          <div class="col-sm-6 bibliography_box">
+          <div class="col-sm-6 bibliography_box" style="background: #f5f5f5; color:#152133; box-shadow: inset 0px 100px 50px -115px, inset 0px -100px 50px -115px ">
               <h2>Fórum de Dúvidas.</h2>
               <p>Coloca as tuas dúvidas sobre os temas de cada módulo em que estás inscrito, e os nossos formadores irão assim que possível responder a cada dúvida colocada. Consulta ainda as dúvidas colocadas pelos teus colegas e participa em discussões sobre a matéria.</p>
           </div>
-          <div class="col-sm-6" style='background-image: url("<?= $url?>/img/Forum.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
+          <div class="col-sm-6 studioR" style='background-image: url("<?= $url?>/img/Forum.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%; background-origin: content-box;'>
             
           </div>
       </div>
     </section>
     
-    <div class="bibliography_box" style="height:100px">
-    </div>
 
      <section id="services" class="text-center">
       <div class="container">
@@ -176,6 +161,34 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
       max-height:720px;
     }
   }
+  @media(max-width:991px){
+    div.col-sm-6.bibliography_box{
+      padding: 15px;
+    }
+  }
+  div.row.is-flex div.col-sm-6:first-child{
+    margin-left: 15px;
+  }
+  div.studio{
+    background-size: contain!important; 
+    background-color: #f5f5f5; 
+    background-repeat: no-repeat;
+    background-position: center; 
+    background-origin: content-box;
+    justify-content: center; 
+    align-items: center; 
+    color:white; 
+    font-weight: bold; 
+    font-size:120%; 
+
+  }
+  div.studioL{
+    margin-left: 15px;
+  }
+  div.studioR{
+    margin-right: 15px;
+  }
+  
 </style>
 <script>
 $('.primary').on('click', function(){

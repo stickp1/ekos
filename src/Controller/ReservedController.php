@@ -565,7 +565,7 @@ class ReservedController extends AppController
             }
             return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $all_sales[0]->id]);
         }
-        $this->set(compact('groups', 'course'));
+        $this->set(compact('groups', 'groups_raw', 'course'));
     }
 
     public function waiting ($course_id = null, $annual = null)
