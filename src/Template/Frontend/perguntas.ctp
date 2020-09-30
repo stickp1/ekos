@@ -118,11 +118,11 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
 
     <section class='text-sm-left text-center no-gutters about'>
       <div class="row is-flex">
-          <div class="col-sm-6 bibliography_box" style="background: #f5f5f5; color:#152133; box-shadow: inset 0px 100px 50px -115px, inset 0px -100px 50px -115px ">
+          <div class="col-sm-6 bibliography_box" id="studioF" style="background: #f5f5f5; color:#152133; box-shadow: inset 0px 100px 50px -115px, inset 0px -100px 50px -115px ">
               <h2>Fórum de Dúvidas.</h2>
               <p>Coloca as tuas dúvidas sobre os temas de cada módulo em que estás inscrito, e os nossos formadores irão assim que possível responder a cada dúvida colocada. Consulta ainda as dúvidas colocadas pelos teus colegas e participa em discussões sobre a matéria.</p>
           </div>
-          <div class="col-sm-6 studioR" style='background-image: url("<?= $url?>/img/Forum.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%; background-origin: content-box;'>
+          <div class="col-sm-6 studioR" style='background-image: url("<?= $url?>/img/Forum.jpg?>"); justify-content: center; align-items: center; color:white; font-weight: bold; font-size:120%;'>
             
           </div>
       </div>
@@ -169,6 +169,9 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
   div.row.is-flex div.col-sm-6:first-child{
     margin-left: 15px;
   }
+  div.row.is-flex div.col-sm-6{
+    padding: 40px;
+  }
   div.studio{
     background-size: contain!important; 
     background-color: #f5f5f5; 
@@ -187,6 +190,28 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
   }
   div.studioR{
     margin-right: 15px;
+  }
+  @media(max-width:992px){
+    div.row.is-flex div.col-sm-6{
+      padding: 15px;
+    }
+  }
+  @media(max-width: 767px){
+    div.row.is-flex{
+      display: flex;
+      flex-flow: column;
+    }
+    div.studio{
+      order: 2;
+      padding-bottom: 20px!important;
+    }
+    div.row.is-flex div.col-sm-6.bibliography_box{
+      padding: 40px;
+    }
+    div#studioF{
+      box-shadow: inset 0px 100px 50px -115px!important;
+      padding-bottom: 20px!important;
+    }
   }
   
 </style>
