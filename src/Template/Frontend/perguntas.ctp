@@ -151,7 +151,7 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
   @media(max-width:1580px){
     header#trailer iframe{
       height: 60vw;
-      max-height:720px;
+      max-height:650px;
     }
   }
   @media(max-width:991px){
