@@ -126,9 +126,10 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
             <h1>Inscrição EKOS Studio.</h1>
             <p>O lançamento da plataforma terá lugar no dia 1 de Novembro, encontrando-se aberto o período de pré-inscrições!<br> A inscrição no EKOS Studio tem o <strike>valor de 150€</strike>.</p>
             <p style="font-size: 25px; color: #FEB000;">Valor promocional até 15 de Novembro | 100€</p>
-
-            <?php if (!isset($Auth['id'])): echo '<button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>'; else: ?> 
-              <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 1]) ?>"'>PRÉ_INSCRIÇÃO</button>
+            <?php if(!isset($Auth['id'])): ?>
+                <button class="btn btn-black" data-toggle="modal" data-target="#login" >PRÉ-INSCRIÇÃO</button>
+            <?php else: ?>
+                <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 1]) ?>"'>PRÉ-INSCRIÇÃO</button>
             <?php endif; ?>
     
           </div>
