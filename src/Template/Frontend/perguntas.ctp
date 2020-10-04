@@ -49,7 +49,7 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
             <h1>O nosso Studio</h1>
             <p style="margin-bottom: 50px">Queres estudar quando e onde quiseres? Procuras uma alternativa digital para aprender, rever e praticar? A EKOS traz-te uma nova ferramente digital e interativa para cresceres no teu estudo.<br> Vem conhecer o EKOS Studio - a plataforma que desenvolvemos para ti!</p>
             <img style="width:100%; margin-bottom:10px" src="<?= $url?>/img/Perguntas.jpg" alt="Vídeos"></img>
-            <p style="font-size:15px;">Personaliza o teu Studio | Perguntas<br>Escolhe as fáceis, as difíceis, as novas ou as que erraste, as de ansiedade generalizada ou as tuas favoritas. Ou podes sempre escolher todas. Tudo isto em sessões com o número de perguntas que quiseres e podes ainda cronometrar cada sessão ou definir um tempo limite!</p>
+            <p style="font-size:15px;"><b>Personaliza o teu Studio | Perguntas</b><br>Escolhe as fáceis, as difíceis, as novas ou as que erraste, as de ansiedade generalizada ou as tuas favoritas. Ou podes sempre escolher todas. Tudo isto em sessões com o número de perguntas que quiseres e podes ainda cronometrar cada sessão ou definir um tempo limite!</p>
           </div>
         </div>
       </div>
@@ -110,10 +110,10 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
         <div class="row" style='margin-bottom:75px'>
           <div class="col-md-8 col-md-offset-2 tab-content">
             <h1 style='text-align:center'>Informações</h1>
-            <p>O EKOS Studio dá-te acesso à nossa plataforma digital construida para te ajudar a preparar e estudar para a prova. Uma ferramente assente em 4 pilares, constituída por <b>vídeos curtos e interativos</b>, uma base de <b>perguntas-tipo em modelo de caso-clínico</b> (formato do exame), um extenso conjunto de <b><em>flashcards</em> para revisão e treino</b> dos conteúdos previamente estudados e um <b>fórum de dúvidas</b>. A plataforma traz-te uma abordagem nova e interativa com ênfase na personalização das tuas preferências, desde a dificuldade das perguntas e selecão de conteúdos favoritos.</p>
-            <p> À data de lançamento, a <b>1 de Novembro de 2020</b>, existirão 1000 perguntas, incluindo a anterior PNA e prova-piloto, 2400 flashcards e mais de uma dezena de vídeos. Novos conteúdos serão ainda adicionados ao longo do ano, durante o decorrer dos módulos, totalizando mais de 100 vídeos interativos.</p>
-            <p> A inscrição terá validade até à data da prova nacional de acesso de 2021. O método de inscrição é semelhante ao dos restantes módulos, cujo procedimento se encontra descrito na página Informações.</p>
-            <p> A inscrição no EKOS Studio é gratuita para todos os alunos da EKOS inscritos no curso anual.</p>
+            <p>O EKOS Studio dá-te acesso à nossa plataforma digital construída para te ajudar a preparar e estudar para a prova. Uma ferramente assente em 4 pilares, constituída por <b>vídeos curtos e interativos</b>, uma base de <b>perguntas-tipo em modelo de caso-clínico</b> (formato do exame), um extenso conjunto de <b><em>flashcards</em> para revisão e treino</b> dos conteúdos previamente estudados e um <b>fórum de dúvidas</b>. A plataforma traz-te uma abordagem nova e interativa com ênfase na personalização das tuas preferências, desde a dificuldade das perguntas à selecão dos teus conteúdos favoritos.</p>
+            <p> À data de lançamento, a <b>1 de Novembro de 2020</b>, existirão 1000 perguntas, incluindo a anterior PNA e prova-piloto, 2400 flashcards e mais de uma dezena de vídeos. Novos conteúdos serão ainda adicionados ao longo do ano e durante o decorrer dos módulos, totalizando mais de 100 vídeos interativos.</p>
+            <p> A inscrição terá <b>validade até à data da prova nacional de acesso de 2021</b>. A inscrição pode ser realizada através do botão 'Inscrever' no final desta página, encontrando-se o procedimento de inscrição descrito na página Informações.</p>
+            <p> A inscrição no <b>EKOS Studio é gratuita para todos os alunos da EKOS</b> inscritos no curso anual.</p>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
             <p style="font-size: 25px; color: #FEB000;">Valor promocional até 15 de Novembro | 100€</p>
 
             <?php if (!isset($Auth['id'])): echo '<button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>'; else: ?> 
-              <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 1]) ?>"'>INSCREVER</button>
+              <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 1]) ?>"'>PRÉ_INSCRIÇÃO</button>
             <?php endif; ?>
     
           </div>
