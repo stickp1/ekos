@@ -391,11 +391,22 @@
 <section id="recruting" class='text-center'>
       <div class="container">
         <div class="row">
-          <div class="col-md-8 col-md-offset-2">
+          <!--<div class="col-md-8 col-md-offset-2">
             <h1>Perguntas Modelo.</h1>
             <p>Não sabes que tipo de perguntas vão sair na nova prova? A EKOS preparou para ti 25 perguntas-tipo, baseadas no modelo de vinheta clínica, para que possas saber o que te espera.</p>
 
             <button class="btn btn-black" onClick="window.open('http://ekos.pt/reserved/exam')" >COMEÇAR</button>
+          </div>-->
+
+          <div class="col-md-8 col-md-offset-2">
+            <h1>O nosso exame de simulação.</h1>
+            <p>Queres praticar para a PNA?<br> A inscrição nas nossas provas de simulação oferece-te 2 exames originais e temporizados para praticares e simulares a prova na nossa plataforma.</p>
+            <?php if(!isset($Auth['id'])): ?>
+                <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCREVER</button>
+            <?php else: ?>
+                <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 16]) ?>"'>INSCREVER</button>
+            <?php endif; ?>
+    
           </div>
         </div>
       </div>
