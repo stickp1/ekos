@@ -153,7 +153,7 @@
                         <input type="hidden" name="newTheme">
                         <div class="newMessageLabel">Título:</div>
                         <textarea rows=2 name="newTitle" placeholder="Introduz aqui a tua dúvida resumidamente"></textarea>
-                        <div class="newMessageLabel">Conteúdo:</div><br>
+                        <div class="newMessageLabel" id="contentLabel">Conteúdo:</div><br>
                         <textarea rows=5 id="newMessageEditor" name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida"></textarea>
                     </div>
                     <div class="modal-footer row">
@@ -395,6 +395,9 @@ div#themeTable{
         margin-top: 10px;
     }
 }
+#newMessage #contentLabel{
+    margin-bottom: -10px;
+}
 #backArrow i{
     position: absolute;
     right: 0;
@@ -446,7 +449,7 @@ setTimeout(function(){
 
 $(function () {
 
-    CKEDITOR.replace('newMessageEditor', {
+    cke_new_editor = CKEDITOR.replace('newMessageEditor', {
       allowedContent: true,
       toolbarGroups: [
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
@@ -456,7 +459,7 @@ $(function () {
       ]
     });
 
-    CKEDITOR.replace('replyMessage', {
+    cke_reply_editor = CKEDITOR.replace('replyMessage', {
       allowedContent: true,
       toolbarGroups: [
         { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
@@ -591,7 +594,7 @@ $('.messageList').on('click', '.messageToggle', function(){
         $.each(JSON.parse(data), function(index, value){
             $('#replyList #tempReplies').append(repliesTemplate(value['id']));
             $('#replyList #tempReplies div.well:last-child div:first-child').text(value['title']);
-            $('#replyList #tempReplies div.well:last-child div:last-child').text(value['message']);
+            $('#replyList #tempReplies div.well:last-child div:last-child').html(value['message']);
             $('#replyList #tempReplies div.well:last-child span:nth-child(2)').text(value['user']);
             $('#replyList #tempReplies div.well:last-child span.date').html('&nbsp&nbsp·&nbsp' + value['date_created']);
             $('#replyList #tempReplies div.well:last-child span.upvotes').text(value['upvotes']);
@@ -632,7 +635,8 @@ $('.submitNewMessage').on('click', function(){
     event.preventDefault();
     theme_id = $('input[name="newTheme"]').val();
     title = $('textarea[name="newTitle"]').val();
-    message = $('textarea[name="newMessage"]').val(); 
+    //message = $('textarea[name="newMessage"]').val(); 
+    message = cke_new_editor.getData();
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: theme_id,
         title: title,
@@ -644,7 +648,8 @@ $('.submitNewMessage').on('click', function(){
 })
 
 $('.submitReplyMessage').on('click', function(){
-    message = $(this).siblings('#replyList textarea').val();
+    //message = $(this).siblings('#replyList textarea').val();
+    message = cke_reply_editor.getData();
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: THEMEID[0],
         parent: MESSAGEID[0],

@@ -1792,6 +1792,7 @@ class ReservedController extends AppController
                 if(!$this->ThemeMessages->save($parent)) 
                     $continue = false;
             }
+
             if($continue && $this->ThemeMessages->save($message)){
 
                 $users = $this->loadModel('ThemeMessages')->find('list', [
