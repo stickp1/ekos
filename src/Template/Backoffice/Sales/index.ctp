@@ -26,9 +26,11 @@
               </div>
               <div class="box-tools" style='right:170px'>
                 <ul class="pagination pagination-sm no-margin pull-right">
-                    <?= $this->Paginator->prev('«') ?>
+                    <?= $this->Paginator->first('«') ?>
+                    <?= $this->Paginator->prev('‹') ?>
                     <?= $this->Paginator->numbers() ?>
-                    <?= $this->Paginator->next('»') ?>
+                    <?= $this->Paginator->next('›') ?>
+                    <?= $this->Paginator->last('»') ?>
                 </ul>
             </div>
             </div>
