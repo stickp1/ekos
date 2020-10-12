@@ -108,33 +108,113 @@ class SalesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($year = null)
     
     {
-    
-    	
+        $dates = $this->Sales->find('list', [
+          'fields' => [
+            'year' => 'year(datetime)',
+            'month' => 'month(datetime)'
+          ],
+          'keyField' => 'year',
+          'valueField' => 'month',
+          'order' => [
+            'year' => 'desc',
+            'month' => 'asc'
+          ]
+        ]);
+        $years = [];
+        $startMonth = 10;
+        if(!$year)
+            $year = 0;
+
+
+        foreach($dates as $y => $m)
+        {
+          $month = $m;
+          $year_last = $y;
+        }
+        if($month < $startMonth)
+        {
+          foreach($dates as $y => $m)
+            $years[$y.''] = intval($y-1)."/".$y;
+          
+        }
+        else
+        {
+          foreach($dates as $y => $m)
+            $years[intval($y+1).''] = $y."/".intval($y+1);
+        }
+        //$years = array_reverse($years);
+        if (!$year){
+          $year_aux = array_keys($years);
+          $year = $year_aux[$year];
+        }
         if(isset($_GET['name'])):
         $this->paginate = [
-            'contain' => ['Users'],
-            'sortWhitelist' => ['Users.first_name', 'datetime', 'value', 'status', 'Sales.id'],
-            'conditions' => ['OR' => ['Users.first_name LIKE' => '%'.$_GET['name'].'%', 'Users.last_name LIKE' => '%'.$_GET['name'].'%']],
+            'contain' => [
+                'Users'
+            ],
+            'sortWhitelist' => [
+                'Users.first_name', 
+                'datetime', 
+                'value', 
+                'status', 
+                'Sales.id'
+            ],
+            'conditions' => [
+                'OR' => [
+                    'Users.first_name LIKE' => '%'.$_GET['name'].'%', 
+                    'Users.last_name LIKE' => '%'.$_GET['name'].'%'
+                ],
+                'OR' => [
+                    [
+                      'year(datetime)' => $year,
+                      'month(datetime)' => $startMonth
+                    ],
+                    [
+                      'year(datetime)' => $year - 1,
+                      'month(datetime)' => $startMonth
+                    ]
+                ]
+            ],
             'order' => [
-            'Sales.id' => 'desc'
-             ]
+                'Sales.id' => 'desc'
+            ]
         ];
 
         else:
         $this->paginate = [
-            'contain' => ['Users'],
+            'contain' => [
+                'Users'
+            ],
             'order' => [
-            'Sales.id' => 'desc'
-             ],
-            'sortWhitelist' => ['Users.first_name', 'datetime', 'value', 'status', 'Sales.id']
+                'Sales.id' => 'desc'
+            ],
+            'sortWhitelist' => [
+                'Users.first_name', 
+                'datetime', 
+                'value', 
+                'status', 
+                'Sales.id'
+            ],
+            'conditions' => [
+                'OR' => [
+                    [
+                      'year(datetime)' => $year,
+                      'month(datetime) < ' => $startMonth
+                    ],
+                    [
+                      'year(datetime)' => $year - 1,
+                      'month(datetime) >= ' => $startMonth
+                    ]
+                ]
+            ]
         ];
         endif;
         $sales = $this->paginate($this->Sales);
 
-        $this->set(compact('sales'));
+        $this->set(compact('sales', 'years', 'year'));
     }
 
     /**
