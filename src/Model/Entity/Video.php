@@ -4,16 +4,7 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 use Cake\ORM\Behavior\TreeBehavior;
 
-/**
- * VideoTheme Entity
- *
- * @property int $id
- * @property int $video_id
- * @property int $theme_id
- * @property int $course_id
- *
- */
-class VideoThemes extends Entity
+class Videos extends Entity
 {
 
     /**
@@ -31,9 +22,13 @@ class VideoThemes extends Entity
     //];
 
     protected $_accessible = [
-        'video_id' => true,
-        'theme_id' => true,
-        'course_id' => true
+        'id' => true,
+        'title' => true,
+        'description' => true,
+        'date_created' => true,
+        'user_id' => true,
+        'category' => true,
+        'rating' => true,
     ];
 
     //protected function _getChildren() 

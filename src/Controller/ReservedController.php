@@ -1892,8 +1892,47 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
+/*
+        $ahland = $this->loadModel('Videos')->get(1, [
+                'contain' => 'VotesVideos'
+            ]);
 
+        $ahland->VotesVideos = $this->Videos->VotesVideos->newEntity([
+                'user_id' => $user_id,
+                'video_id' => $message_id,
+                'date_votes' => Time::now(),
+                'rating' => $this->request->getData('rating')
+            ]);
+                
+            if(!$this->Videos->save($ahland) || !$this->Videos->VotesVideos->save($ahland->VotesVideos))
+                $this->Flash->error('Alguma coisa correu mal ao votar...');    
+*/
         $this->set(compact('courses', 'videos', 'video_themes', 'video_courses'));
+    }
+
+    public function videoRate()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $user_id = $this->Auth->user('id');
+        $video_id = $this->request->getData('id');
+
+        //if($user_id && $video_id)
+        //{
+            $video = $this->loadModel('Videos')->get($video_id, [
+                'contain' => 'VotesVideos'
+            ]);
+            //$video->upvotes += 1;
+            $video->VotesVideos = $this->Videos->VotesVideos->newEntity([
+                'user_id' => $user_id,
+                'video_id' => $video_id,
+                'date_votes' => Time::now(),
+                'rating' => $this->request->getData('rating')
+            ]);
+                
+            if(!$this->Videos->save($video) || !$this->Videos->VotesVideos->save($video->VotesVideos))
+                $this->Flash->error('Alguma coisa correu mal ao votar...');    
+        //}
     }
 
     /**

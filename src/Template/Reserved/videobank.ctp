@@ -10,6 +10,7 @@ $uri = 'http://api.vimeo.com/me/albums/7542594/videos';
 $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET');
 ?>
 
+
 <?php if(@$e != 1): ?>
 <section id="services" class="text-center ">
     <div class="container-fluid">
@@ -57,19 +58,21 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 						<div class="thumbvideo-buttons">
 							<button class="play-pause-btn"><i class="fa fa-play"></i></button>
 							<button class="mute-btn" ><i class="fa fa-volume-off"></i></button>
-							<button id="save">
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-								<i class="fa fa-start"></i>
-							</button>
+							<button class="rate-btn"><i class="fa fa-thumbs-up"></i><i class="fa fa-thumbs-down fa-flip-horizontal"></i></button>
+							<div class="rate-panel" id="<?=$video['name']?>">
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+								<i class="fa fa-star"></i>
+							</div>
 						</div>
+						
 					</div> 
 				<?php endif ?>       		
     		<?php endforeach ?>
@@ -103,10 +106,10 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 	                			Perguntas sobre este assunto
 	                		</div>
 	                	</div>
-	                	<div class="row" id="options">
-	                		<form id="qbank" method="post" target="_blank" action="<?= $this->Url->build(["action" => 'qbank']); ?>">
+	                	<div class="row" id="q_options">
+	                		<form id="qbank" method="post" target="_blank" action="<?= $this->Url->build(["action" => 'qbank']) ?>">
 		                        <div class="col-xs-4"> 
-		                            <div class="well well-sm q-options" id="difficulty">
+		                            <div class="well well-sm options" id="difficulty">
 		                                <div>Dificuldade</div>
 		                                <div>
 		                                    <input type="checkbox" name="difficulty[]" value="1" checked>Fácil
@@ -120,7 +123,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 		                            </div>
 		                        </div>
 		                        <div class="col-xs-4">   
-		                            <div class="well well-sm q-options" id="filter">
+		                            <div class="well well-sm options" id="filter">
 		                                <div>Perguntas</div>
 		                                <div>
 		                                    <input type="checkbox" name="filter[]" class="filter-q" value="0">Novas
@@ -137,7 +140,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 		                            </div>
 		                        </div>
 		                        <div class="col-xs-4">   
-		                            <div class="well well-sm q-options" id="time">
+		                            <div class="well well-sm options" id="time">
 			                            	<div>Temporizador</div>
 			                                <div>
 			                                    <input type="radio" name="timer" id="chronometer" value="0"> Cronómetro
@@ -148,7 +151,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 			                                <div id="tempo_input">
 			                                    <input type="text" name="time-lim" class="timer" value="60"> min
 			                                </div>
-			                               	<hr id="separator">
+			                                <hr id="separator">
 			                               	<div>
 			                               		<button id="questionGo" type="submit">Start</button>
 			                                </div>
@@ -160,6 +163,25 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 	                		<div class="col-xs-12">
 	                			Flashcards sobre este assunto
 	                		</div>
+	                	</div>
+	                	<div class="row" id="f_options">
+	                		<form id="fbank" method="post" target="_blank" action="<?= $this->Url->build(["action" => 'flashcards']) ?>">
+	                    		<div class="col-12"> 
+		                            <div class="well well-sm options" id="f_difficulty">
+		                                <div>Perguntas</div>
+		                                <div>
+		                                    <input type="radio" name="wrong" value="0" checked>Todas
+		                                </div>
+		                                <div>
+		                                    <input type="radio" name="wrong" value="1"> Incorretas
+		                                </div>
+		                                <div> 
+		                                    <input type="radio" name="wrong" value="2"> Favoritas
+		                                </div>
+				                       	<button id="flashcardGo" type="submit">Start</button> 
+		                            </div>
+		                        </div>
+	                    	</form>
 	                	</div>
 	                </div>
 	                <div class="modal-footer row">
@@ -204,7 +226,7 @@ section.footer a:hover{
 	color: #FEB000;
 }
 section#services{
-	padding-bottom: 200px;
+	padding-bottom: 225px;
 }
 div.showcase{
 	position: relative;
@@ -221,6 +243,9 @@ div.showcase{
     -o-transition: all 1s;
     transition: all 1s;
     font-size: 0; /* remove space between inline elements */
+}
+div.showcase.while-hover{
+	font-size: initial; /* otherwise fucks up alignment */
 }
 div.showcase::-webkit-scrollbar{
   	display:none;
@@ -319,7 +344,8 @@ div.thumbvideo .thumbvideo-buttons{
 	border-radius: 0 0 10px 10px;
 	left: 0;
 	right: 0;
-	border:0;
+	border: 0;
+	margin: auto;
 }
 div.thumbvideo .thumbvideo-buttons.hover{
 	visibility: visible;
@@ -333,14 +359,26 @@ div.thumbvideo .thumbvideo-buttons button{
 	display: inline-block;
 	justify-content: space-between;
 	text-align: justify;
-	height: 80%;
-	width: 20%;
+	height: 25px;
+	width: 40px;
 	background: transparent;
 	border: 1px solid #152133;
 	margin-top: auto;
 	margin-bottom: auto;
 	border-radius: 20px;
 	position: relative;
+	outline: none;
+}
+div.thumbvideo .thumbvideo-buttons button.disabled{
+	background: #152133;
+}
+@media(max-width:430px){
+	div.thumbvideo .thumbvideo-buttons button{
+		border: none;
+	}
+	div.thumbvideo .rate-panel{
+		left:-33px;
+	}
 }
 div.thumbvideo .thumbvideo-buttons button .fa{
 	font-size: 15px;
@@ -353,17 +391,29 @@ div.thumbvideo .thumbvideo-buttons button .fa{
 	margin: auto;
 	position: absolute;
 }
-div.thumbvideo .thumbvideo.buttons button .fa-star{
-	position: relative;
-	justify-content: space-between;
+div.thumbvideo .thumbvideo-buttons button .fa.fa-thumbs-up{
+	left: 10%;
+}
+div.thumbvideo .thumbvideo-buttons button .fa.fa-thumbs-down{
+	left: 65%;
+}
+div.thumbvideo .thumbvideo-buttons button.disabled .fa{
+	color: #f5f5f5;
 }
 @media (max-width:576px){
+	div.thumbvideo .thumbvideo-buttons button{
+		height: 20px;
+		width: 30px;
+	}
 	div.thumbvideo .thumbvideo-buttons button .fa{
 		font-size: 10px;
 		left: 35%;
 		right: none;
 		top: 25%;
 		bottom: none;
+	}
+	div.thumbvideo .thumbvideo-buttons button .fa.fa-thumbs-down{
+		left: 51%;
 	}
 }
 @media (max-width:768px){  /* apparently max-width is not included....*/
@@ -413,6 +463,33 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 		left: -50%;
 		right: 50%;
 	}
+}
+div.thumbvideo .rate-panel{
+	position: absolute;
+	width: 150px;
+	height: 20px;
+	bottom: -15px;
+	background: #FEB;
+	border-radius: 4px;
+	left: 0;
+	right: 0;
+	margin: auto;
+	display: none;
+	pointer-events: none;
+}
+div.thumbvideo .rate-panel .fa-star{
+	width: 14px;
+	color: #152133;
+	font-size: 12px;
+	-webkit-text-stroke: 1px #152133;
+	margin-top: 3px;
+	pointer-events: auto;
+}
+div.thumbvideo .rate-panel:hover .fa-star{
+	color: #FEB000;
+}
+div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
+	color: #152133;
 }
 .modal-header{
 	height:  fit-content;
@@ -474,7 +551,7 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
     border: 2px solid grey;
     background: grey!important;
 }
-.q-options{
+.options{
     padding-top: 45px;
     position:relative;
     display: flex;
@@ -487,28 +564,28 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
     border: 2.2px solid #152335;
     border-radius: 10px;
 }
-.q-options#time{
+.options#time{
 	padding-bottom: 35px;
 }
-.q-options input[type='checkbox'], .q-options input[type='radio']{
+.options input[type='checkbox'], .options input[type='radio']{
     width:20px; 
     height:20px; 
     position:relative; 
     top:5px;
     margin-right: 5px;
 }
-.q-options input[type='text']{
+.options input[type='text']{
     width:35px; 
     height:auto; 
     text-align: center;
     position:relative; 
     background-color: transparent;
 }
-.q-options #tempo_input{
+.options #tempo_input{
     text-align:center;
     margin-top:-22px;
 }
-.q-options div:first-child{
+.options div:first-child{
     font-weight: bold;
     position: absolute;
     top: 15px;
@@ -521,35 +598,45 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
     border: 0.5px solid black;
     background: black;
 }
-#fullvideo .row#options{
+#fullvideo .row#q_options{
     display: block;
 }
 @media(min-width: 1200px){
-    .row#options{
+    .row#q_options{
         display: flex;
     }
 }
 @media(max-width: 768px){
-    .row#options>.col-lg-3:nth-child(odd) .q-options{
+    .row#q_options>.col-lg-3:nth-child(odd) .options{
         float:right;
     }
-    .row#options>.col-lg-3:nth-child(even) .q-options{
+    .row#q_options>.col-lg-3:nth-child(even) .options{
         float:left;
     }
 }
-.row#options::before{
+.row#q_options::before{
     display: block;
 }
+#fbank .options{
+	padding-bottom: 50px;
+}
 @media(max-width: 500px){
-    .q-options{
+    .options{
         width:100%;
     }
     .col-xs-6{
         padding-right: 5px;
         padding-left: 5px;
     }
+    #questionGo{
+    	bottom: 8px;
+    }
+    .options#time{
+		padding-bottom: 45px;
+		margin-bottom: 15px;
+	}
 }
-#questionGo{
+#questionGo, #flashcardGo{
 	position: absolute;
 	bottom: 8px;
 	left: 0;
@@ -558,6 +645,10 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 	background: #ffdf80;
 	border-radius: 5px;
 	width: 60%;
+}
+#fbank .options{
+	flex-direction: row;
+	justify-content: space-evenly;
 }
 @media(max-width:590px){
 	#qbank .col-xs-4{
@@ -569,13 +660,9 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 	#qbank .col-xs-4{
 		width:100%;
 	}
-	#qbank .q-options{
+	#qbank .options{
 		flex-direction: row;
 		justify-content: space-around;
-	}
-	#qbank .q-options#time{
-		padding-bottom: 5px;
-		margin-bottom: 40px;
 	}
 	hr#separator{
 		display:none;
@@ -584,18 +671,18 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 		margin-top: 5px;
 		margin-left: -30px;
 	}
-	#qbank #questionGo{
-		bottom: -35px;	
-	}
 }
 @media(max-width:360px){
-	#qbank .q-options{
+	#qbank .options{
 		flex-direction: column;
 	}
 	#qbank #tempo_input{
 		margin-top: -23px;
 		margin-left: -90px;
 	}
+}
+#login input{
+	background: #FEB0;
 }
 
 </style>
@@ -613,17 +700,14 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 	function play(){
 		timeoutId = null;
 		player = new Vimeo.Player(element[0]);
-		element.children('.thumbvideo-frame').addClass('hover');
-		element.children('.thumbvideo-framebtn').addClass('hover');
-		element.children('.thumbvideo-buttons').addClass('hover');
+		element.children().addClass('hover');
+		element.parent().addClass('while-hover');
 		element.children('.thumbvideo-buttons').children('.play-pause-btn').trigger('click');
 	}
 
 	function pause(){
-		console.log('pausing...?');
-		element.children('.thumbvideo-frame').removeClass('hover');
-		element.children('.thumbvideo-framebtn').removeClass('hover');
-		element.children('.thumbvideo-buttons').removeClass('hover');
+		element.children().removeClass('hover');
+		element.parent().removeClass('while-hover');
 		button = element.children('.thumbvideo-buttons').children('.play-pause-btn');
 		player.getPaused().then(function(paused){
 			if(!paused)
@@ -681,17 +765,18 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 		$('#fullvideo-frame iframe').attr('src', src2);
 		
 		$('#fullvideo .modal-title').text($(this).siblings('input[name="title"]').val());
-		$('#fullvideo-description').text($(this).siblings('input[name="description"]').val());
-		$(this).siblings('input[name="courses[]"]').detach().appendTo('#qbank');
-		$(this).siblings('input[name="themes[]"]').detach().appendTo('#qbank');
+		//$('#fullvideo-description').text($(this).siblings('input[name="description"]').val());
+		$(this).siblings('input[name="courses[]"]').appendTo('#qbank');
+		$(this).siblings('input[name="themes[]"]').appendTo('#qbank').clone().appendTo('#fbank');
 		$('#fullvideo').modal('show');
 	});
 
 	$('#fullvideo').on('hidden.bs.modal', function(){
 		$('#fullvideo-frame iframe').attr('src', src);
 		$('#fullvideo-frame iframe').detach().appendTo(selected);
-		$('#fullvideo input[name="courses[]"]').detach().appendTo(selected.parent());
-		$('#fullvideo input[name="themes[]"]').detach().appendTo(selected.parent());
+		$('#fullvideo #qbank input[name="courses[]"]').detach().appendTo(selected.parent());
+		$('#fullvideo #qbank input[name="themes[]"]').detach().appendTo(selected.parent());
+		$('#fullvideo #fbank input[name="themes[]"]').remove();
 	});
 
 	$('.thumbvideo-buttons').on('click', '.play-pause-btn', function(){
@@ -720,6 +805,22 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 		}	
 	});
 
+	$('.thumbvideo-buttons').on('click', '.rate-btn', function(){
+		if(!$(this).hasClass('disabled'))
+			$(this).siblings('.rate-panel').show();
+	});
+
+	$('.thumbvideo-buttons').on('click','.fa-star', function(){
+		rating = $(this).prevAll().length + 1;
+		id = $(this).parent().attr('id');
+		$(this).parents('.thumbvideo-buttons').children('.rate-btn').addClass('disabled');
+		$(this).parent().hide();
+		$.post("<?= $url?>/reserved/video-rate", {
+    		id: id,
+    		rating: rating 
+    	});
+	});
+
 	$('.all-q').on('click', function(){
     if($(this).prop('checked'))
         $('.filter-q').prop('checked', false);
@@ -727,21 +828,5 @@ div.thumbvideo .thumbvideo.buttons button .fa-star{
 	$('.filter-q').on('click', function(){
 	    $('.all-q').prop('checked', false);
 	});
-
-
-	/*$('#questionGo').on('click', function(){
-		courses = $('#qbank input[name="courses[]"]').val();
-		themes = $('#qbank input[name="themes[]"]').val();
-		difficulty = $('#qbank input[name="difficulty[]"]').val();
-		filter = $('qbank input')
-		$.post("<?= $url?>/reserved/message-table-get", {
-			courses: ,
-    		themes: ,
-    		difficulty: ,
-    		filter: ,
-    		timer: 
-    		time-lim: 
-		})
-	});*/
 
 </script>
