@@ -408,8 +408,32 @@ class ReservedController extends AppController
 
         if($annual){
              
-            // ids of annual courses selection
-            $courses = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+            $courses = $this->loadModel('Courses')->find('list', [ 
+                'conditions' => [
+                  'Courses.id > 1',
+                  'Courses.id < 14'
+                ],
+                'valueField' => 'Courses.id'
+              ])->join([
+                'g' => [
+                  'table' => 'Groups',
+                  'type' => 'LEFT',
+                  'conditions' => [
+                    'g.courses_id = courses.id',
+                    'g.active' => 1,
+                    'g.city_id' => $city_id
+                  ]
+                ],
+                'l' => [
+                  'table' => 'Lectures',
+                  'type' => 'LEFT',
+                  'conditions' => [
+                    'l.group_id = g.id',
+                    'l.datetime is not null'
+                  ]
+                ]
+              ])->order('l.datetime')->group('Courses.id')->toArray();
+            $courses = array_keys($courses);
 
             $annual_courses = $this->Products->Courses->find('all', [
                 'order' => 'name',
@@ -424,10 +448,10 @@ class ReservedController extends AppController
                     ]
                 ]
             ])->toArray();
-            $course['price'] = 840;
+            $course['price'] = $city_id !=3 ? 850 : 620;
             $course['name'] = 'Curso Anual';
 
-            $this->set(compact('annual_courses'));
+            $this->set(compact('annual_courses', 'courses'));
         }
         if ($this->request->is('post')) {
 
@@ -437,16 +461,43 @@ class ReservedController extends AppController
 
             if($annual){
 
-                $courses_id_order = [10, 4, 5, 6, 11, 8, 3, 7, 9, 12, 13]; 
-                $courses_per_trimester = [2, 2, 3, 4];
+                $courses_id_order = $this->loadModel('Courses')->find('list', [ 
+                    'conditions' => [
+                      'Courses.id > 1',
+                      'Courses.id < 14'
+                    ],
+                    'valueField' => 'Courses.id'
+                    ])->join([
+                    'g' => [
+                      'table' => 'Groups',
+                      'type' => 'LEFT',
+                      'conditions' => [
+                        'g.courses_id = courses.id',
+                        'g.active' => 1,
+                        'g.city_id' => $city_id
+                      ]
+                    ],
+                    'l' => [
+                      'table' => 'Lectures',
+                      'type' => 'LEFT',
+                      'conditions' => [
+                        'l.group_id = g.id',
+                        'l.datetime is not null'
+                      ]
+                    ]
+                ])->order('l.datetime')->group('Courses.id')->toArray();
+                $courses_id_order = array_keys($courses_id_order);
+
+                $courses_per_trimester = [2, 4, 5];
+                $prices_per_trimester = $city_id != 3 ? [350, 300, 200] : [248, 222, 150];
                 $course_it = 0;
                 
-                for($trimester=0; $trimester<4; $trimester++){
+                for($trimester=0; $trimester<count($courses_per_trimester); $trimester++){
 
                     // generate one sale per trimester with value 210
                     $sale = $this->Products->Sales->newEntity();
                     $sale['users_id'] = $id;
-                    $sale['value'] = 210;
+                    $sale['value'] = $prices_per_trimester[$trimester];
                     $sale['payment_type'] = $this->request->getData('payment_type');
                     $sale = $this->Products->Sales->save($sale);
                     array_push($all_sales, $sale);
@@ -461,7 +512,7 @@ class ReservedController extends AppController
                         $product['group_courses_id'] = $id_tmp;
                         $product['sale_id'] = $sale->id;
                         $product['sales_users_id'] = $id;
-                        $product['value'] = floatval(210) / $courses_per_trimester[$trimester];
+                        $product['value'] = floatval($prices_per_trimester[$trimester]) / $courses_per_trimester[$trimester];
                         $this->Products->save($product);
 
                         $course_it++;
@@ -514,7 +565,7 @@ class ReservedController extends AppController
             }
             return $this->redirect(['controller' => 'reserved', 'action' => 'payments', 'c' => $all_sales[0]->id]);
         }
-        $this->set(compact('groups', 'course'));
+        $this->set(compact('groups', 'groups_raw', 'course'));
     }
 
     public function waiting ($course_id = null, $annual = null)
@@ -576,7 +627,18 @@ class ReservedController extends AppController
     	    $total = count($exam['questions']);
     	    $correct = 0;
     	    $data = $this->request->getData();
-    	    
+            if(!$user_id) // in case session timesout
+            {
+                $user = $this->loadModel('Users')->get(array_shift($data)); 
+                $this->Auth->setUser($user);
+                $this->loadModel('Sessions')->deleteAll(['id' => $user->session_id]);
+                $user->session_id = $this->request->session()->id();
+                $user = $this->Users->save($user);
+                $user_id = $this->Auth->user('id');
+            }
+            else
+                array_shift($data);
+
     	    foreach($exam['questions'] as $key => $question)
                 if(array_key_exists('q'.$question['id'], $data) && $question['correct'] == $data['q'.$question['id']])
                     $correct += 1;
@@ -587,6 +649,7 @@ class ReservedController extends AppController
                     'exam_id' => $id
                 ]
             ])->first();
+
     	    $user_exams['answers'] = json_encode($data);
     	    $user_exams['result'] = $correct."/".$total;
     	    $user_exams['finished'] = 1;
@@ -1729,6 +1792,7 @@ class ReservedController extends AppController
                 if(!$this->ThemeMessages->save($parent)) 
                     $continue = false;
             }
+
             if($continue && $this->ThemeMessages->save($message)){
 
                 $users = $this->loadModel('ThemeMessages')->find('list', [
@@ -1892,21 +1956,6 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
-/*
-        $ahland = $this->loadModel('Videos')->get(1, [
-                'contain' => 'VotesVideos'
-            ]);
-
-        $ahland->VotesVideos = $this->Videos->VotesVideos->newEntity([
-                'user_id' => $user_id,
-                'video_id' => $message_id,
-                'date_votes' => Time::now(),
-                'rating' => $this->request->getData('rating')
-            ]);
-                
-            if(!$this->Videos->save($ahland) || !$this->Videos->VotesVideos->save($ahland->VotesVideos))
-                $this->Flash->error('Alguma coisa correu mal ao votar...');    
-*/
         $this->set(compact('courses', 'videos', 'video_themes', 'video_courses'));
     }
 
@@ -1917,8 +1966,8 @@ class ReservedController extends AppController
         $user_id = $this->Auth->user('id');
         $video_id = $this->request->getData('id');
 
-        //if($user_id && $video_id)
-        //{
+        if($user_id && $video_id)
+        {
             $video = $this->loadModel('Videos')->get($video_id, [
                 'contain' => 'VotesVideos'
             ]);
@@ -1932,7 +1981,7 @@ class ReservedController extends AppController
                 
             if(!$this->Videos->save($video) || !$this->Videos->VotesVideos->save($video->VotesVideos))
                 $this->Flash->error('Alguma coisa correu mal ao votar...');    
-        //}
+        }
     }
 
     /**

@@ -59,7 +59,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 							<button class="play-pause-btn"><i class="fa fa-play"></i></button>
 							<button class="mute-btn" ><i class="fa fa-volume-off"></i></button>
 							<button class="rate-btn"><i class="fa fa-thumbs-up"></i><i class="fa fa-thumbs-down fa-flip-horizontal"></i></button>
-							<div class="rate-panel" id="<?=$video['name']?>">
+							<div class="rate-panel" id="rate-panel-<?=$video['name']?>">
 								<i class="fa fa-star"></i>
 								<i class="fa fa-star"></i>
 								<i class="fa fa-star"></i>
@@ -476,6 +476,7 @@ div.thumbvideo .rate-panel{
 	margin: auto;
 	display: none;
 	pointer-events: none;
+	font-size: 0;
 }
 div.thumbvideo .rate-panel .fa-star{
 	width: 14px;
@@ -812,7 +813,7 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 
 	$('.thumbvideo-buttons').on('click','.fa-star', function(){
 		rating = $(this).prevAll().length + 1;
-		id = $(this).parent().attr('id');
+		id = $(this).parent().attr('id').match(/\d+/);
 		$(this).parents('.thumbvideo-buttons').children('.rate-btn').addClass('disabled');
 		$(this).parent().hide();
 		$.post("<?= $url?>/reserved/video-rate", {

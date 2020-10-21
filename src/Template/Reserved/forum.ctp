@@ -151,8 +151,10 @@
                 <?= $this->Form->create('Form', ['url' => ['controller' => 'reserved', 'action' => 'messageCreate'], 'id' => 'message-form']) ?>
                     <div id="textDiv">
                         <input type="hidden" name="newTheme">
+                        <div class="newMessageLabel">Título:</div>
                         <textarea rows=2 name="newTitle" placeholder="Introduz aqui a tua dúvida resumidamente"></textarea>
-                        <textarea id="newMessage" rows=5 name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida" required></textarea>
+                        <div class="newMessageLabel" id="contentLabel">Conteúdo:</div><br>
+                        <textarea rows=5 id="newMessageEditor" name="newMessage" placeholder="Explicita aqui o contexto ou detalhes da tua dúvida"></textarea>
                     </div>
                     <div class="modal-footer row">
                         <div id="report-captcha" class="g-recaptcha col-sm-6 col-xs-12" data-sitekey="6LdAL20UAAAAAJOZy5YPgXQR_u26zrk1Y8hEfuM2" style='display: none'>
@@ -311,6 +313,11 @@ table.messageList tr:last-child{
     padding: 5px;
     resize: vertical;
 }
+#replyList #cke_replyMessage{
+    width: 500px;
+    margin: auto;
+    border-radius: 3px;
+}
 #replyList .submitReplyMessage{
     width: 150px;
     padding: 10px 0 10px 0;
@@ -366,6 +373,13 @@ div#themeTable{
     padding-left: 0;
     padding-right: 0;
 }
+.newMessageLabel{
+    font-size: 18px;
+    text-transform: uppercase;
+    width:100%;
+    text-align: left;
+    font-weight: bold;
+}
 @media (min-width: 768px){
     #newMessage .modal-footer .captcha-push{
         float: none;
@@ -380,6 +394,9 @@ div#themeTable{
     #newMessage .modal-footer .col-sm-offset-6{
         margin-top: 10px;
     }
+}
+#newMessage #contentLabel{
+    margin-bottom: -10px;
 }
 #backArrow i{
     position: absolute;
@@ -405,7 +422,7 @@ div#themeTable{
     #backArrow button{
         width: 75%;
     }
-    #replyList textarea{
+    #replyList textarea, #replyList #cke_replyMessage{
         width: 100%;
     }
     #replyList #tempReplies div.well{
@@ -429,6 +446,30 @@ setTimeout(function(){
   $('.message.success').hide();  
   $('#mainNav').addClass('flash_timeout');
 }, 5000);
+
+$(function () {
+
+    cke_new_editor = CKEDITOR.replace('newMessageEditor', {
+      allowedContent: true,
+      toolbarGroups: [
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph', groups: [ 'list', 'blocks'] },
+        { name: 'links', groups: [ 'links' ] },
+        { name: 'insert', groups: [ 'insert' ] },
+      ]
+    });
+
+    cke_reply_editor = CKEDITOR.replace('replyMessage', {
+      allowedContent: true,
+      toolbarGroups: [
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph', groups: [ 'list', 'blocks'] },
+        { name: 'links', groups: [ 'links' ] },
+        { name: 'insert', groups: [ 'insert' ] },
+      ]
+    });
+
+});
 
 
 $(document).ready(function(){
@@ -553,7 +594,7 @@ $('.messageList').on('click', '.messageToggle', function(){
         $.each(JSON.parse(data), function(index, value){
             $('#replyList #tempReplies').append(repliesTemplate(value['id']));
             $('#replyList #tempReplies div.well:last-child div:first-child').text(value['title']);
-            $('#replyList #tempReplies div.well:last-child div:last-child').text(value['message']);
+            $('#replyList #tempReplies div.well:last-child div:last-child').html(value['message']);
             $('#replyList #tempReplies div.well:last-child span:nth-child(2)').text(value['user']);
             $('#replyList #tempReplies div.well:last-child span.date').html('&nbsp&nbsp·&nbsp' + value['date_created']);
             $('#replyList #tempReplies div.well:last-child span.upvotes').text(value['upvotes']);
@@ -594,7 +635,8 @@ $('.submitNewMessage').on('click', function(){
     event.preventDefault();
     theme_id = $('input[name="newTheme"]').val();
     title = $('textarea[name="newTitle"]').val();
-    message = $('textarea[name="newMessage"]').val(); 
+    //message = $('textarea[name="newMessage"]').val(); 
+    message = cke_new_editor.getData();
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: theme_id,
         title: title,
@@ -606,7 +648,8 @@ $('.submitNewMessage').on('click', function(){
 })
 
 $('.submitReplyMessage').on('click', function(){
-    message = $(this).siblings('#replyList textarea').val();
+    //message = $(this).siblings('#replyList textarea').val();
+    message = cke_reply_editor.getData();
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: THEMEID[0],
         parent: MESSAGEID[0],

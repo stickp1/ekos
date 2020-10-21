@@ -15,22 +15,27 @@
               <h3 class="box-title">Vendas</h3>
 
               <div class="box-tools">
+                  <div class="input-group input-group-sm" style="width: 300px;">
+                      <input type="text" name="table_search" class="form-control pull-right" placeholder="Procurar" id='finder'>
 
-                <div class="input-group input-group-sm" style="width: 150px;">
-                  <input type="text" name="table_search" class="form-control pull-right" placeholder="Procurar" id='finder'>
-
-                  <div class="input-group-btn">
-                    <button type="submit" class="btn btn-default" onClick='submit_button()'><i class="fa fa-search"></i></button>
+                      <div class="input-group-btn">
+                        <button type="submit" class="btn btn-default" onClick='submit_button()'><i class="fa fa-search"></i></button>
+                      </div>
+                      <div class="pull-right">    
+                        <?= $this->Form->control('years', ['class' => 'form-control', 'label' => false]); ?>
+                      </div>
                   </div>
-                </div>
               </div>
-              <div class="box-tools" style='right:170px'>
-                <ul class="pagination pagination-sm no-margin pull-right">
-                    <?= $this->Paginator->prev('«') ?>
-                    <?= $this->Paginator->numbers() ?>
-                    <?= $this->Paginator->next('»') ?>
-                </ul>
-            </div>
+
+              <div class="box-tools" style='right:310px'>
+                  <ul class="pagination pagination-sm no-margin pull-right">
+                      <?= $this->Paginator->first('«') ?>
+                      <?= $this->Paginator->prev('‹') ?>
+                      <?= $this->Paginator->numbers() ?>
+                      <?= $this->Paginator->next('›') ?>
+                      <?= $this->Paginator->last('»') ?>
+                  </ul>
+              </div>
             </div>
             <!-- /.box-header -->
             <div class="box-body table-responsive no-padding">
@@ -88,6 +93,12 @@
 </div>
 
 <script>
+
+$("#years").val(<?= $year ?>);
+
+$("#years").on('change', function(){
+  window.location.href='<?=$this->Url->build(["controller" => "sales", "action" => "index"], true); ?>/index/'+ $(this).val();
+})
 
 function submit_button(){  
     document.location = document.location.href.match(/(^[^?#]*)/)[0]+"?name="+$('#finder').val()

@@ -24,7 +24,7 @@
               <i class="fa fa-users fa-stack-1x fa-inverse"></i>
             </span>
             <h3>Turmas pequenas</h3>
-            <p class='small text-muted'>Para um ambiente mais pedagógico e que estimule a interação, na EKOS todas as turmas são formadas por um máximo de 30 alunos.</p>
+            <p class='small text-muted'>Para um ambiente mais pedagógico e que estimule a interação, na EKOS todas as turmas são constituídas por poucos alunos.</p>
           </div>
           <div class="col-md-4 animation-element">
             <span class="fa-stack fa-5x">
@@ -65,8 +65,8 @@
             <div class="col-md-8 col-md-offset-2">
               <h1>Os nossos cursos.</h1>
               <p>Para melhor te preparares para o novo exame, mais clínico e integrado, construímos para ti cursos pensados à medida: organizados em módulos de aparelhos funcionais, e não por secções da matriz, de forma a manter presente a integração clínica que é o foco do exame.<br> Estes são os cursos que temos preparados para ti!<br>
-              <br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>a decorrer || próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
-              <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>inscrições encerradas </span>
+              <br> <strong>Curso de Preparação Anual | </strong><span style='font-size: 16px'>próxima edição em outubro 2020<br>(informações adicionais serão divulgadas em setembro)</span>
+              <br> <strong>Curso de Preparação de Verão | </strong><span style='font-size: 16px'>próxima edição em julho 2021 </span>
               </p>
               <p><?= $this->Form->intpu('city', ['type' => 'select', 'options' => $cities2, 'style' => 'font-size: 12pt; margin-top:20px;', 'value' => $scity, 'id' => 'city_selector'])?>
               </p>
@@ -198,9 +198,9 @@
         </div>
         <div class="col-sm-6 bibliography_box" style='background-color:#eee; color: #152335'>
             <h2>As nossas aulas.</h2>
-            <p><b>Turmas</b><br>Existirá uma turma semanal e uma turma ao sábado.</p>
+            <p><b>Turmas</b><br>Existem turmas com calendário de aulas à semana e com calendário ao sábado.</p>
             <p><b>Horário</b><br>Na turma da semana, as aulas terão, normalmente, lugar às 2ª/4ª/5ª entre as 18h e as 20h. Na turma do sábado, as aulas terão lugar entre as 8h30 e às 16h00. </p>
-            <p><b>Local</b><br>As aulas terão lugar na FMUL e/ou na FFUC.</p>
+            <p><b>Local</b><br>As aulas irão decorrer em Lisboa e em Coimbra.</p>
         </div>
       </div>
     

@@ -35,7 +35,7 @@ class QuestionsTable extends Table
     {
         parent::initialize($config);
 
-        $user_id = $_SESSION['Auth']['User']['id'];
+        $user_id = @$_SESSION['Auth']['User']['id'];
 
         $this->setTable('questions');
         $this->setDisplayField('id');
@@ -52,7 +52,7 @@ class QuestionsTable extends Table
         ]);
         $this->hasOne('UsersQuestions')
             ->setForeignKey('question_id')
-            ->setConditions(['user_id' => $user_id]);
+            ->setConditions(['user_id' => @$user_id]);
     }
 
     /**

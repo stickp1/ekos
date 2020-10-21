@@ -304,4 +304,76 @@ class CoursesController extends AppController
         $this->Flash->success(__('Os grupos e aulas foram criados com sucesso (provavelmente).'));
     }
     */
+
+    /*
+    public function createOnlineCity()
+    {
+
+        $this->loadModel('Lectures');
+        $currentGroups = $this->loadModel('Groups')->find('all', [
+            'conditions' => [
+                'courses_id not in' => [1, 14, 15, 16, 17, 18],
+                'active' => 1,
+                'deleted' => 0,
+                'city_id' => 1,
+                "name like '%Semana%'" 
+            ],
+            'fields' => [
+                'id',
+                'name',
+                'courses_id',
+                'active',
+                'deleted',
+                'city_id'
+            ]
+        ]);
+
+        if ($currentGroups->count() == 11){
+
+            $allnewlectures = [];
+            $allnewgroups = [];
+
+            foreach($currentGroups as $group){
+                
+                $newGroup = $this->Groups->newEntity();
+                $newGroup->name = $group->name;
+                $newGroup->courses_id = $group->courses_id;
+                $newGroup->active = 0;
+                $newGroup->city_id = 3;
+                $newGroup = $this->Groups->save($newGroup);
+                array_push($allnewgroups, $newGroup);
+                if(!$newGroup)
+                    $this->Flash->error(__('Ocorreu um erro.'));
+                
+                $lectures = $this->Lectures->find('all', [
+                    'conditions' => [
+                        'group_id' => $group->id
+                    ],
+                    'fields' => [
+                        'group_id',
+                        'description',
+                        'teacher',
+                        'themes',
+                        'datetime'
+                    ]
+                ]);
+                
+                foreach($lectures as $lecture){
+                    $newLecture = $this->Lectures->newEntity();
+                    $newLecture->group_id = $newGroup->id;
+                    $newLecture->description = $lecture->description;
+                    $newLecture->teacher = $lecture->teacher;
+                    $newLecture->themes = $lecture->themes;
+                    $newLecture->datetime = $lecture->datetime;
+                    $newLecture = $this->Lectures->save($newLecture);
+                    array_push($allnewlectures, $newLecture);
+                    if(!$newLecture)
+                        $this->Flash->error(__('Ocorreu um erro.'));
+                }
+            }
+        }
+        $this->set(compact('allnewgroups', 'allnewlectures'));
+        $this->Flash->success(__('Os grupos e aulas foram criados com sucesso (provavelmente).'));
+    }
+    */
 }

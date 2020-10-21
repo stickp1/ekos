@@ -112,6 +112,13 @@ class UsersTable extends Table
             ->maxLength('active', 45)
             ->allowEmpty('active');
 
+        $validator
+            ->scalar('school')
+            ->maxLength('school', 255);
+
+        $validator
+            ->integer('exam_year');
+
         return $validator;
     }
 
