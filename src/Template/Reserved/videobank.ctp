@@ -23,6 +23,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
                               <li <?=  @$this->request->params['action'] == 'qbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "qbank"]) ?>">Perguntas</a></li>
                               <li <?=  @$this->request->params['action'] == 'fbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "fbank"]) ?>">Flashcards</a></li>
                               <li <?=  @$this->request->params['action'] == 'forum' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "forum"]) ?>">Dúvidas</a></li>
+                              <li <?=  @$this->request->params['action'] == 'videobank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "videobank"]) ?>">Vídeos</a></li>
                               <?php if(in_array(16, $courses) || in_array(15, $courses)): ?> <li <?=  @$this->request->params['action'] == 'ebank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "ebank"]) ?>">Exames</a></li> <?php endif; ?>
                               <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>
                           </ul>
@@ -30,6 +31,9 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
               </div>
             </div>
         </div>
+        <p class="showcase-title">
+        		Todos os vídeos
+        </p>
         <div class="row showcase">
     		<?php foreach($response['body']['data'] as $key=>$video): ?>
     			<?php if(isset($videos[$video['name']])): ?>
@@ -94,6 +98,9 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
     <div class="modal-dialog">
         <div class="modal-content">
 	        <div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
 	            <div id="fullvideo-frame">	
 	            </div>
 	            <h1 class="modal-title">title</h1>
@@ -153,7 +160,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 			                                </div>
 			                                <hr id="separator">
 			                               	<div>
-			                               		<button id="questionGo" type="submit">Start</button>
+			                               		<button id="questionGo" type="submit">Iniciar</button>
 			                                </div>
 		                            </div>
 		                        </div>
@@ -178,7 +185,7 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 		                                <div> 
 		                                    <input type="radio" name="wrong" value="2"> Favoritas
 		                                </div>
-				                       	<button id="flashcardGo" type="submit">Start</button> 
+				                       	<button id="flashcardGo" type="submit">Iniciar</button> 
 		                            </div>
 		                        </div>
 	                    	</form>
@@ -203,7 +210,10 @@ $response = $client->request('/albums/7542594/videos',['background' => 1], 'GET'
 }
 div.panel.with-nav-tabs{
 	background: transparent;
-	border-bottom: 1px solid #FEB;
+	border-bottom: 0px;
+}
+div.panel.with-nav-tabs #submenu{
+	border-bottom: 1px solid #ffdf80;
 }
 div.panel.with-nav-tabs li a{
 	color: #ffdf80;
@@ -260,6 +270,12 @@ div.showcase-scroll{
 	bottom: 5px;
 	visibility: visible;
 }
+p.showcase-title{
+	position: absolute;
+	top: 230px;
+	left: 30px;
+	color: #ffdf80;
+}
 div.scroll-right{
 	right: 0;
 }
@@ -274,8 +290,12 @@ div.showcase-scroll button{
 	height: 100%;
 	border-radius: 10px 0 0 10px;
 	border: none;
-	background: #feb00082;
-	box-shadow: 0 0px 20px 10px #FEB000;
+	background: #ffdf8066;
+	box-shadow: 0 0px 20px 10px #ffdf80;
+	outline: none;
+}
+div.showcase-scroll.scroll-left button{
+	border-radius: 0 10px 10px 0;
 }
 div.showcase-scroll .fa{
 	font-size: 50px;
@@ -316,6 +336,7 @@ div.thumbvideo .thumbvideo-frame, .thumbvideo-framebtn{
 }
 div.thumbvideo .thumbvideo-framebtn{
 	background: transparent;
+	cursor: pointer;
 }
 div.thumbvideo .thumbvideo-frame.hover, .thumbvideo-framebtn.hover{
 	transform: scale(2);
@@ -340,7 +361,7 @@ div.thumbvideo .thumbvideo-buttons{
 	visibility: hidden;
 	flex-flow: row nowrap;
 	justify-content: space-evenly;
-	background: #FEB;
+	background: #ffdf80;
 	border-radius: 0 0 10px 10px;
 	left: 0;
 	right: 0;
@@ -421,7 +442,7 @@ div.thumbvideo .thumbvideo-buttons button.disabled .fa{
 		height: calc(100vw * 0.17);
 	}
 	div.thumbvideo .thumbvideo-buttons{
-		height: calc(30vw * 0.17);
+		height: calc(30vw * 0.18);
 		bottom: calc(30vw * -0.17);
 	}
 	div.thumbvideo .thumbvideo-buttons.hover{
@@ -431,13 +452,16 @@ div.thumbvideo .thumbvideo-buttons button.disabled .fa{
 		left: -50%;
 		right: 50%;
 	}
+	div.thumbvideo:nth-child(3n+1) .hover{
+		left: 50%;
+	}
 }
 @media (min-width:768px) and (max-width:1199px){
 	div.showcase{
 		height: calc(100vw * 0.13);
 	}
 	div.thumbvideo .thumbvideo-buttons{
-		height: calc(30vw * 0.13);
+		height: calc(30vw * 0.14);
 		bottom: calc(30vw * -0.13);
 	}
 	div.thumbvideo .thumbvideo-buttons.hover{
@@ -447,13 +471,16 @@ div.thumbvideo .thumbvideo-buttons button.disabled .fa{
 		left: -50%;
 		right: 50%;
 	}
+	div.thumbvideo:nth-child(4n+1) .hover{
+		left: 50%;
+	}
 }
 @media (min-width:1200px){
 	div.showcase{
 		height: calc(100vw * 0.09);
 	}
 	div.thumbvideo .thumbvideo-buttons{
-		height: calc(30vw * 0.09);
+		height: calc(30vw * 0.10);
 		bottom: calc(30vw * -0.09);
 	}
 	div.thumbvideo .thumbvideo-buttons.hover{
@@ -463,13 +490,16 @@ div.thumbvideo .thumbvideo-buttons button.disabled .fa{
 		left: -50%;
 		right: 50%;
 	}
+	div.thumbvideo:nth-child(6n+1) .hover{
+		left: 50%;
+	}
 }
 div.thumbvideo .rate-panel{
 	position: absolute;
 	width: 150px;
 	height: 20px;
 	bottom: -15px;
-	background: #FEB;
+	background: #ffdf80;
 	border-radius: 4px;
 	left: 0;
 	right: 0;
@@ -496,6 +526,12 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 	height:  fit-content;
 	padding: 0;
 	border-bottom: none;
+}
+.modal-header button.close{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	color: #ffdf80;
 }
 #fullvideo-frame{
 	height: 340px;
@@ -524,11 +560,16 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 	border-radius: 10px;
 	background: #FFDF80;
 }
+
 .modal-footer{
 	border: none;
 }
 
 
+#fullvideo .modal-content{
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
 #fullvideo input[type='checkbox'], #fullvideo input[type="radio"], #fullvideo input[type="text"]{
         -webkit-appearance: none;
         outline: none;
@@ -683,7 +724,7 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 	}
 }
 #login input{
-	background: #FEB0;
+	background: #ffdf80;
 }
 
 </style>
@@ -766,7 +807,7 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 		$('#fullvideo-frame iframe').attr('src', src2);
 		
 		$('#fullvideo .modal-title').text($(this).siblings('input[name="title"]').val());
-		//$('#fullvideo-description').text($(this).siblings('input[name="description"]').val());
+		$('#fullvideo-description').text($(this).siblings('input[name="description"]').val());
 		$(this).siblings('input[name="courses[]"]').appendTo('#qbank');
 		$(this).siblings('input[name="themes[]"]').appendTo('#qbank').clone().appendTo('#fbank');
 		$('#fullvideo').modal('show');
@@ -813,7 +854,7 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 
 	$('.thumbvideo-buttons').on('click','.fa-star', function(){
 		rating = $(this).prevAll().length + 1;
-		id = $(this).parent().attr('id').match(/\d+/);
+		id = $(this).parent().attr('id').match(/\d+/)[0];
 		$(this).parents('.thumbvideo-buttons').children('.rate-btn').addClass('disabled');
 		$(this).parent().hide();
 		$.post("<?= $url?>/reserved/video-rate", {
