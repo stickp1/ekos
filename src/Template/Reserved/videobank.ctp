@@ -7,7 +7,7 @@ use Vimeo\Vimeo;
 $client = new Vimeo("0af46bd862c619713814e571961d0c3f276fb58c", "I1w+gCaPsU49Wpy0JfsZCepYD/9hT88kJGkpnF4ko+MYhpTMYj+Un1kCpyFlGB8rvG59eAcIHKX103U8xP4zKBIzY1M612nXw+K/0hg5YITsvs/3eEFzbzojRXAIfKVg", "1c4b57b035d803815e1a0e13794815bc");
 
 $uri = 'http://api.vimeo.com/me/albums/7542594/videos';
-$response = $client->request('/albums/7542594/videos',['background' => 1], 'GET');
+$response = $client->request('/albums/7542594/videos',['background' => 1, 'sort' => 'manual'], 'GET');
 ?>
 
 
