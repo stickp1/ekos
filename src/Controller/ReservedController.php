@@ -1653,7 +1653,7 @@ class ReservedController extends AppController
                 'parent_id',
                 'title',
                 'theme_id',
-                'user' => "concat(Users.first_name,' ',Users.last_name)",
+                'user' => 'Users.first_name',
                 'date_last'
             ],
             'order' => [
@@ -1664,8 +1664,23 @@ class ReservedController extends AppController
 
         $messages = $messages->groupBy('theme_id')->toArray();
         foreach($messages as $theme => $messageList)
-            foreach($messageList as $message)
+            foreach($messageList as $key => $message)
+            {
                 $message['children'] = $this->ThemeMessages->childCount($message); 
+                $lastPoster = $this->loadModel('ThemeMessages')->find('all', [
+                    'contain' => 'Users',
+                    'conditions' => [
+                        'parent_id' => $message->id
+                    ],
+                    'fields' => [
+                        'user' => 'Users.first_name',
+                    ],
+                    'order' => [
+                        'date_last' => 'DESC'
+                    ]
+                ])->first()->toArray();
+                $message['user'] = array_pop($lastPoster);
+            }
 
         $this->set(compact('maxPerPage','group', 'user', 'themes', 'courses', 'messages'));
     }
@@ -1693,7 +1708,7 @@ class ReservedController extends AppController
                 ],
                 'fields' => [
                     'id',
-                    'user' => "concat(Users.first_name,' ',Users.last_name)",
+                    'user' => 'Users.first_name',
                     'date_created',
                     'upvotes',
                     'title',
@@ -1732,7 +1747,7 @@ class ReservedController extends AppController
             ],
             'fields' => [
                     'id',
-                    'user' => "concat(Users.first_name,' ',Users.last_name)",
+                    'user' => 'Users.first_name',
                     'date_last',
                     'upvotes',
                     'title',
@@ -1746,6 +1761,19 @@ class ReservedController extends AppController
         foreach($messages as $message){
             $message['children'] = $this->ThemeMessages->childCount($message); 
             $message['date_last'] = $message['date_last']->timeAgoInWords();
+            $lastPoster = $this->loadModel('ThemeMessages')->find('all', [
+                'contain' => 'Users',
+                'conditions' => [
+                    'parent_id' => $message->id
+                ],
+                'fields' => [
+                    'user' => 'Users.first_name',
+                ],
+                'order' => [
+                    'date_last' => 'DESC'
+                ]
+            ])->first()->toArray();
+            $message['user'] = array_pop($lastPoster);
         }
 
         $this->response->body(json_encode($messages));
@@ -1810,7 +1838,7 @@ class ReservedController extends AppController
                     'keyField' => 'name',
                     'valueField' => 'contact',
                     'group' => 'contact'
-                ]);
+                ])->toArray();
 
                 $formadors = $this->loadModel('Lectures')->find('list', [
                     'contain' => [
@@ -1829,10 +1857,27 @@ class ReservedController extends AppController
                     'keyField' => 'name',
                     'valueField' => 'contact',
                     'group' => 'contact'
-                ]);
+                ])->toArray();
 
-                $usersNot = $users->where(['notify' => 1])->toArray();
-                $users = array_diff(array_unique(array_merge($users->toArray(), $formadors->toArray())), $usersNot);
+                $usersNot = $this->loadModel('ThemeMessages')->find('list', [
+                    'contain' => 'Users',
+                    'conditions' => [
+                        'OR' => [
+                            'parent_id' => $this->request->getData('parent'),
+                            'ThemeMessages.id' => $this->request->getData('parent')
+                        ],
+                        'notify' => 1
+                    ],
+                    'fields' => [
+                        'name' => 'Users.first_name',
+                        'contact' => 'Users.email'
+                    ],
+                    'keyField' => 'name',
+                    'valueField' => 'contact',
+                    'group' => 'contact'
+                ])->toArray();
+
+                $users = array_diff(array_unique(array_merge($users, $formadors)), $usersNot);
                 if(($key = array_search($user_id, $users)) !== false)
                     unset($users[$key]);
                 //$users = ['Cristiano' => 'crisb7@hotmail.com'];
