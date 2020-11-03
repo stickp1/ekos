@@ -1965,6 +1965,15 @@ class ReservedController extends AppController
             return;
         }
 
+        //IS IN COURSE 1
+        $is1 = $this->loadModel('UsersGroups')->exists([
+                'users_id' => $user_id,
+                'groups_courses_id' => 1
+        ]);
+
+        if(!$is1)
+            $this->redirect(['controller' => 'reserved']);
+
         array_map([$this, 'loadModel'], ['Videos', 'VideoThemes', 'UsersGroups']);
 
         $videos = $this->Videos->find('list', [
@@ -2003,7 +2012,7 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
-        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses'));
+        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses', 'is1'));
     }
 
     public function videoRate()
