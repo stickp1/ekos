@@ -1831,7 +1831,8 @@ class ReservedController extends AppController
                         'OR' => [
                             'parent_id' => $this->request->getData('parent'),
                             'ThemeMessages.id' => $this->request->getData('parent')
-                        ]
+                        ],
+                        'user_id !=' => $user_id
                     ],
                     'fields' => [
                         'name' => 'Users.first_name',
@@ -1850,7 +1851,8 @@ class ReservedController extends AppController
                     'conditions' => [
                         'Groups.active' => 1,
                         'Groups.deleted' => 0,
-                        'FIND_IN_SET('.$this->request->getData('theme_id').', Lectures.themes) > 0'
+                        'FIND_IN_SET('.$this->request->getData('theme_id').', Lectures.themes) > 0',
+                        'user_id !=' => $user_id 
                     ],
                     'fields' => [
                         'name' => 'Users.first_name',
@@ -1880,8 +1882,6 @@ class ReservedController extends AppController
                 ])->toArray();
 
                 $users = array_diff(array_unique(array_merge($users, $formadors)), $usersNot);
-                if(($key = array_search($user_id, $users)) !== false)
-                    unset($users[$key]);
                 //$users = ['Cristiano' => 'crisb7@hotmail.com'];
                 
                 foreach($users as $name => $address){
@@ -1903,14 +1903,14 @@ class ReservedController extends AppController
 
     private function messageEmailBody($data, $user)
     {
-        $email_body = '<p>Foi submetida uma nova resposta a uma dúvida que estás a seguir.</p>
-            <p><b>Título da dúvida original: </b>'.$data['title'].'</p>
+        $email_body = '<p>Foi publicada uma nova resposta na dúvida que estás a acompanhar.</p>
+            <p><b>Título da publicação: </b>'.$data['title'].'</p>
             <p><b>Conteúdo da mensagem: </b>'.$data['message'].'</p>
-            <p>Para responder ou visualizar a conversa, basta utilizares o botão abaixo.</p>
-            <a class="btn" style="background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;" href="'.Router::url(['action' => 'forum', $data['course'], $data['theme_id']], true).'">Ver conversa</a>
+            <p>Para visualizar a discussão completa, basta utilizares o botão abaixo.</p>
+            <a class="btn" style="background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;" href="'.Router::url(['action' => 'forum', $data['course'], $data['theme_id']], true).'">Ver Publicação</a>
             ';
         if($data['parent'])
-            $email_body .= '<a class="btn" style="background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;" href="'.Router::url(['action' => 'messageUnfollow', $user, $data['parent']], true).'">Deixar de seguir esta conversa</a>';
+            $email_body .= '<a class="btn" style="background-color: #ccc; color: #152335; cursor: pointer; display: inline-block; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: bold; margin: 0; margin-right: 10px; padding: 10px 16px; text-align: center; text-decoration: none;" href="'.Router::url(['action' => 'messageUnfollow', $user, $data['parent']], true).'">Parar Notificações da Discussão</a>';
         return $email_body;
     }
 
