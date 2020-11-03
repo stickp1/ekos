@@ -1677,12 +1677,14 @@ class ReservedController extends AppController
                     ],
                     'order' => [
                         'date_last' => 'DESC'
-                    ]
-                ])->first()->toArray();
-                $message['user'] = array_pop($lastPoster);
+                    ],
+                    'limit' => 1
+                ]);
+                foreach($lastPoster as $last)
+                    $message['user'] = $last['user'];
             }
 
-        $this->set(compact('maxPerPage','group', 'user', 'themes', 'courses', 'messages'));
+        $this->set(compact('maxPerPage','group', 'user', 'themes', 'courses', 'messages', 'lastPoster'));
     }
 
     public function messageGet()
