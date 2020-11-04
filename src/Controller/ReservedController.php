@@ -1822,80 +1822,87 @@ class ReservedController extends AppController
                 if(!$this->ThemeMessages->save($parent)) 
                     $continue = false;
             }
-
-            if($continue && $this->ThemeMessages->save($message)){
-
-                $users = $this->loadModel('ThemeMessages')->find('list', [
-                    'contain' => 'Users',
-                    'conditions' => [
-                        'OR' => [
-                            'parent_id' => $this->request->getData('parent'),
-                            'ThemeMessages.id' => $this->request->getData('parent')
-                        ],
-                        'user_id !=' => $user_id
-                    ],
-                    'fields' => [
-                        'name' => 'Users.first_name',
-                        'contact' => 'Users.email'
-                    ],
-                    'keyField' => 'name',
-                    'valueField' => 'contact',
-                    'group' => 'contact'
-                ])->toArray();
-
-                $formadors = $this->loadModel('Lectures')->find('list', [
-                    'contain' => [
-                        'Users',
-                        'Groups'
-                    ],
-                    'conditions' => [
-                        'Groups.active' => 1,
-                        'Groups.deleted' => 0,
-                        'FIND_IN_SET('.$this->request->getData('theme_id').', Lectures.themes) > 0',
-                        'user_id !=' => $user_id 
-                    ],
-                    'fields' => [
-                        'name' => 'Users.first_name',
-                        'contact' => 'Users.email'
-                    ],
-                    'keyField' => 'name',
-                    'valueField' => 'contact',
-                    'group' => 'contact'
-                ])->toArray();
-
-                $usersNot = $this->loadModel('ThemeMessages')->find('list', [
-                    'contain' => 'Users',
-                    'conditions' => [
-                        'OR' => [
-                            'parent_id' => $this->request->getData('parent'),
-                            'ThemeMessages.id' => $this->request->getData('parent')
-                        ],
-                        'notify' => 1
-                    ],
-                    'fields' => [
-                        'name' => 'Users.first_name',
-                        'contact' => 'Users.email'
-                    ],
-                    'keyField' => 'name',
-                    'valueField' => 'contact',
-                    'group' => 'contact'
-                ])->toArray();
-
-                $users = array_diff(array_unique(array_merge($users, $formadors)), $usersNot);
-                //$users = ['Cristiano' => 'crisb7@hotmail.com'];
-                
-                foreach($users as $name => $address){
-                    $email = new Email('default');
-                    $email->to($address)
-                      ->emailFormat('html')
-                      ->subject('EKOS - Nova mensagem')
-                      ->send($this->email_template($name, $this->messageEmailBody($this->request->getData(), $user_id)));
-                }
-
+            if($continue && $this->ThemeMessages->save($message))
                 $this->Flash->success(__('A mensagem foi submetida!'));
+        }
+        else
+            return $this->redirect(['controller' => '/']);
+    }
+
+    public function messageNotification()
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['post']);
+        $user_id = $this->Auth->user('id');
+
+        if($user_id)
+        {
+            $users = $this->loadModel('ThemeMessages')->find('list', [
+                'contain' => 'Users',
+                'conditions' => [
+                    'OR' => [
+                        'parent_id' => $this->request->getData('parent'),
+                        'ThemeMessages.id' => $this->request->getData('parent')
+                    ],
+                    'user_id !=' => $user_id
+                ],
+                'fields' => [
+                    'name' => 'Users.first_name',
+                    'contact' => 'Users.email'
+                ],
+                'keyField' => 'name',
+                'valueField' => 'contact',
+                'group' => 'contact'
+            ])->toArray();
+
+            $formadors = $this->loadModel('Lectures')->find('list', [
+                'contain' => [
+                    'Users',
+                    'Groups'
+                ],
+                'conditions' => [
+                    'Groups.active' => 1,
+                    'Groups.deleted' => 0,
+                    'FIND_IN_SET('.$this->request->getData('theme_id').', Lectures.themes) > 0',
+                    'Lectures.teacher !=' => $user_id 
+                ],
+                'fields' => [
+                    'name' => 'Users.first_name',
+                    'contact' => 'Users.email'
+                ],
+                'keyField' => 'name',
+                'valueField' => 'contact',
+                'group' => 'contact'
+            ])->toArray();
+
+            $usersNot = $this->loadModel('ThemeMessages')->find('list', [
+                'contain' => 'Users',
+                'conditions' => [
+                    'OR' => [
+                        'parent_id' => $this->request->getData('parent'),
+                        'ThemeMessages.id' => $this->request->getData('parent')
+                    ],
+                    'notify' => 1
+                ],
+                'fields' => [
+                    'name' => 'Users.first_name',
+                    'contact' => 'Users.email'
+                ],
+                'keyField' => 'name',
+                'valueField' => 'contact',
+                'group' => 'contact'
+            ])->toArray();
+
+            $users = array_diff(array_unique(array_merge($users, $formadors)), $usersNot);
+            //$users = ['Cristiano' => 'crisb7@hotmail.com'];
+            
+            foreach($users as $name => $address){
+                $email = new Email('default');
+                $email->to($address)
+                  ->emailFormat('html')
+                  ->subject('EKOS - Nova mensagem')
+                  ->send($this->email_template($name, $this->messageEmailBody($this->request->getData(), $user_id)));
             }
-            else
-                $this->Flash->error('Alguma coisa correu mal...');
         }
         else
             return $this->redirect(['controller' => '/']);

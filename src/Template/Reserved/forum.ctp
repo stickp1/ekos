@@ -636,7 +636,6 @@ $('.submitNewMessage').on('click', function(){
     event.preventDefault();
     theme_id = $('input[name="newTheme"]').val();
     title = $('textarea[name="newTitle"]').val();
-    //message = $('textarea[name="newMessage"]').val(); 
     message = cke_new_editor.getData();
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: theme_id,
@@ -644,19 +643,33 @@ $('.submitNewMessage').on('click', function(){
         message: message,
         course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
     }).done(function(data) {
+        $.post( "<?= $url?>/reserved/message-notification", { 
+            theme_id: theme_id,
+            title: title,
+            message: message,
+            course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
+        });
         location.reload();
     });
 })
 
 $('.submitReplyMessage').on('click', function(){
-    //message = $(this).siblings('#replyList textarea').val();
     message = cke_reply_editor.getData();
+    title = $(this).siblings('#tempReplies').children('div:first-child').children('div:first-child').text();
     $.post( "<?= $url?>/reserved/message-create", { 
         theme_id: THEMEID[0],
         parent: MESSAGEID[0],
         message: message,
+        title: title,
         course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
     }).done(function(data) {
+        $.post( "<?= $url?>/reserved/message-notification", { 
+            theme_id: THEMEID[0],
+            parent: MESSAGEID[0],
+            message: message,
+            title: title,
+            course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
+        });
         location.reload();
     });
 })
