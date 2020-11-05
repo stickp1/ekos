@@ -515,10 +515,10 @@ function displayStyle(){
 function getMessageTable(theme, page){
     $('div#d'+theme+' .messageList tbody').hide(300, function(){$(this).show(300)});
     $.post("<?= $url?>/reserved/message-table-get", {
-    page: page,
-    theme: theme
+        page: page,
+        theme: theme
     }).done(function(data) {
-
+        console.log(JSON.parse(data));
         $('div#d'+theme+' .messageList tbody').empty();
         $.each(JSON.parse(data), function(index, value){
             $('div#d'+theme+' .messageList tbody').append(
@@ -643,12 +643,13 @@ $('.submitNewMessage').on('click', function(){
         message: message,
         course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
     }).done(function(data) {
-        $.post( "<?= $url?>/reserved/message-notification", { 
-            theme_id: theme_id,
-            title: title,
-            message: message,
-            course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
-        });
+        if(data)
+            $.post( "<?= $url?>/reserved/message-notification", { 
+                theme_id: theme_id,
+                title: title,
+                message: message,
+                course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
+            });
         location.reload();
     });
 })
@@ -663,13 +664,14 @@ $('.submitReplyMessage').on('click', function(){
         title: title,
         course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
     }).done(function(data) {
-        $.post( "<?= $url?>/reserved/message-notification", { 
-            theme_id: THEMEID[0],
-            parent: MESSAGEID[0],
-            message: message,
-            title: title,
-            course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
-        });
+        if(data)
+            $.post( "<?= $url?>/reserved/message-notification", { 
+                theme_id: THEMEID[0],
+                parent: MESSAGEID[0],
+                message: message,
+                title: title,
+                course: <?= @$group['courses_id'] ? @$group['courses_id'] : 0 ?>
+            });
         location.reload();
     });
 })
@@ -678,6 +680,9 @@ $('.nextPage').on('click', function(){
     pageInfo = $(this).siblings('.pageInfo');
     page = parseInt(pageInfo.val()) + 1;
     theme = $(this).parent('.dependency').attr('id').match(/\d+/g);
+    console.log(pageInfo);
+    console.log(page);
+    console.log(theme);
     if(page <= pageInfo.attr('id')){
         pageInfo.val(page);
         getMessageTable(theme[0], page)

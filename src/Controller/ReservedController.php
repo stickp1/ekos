@@ -1773,9 +1773,11 @@ class ReservedController extends AppController
                 ],
                 'order' => [
                     'date_last' => 'DESC'
-                ]
-            ])->first()->toArray();
-            $message['user'] = array_pop($lastPoster);
+                ],
+                'limit' => 1
+            ]);
+            foreach($lastPoster as $last)
+                    $message['user'] = $last['user'];
         }
 
         $this->response->body(json_encode($messages));
@@ -1793,6 +1795,7 @@ class ReservedController extends AppController
         {
             $this->loadModel('ThemeMessages');
             $now = Time::now();
+            $submited = false;
 
             if(!$this->request->getData('parent'))
             {
@@ -1823,7 +1826,13 @@ class ReservedController extends AppController
                     $continue = false;
             }
             if($continue && $this->ThemeMessages->save($message))
+            {
                 $this->Flash->success(__('A mensagem foi submetida!'));
+                $submited = true;
+            } else
+                $this->Flash->error('Infelizmente não foi possível submeter a mensagem...');
+
+            $this->response->body(json_encode($submited));
         }
         else
             return $this->redirect(['controller' => '/']);
@@ -1959,7 +1968,7 @@ class ReservedController extends AppController
         if($this->ThemeMessages->save($message))
             $this->Flash->success(__('Deixaste de seguir esta conversa!'));
         else
-            $this->Flash->success(__('Infelizmente não foi possível deixar de seguir esta conversa...'));
+            $this->Flash->error('Infelizmente não foi possível deixar de seguir esta conversa...');
         $this->redirect(['controller' => 'frontend']);
     }
 
