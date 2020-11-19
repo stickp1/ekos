@@ -30,16 +30,21 @@ use Cake\ORM\Query;
 class ReservedController extends AppController
 {
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
+    private function isStudio($user_id)
+    {
+        $isStudio = $this->loadModel('UsersGroups')->exists([
+                'users_id' => $user_id,
+                'groups_courses_id in ' => [1,2,3,4,5,6,7,8,9,10,11,12,13]
+        ]);
+        $this->set(compact('isStudio'));
+    }
+
     public function index($group_id = null)
     {
         
         $id = $this->Auth->user('id');
         if(!isset($id))   return $this->redirect(['controller' => '/']);
+        $this->isStudio($id);
 
         $user = $this->loadModel('Users')->get($id, [
             'contain' => [
@@ -160,6 +165,7 @@ class ReservedController extends AppController
 
             $id = $this->Auth->user('id');
             if(!isset($id))   return $this->redirect(['controller' => '/']);
+            $this->isStudio($id);
             
             $user = $this->loadModel('Users')->get($id, [
             'contain' => ['groups' => ['Courses']]
@@ -226,6 +232,7 @@ class ReservedController extends AppController
     {
         $id = $this->Auth->user('id');
         if(!isset($id))   return $this->redirect(['controller' => '/']);
+        $this->isStudio($id);
 
         // We need to get the user each time because it might be different from the original authenticated user
         // (eg. if image is updated, which happens in a different function)
@@ -401,7 +408,7 @@ class ReservedController extends AppController
             ]
         ])->toArray();
   
-        if(empty($groups) || $this->Products->exists(['sales_users_id' => $id, 'group_courses_id' => $course_id])){
+        if(empty($groups) || $this->Products->exists(['sales_users_id' => $id, 'group_courses_id' => $course_id, 'group_courses_id !=' => 1])){
             $this->Flash->error(__('Não foi possível realizar a inscrição'));
             return $this->redirect(['action' => 'index']);
         }
@@ -573,6 +580,7 @@ class ReservedController extends AppController
         $id = $this->Auth->user('id');
         if(!isset($id)) return $this->redirect(['controller' => '/']);
 
+
         $count = $this->loadModel('Products')->find('all', [
             'conditions' => [
                 'sales_users_id' => $id, 
@@ -730,6 +738,7 @@ class ReservedController extends AppController
     {
         $user_id = $this->Auth->user('id');
         if(!isset($user_id))   return $this->redirect(['controller' => '/']);
+        $this->isStudio($id);
 
         $courses = $this->loadModel('UsersGroups')->find('list', [
             'contain' => 'Groups',
@@ -792,6 +801,7 @@ class ReservedController extends AppController
         $user_id = $this->Auth->user('id');
         
         if(!isset($user_id))   return $this->redirect(['controller' => '/']);
+        $this->isStudio($user_id);
 
         array_map([$this, 'loadModel'], ['Questions', 'Courses', 'UsersGroups']);
         $session = $this->getRequest()->getSession();
@@ -1000,6 +1010,9 @@ class ReservedController extends AppController
 
         $user_id = $this->Auth->user('id');
         $session = $this->getRequest()->getSession();
+        if(!isset($user_id))   
+                return $this->redirect(['controller' => '/']);
+        $this->isStudio($user_id);
 
         $this->loadModel('Questions');
 
@@ -1018,9 +1031,6 @@ class ReservedController extends AppController
         if(!isset($pointer) || empty(@$question_list))
             $this->set('none', 1);
         else {
-
-            if(!isset($user_id))   
-                return $this->redirect(['controller' => '/']);
 
             $question_ids = array_keys($question_list[$pointer]);
             $questions = $this->Questions->find('all', [
@@ -1194,6 +1204,10 @@ class ReservedController extends AppController
 
     public function flashcards()
     {
+        $user_id = $this->Auth->user('id');
+        if(!isset($user_id))   return $this->redirect(['controller' => '/']);
+        $this->isStudio($user_id);
+
         $session = $this->getRequest()->getSession();
         $themes = $session->read('flash_themes');
         $wrong = $session->read('flash_wrong');
@@ -1209,8 +1223,6 @@ class ReservedController extends AppController
         if((!is_null($themes) || !is_null($mythemes)) && !is_null($wrong)) {
 
             array_map([$this, 'loadModel'], ['UsersGroups', 'Courses', 'Flashcards']);
-
-            $user_id = $this->Auth->user('id');
             
             $courses = $this->UsersGroups->find('list', [
                 'contain' => 'Groups',
@@ -1271,6 +1283,7 @@ class ReservedController extends AppController
         $user_id = $this->Auth->user('id');
         if(!isset($user_id))   
             return $this->redirect(['controller' => '/']);
+        $this->isStudio($user_id);
 
         $courses_ = $this->UsersGroups->find('list', [
             'contain' => 'Groups',
@@ -1493,6 +1506,7 @@ class ReservedController extends AppController
         $user_id = $this->Auth->user('id');
         if(!isset($user_id))   
             return $this->redirect(['controller' => '/']);
+        $this->isStudio($user_id);
 
         array_map([$this, 'loadModel'], ['UsersGroups', 'Courses', 'Flashcards']);
 
@@ -1562,6 +1576,7 @@ class ReservedController extends AppController
             $this->set(compact('e'));
             return;
         }
+        $this->isStudio($id);
 
         $maxPerPage = 5; 
 
@@ -1980,11 +1995,12 @@ class ReservedController extends AppController
             $this->set(compact('e'));
             return;
         }
+        $this->isStudio($user_id);
 
         //IS IN COURSE 1
         $is1 = $this->loadModel('UsersGroups')->exists([
                 'users_id' => $user_id,
-                'groups_id' => 200
+                'groups_courses_id in ' => [1,2,3,4,5,6,7,8,9,10,11,12,13]
         ]);
 
         if(!$is1)

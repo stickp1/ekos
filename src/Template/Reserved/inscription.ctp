@@ -10,7 +10,7 @@
                     <p><b><?= $course['price'] ?> €</b></p><br>
                     <div class="select" id="main-group">
                         <label for="<?= 'course_'.$course['id'].'_group_id'?>">Por favor seleciona uma turma:</label>
-                        <select class="form-control" name="<?= 'course_'.$course['id'].'_group_id'?>" id="<?= 'course_'.$value['id'].'_group_id'?>">
+                        <select class="form-control" name="<?= 'course_'.$course['id'].'_group_id'?>" id="<?= 'course_'.$course['id'].'_group_id'?>">
                           <?php foreach ($groups as $key=>$group): ?>
                               <option value=<?=$group['id']?> >
                                   <?=$group['name']?>
