@@ -1918,6 +1918,7 @@ class ReservedController extends AppController
             ])->toArray();
 
             $users = array_diff(array_unique(array_merge($users, $formadors)), $usersNot);
+            $users['Geral'] = 'geral@ekos.pt';
             //$users = ['Cristiano' => 'crisb7@hotmail.com'];
             
             foreach($users as $name => $address){
@@ -1934,7 +1935,7 @@ class ReservedController extends AppController
 
     private function messageEmailBody($data, $user)
     {
-        $email_body = '<p>Foi publicada uma nova resposta na dúvida que estás a acompanhar.</p>
+        $email_body = '<p>Foi publicada uma nova mensagem na dúvida que estás a acompanhar.</p>
             <p><b>Título da publicação: </b>'.$data['title'].'</p>
             <p><b>Conteúdo da mensagem: </b>'.$data['message'].'</p>
             <p>Para visualizar a discussão completa, basta utilizares o botão abaixo.</p>

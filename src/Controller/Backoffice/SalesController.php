@@ -156,7 +156,8 @@ class SalesController extends AppController
                 'Users'
             ],
             'sortWhitelist' => [
-                'Users.first_name', 
+                'Users.first_name',
+                'Users.last_name',
                 'datetime', 
                 'value', 
                 'status', 
@@ -166,16 +167,6 @@ class SalesController extends AppController
                 'OR' => [
                     'Users.first_name LIKE' => '%'.$_GET['name'].'%', 
                     'Users.last_name LIKE' => '%'.$_GET['name'].'%'
-                ],
-                'OR' => [
-                    [
-                      'year(datetime)' => $year,
-                      'month(datetime)' => $startMonth
-                    ],
-                    [
-                      'year(datetime)' => $year - 1,
-                      'month(datetime)' => $startMonth
-                    ]
                 ]
             ],
             'order' => [
