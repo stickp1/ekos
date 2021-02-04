@@ -134,6 +134,7 @@ class SalesController extends AppController
           $month = $m;
           $year_last = $y;
         }
+        /*
         if($month < $startMonth)
         {
           foreach($dates as $y => $m)
@@ -145,6 +146,10 @@ class SalesController extends AppController
           foreach($dates as $y => $m)
             $years[intval($y+1).''] = $y."/".intval($y+1);
         }
+        */
+        foreach($dates as $y => $m)
+            $years[$y.''] = intval($y-1)."/".$y;
+        
         //$years = array_reverse($years);
         if (!$year){
           $year_aux = array_keys($years);

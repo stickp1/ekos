@@ -2012,7 +2012,8 @@ class ReservedController extends AppController
         $videos = $this->Videos->find('list', [
             'groupField' => 'id',
             'keyField' => 'title',
-            'valueField' => 'description'
+            'valueField' => 'description',
+            'order' => 'title'
         ])->toArray();
         $video_themes = $this->VideoThemes->find('list', [
             'contain' => 'Themes',
@@ -2036,7 +2037,7 @@ class ReservedController extends AppController
             'keyField' => 'course_id',
             'valueField' => 'name'
         ])->toArray();
-
+        $video_courses2 = array_unique(call_user_func_array('array_merge', $video_courses)); 
         $courses = $this->loadModel('UsersGroups')->find('list', [
             'contain' => 'Groups',
             'conditions' => [
@@ -2045,7 +2046,7 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
-        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses', 'is1'));
+        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses','video_courses2', 'is1'));
     }
 
     public function videoRate()
