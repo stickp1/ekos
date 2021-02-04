@@ -2014,7 +2014,16 @@ class ReservedController extends AppController
             'keyField' => 'title',
             'valueField' => 'description',
             'order' => 'title'
-        ])->toArray();
+        ]);
+        $recentVideos = $this->Videos->find('list', [
+            'conditions' => [
+                'datecreated >' => new Time('1 month ago')
+            ],
+            'groupField' => 'id',
+            'keyField' => 'title',
+            'valueField' => 'description',
+            'order' => 'datecreated DESC'
+        ]);
         $video_themes = $this->VideoThemes->find('list', [
             'contain' => 'Themes',
             'fields' => [
@@ -2046,7 +2055,7 @@ class ReservedController extends AppController
             ],
             'valueField' => 'groups_courses_id'
         ])->toArray();
-        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses','video_courses2', 'is1'));
+        $this->set(compact('courses', 'videos', 'video_themes', 'video_courses','video_courses2', 'is1', 'recentVideos'));
     }
 
     public function videoRate()

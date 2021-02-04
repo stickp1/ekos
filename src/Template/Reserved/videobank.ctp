@@ -7,7 +7,7 @@ use Vimeo\Vimeo;
 $client = new Vimeo("0af46bd862c619713814e571961d0c3f276fb58c", "I1w+gCaPsU49Wpy0JfsZCepYD/9hT88kJGkpnF4ko+MYhpTMYj+Un1kCpyFlGB8rvG59eAcIHKX103U8xP4zKBIzY1M612nXw+K/0hg5YITsvs/3eEFzbzojRXAIfKVg", "1c4b57b035d803815e1a0e13794815bc");
 
 $uri = 'http://api.vimeo.com/me/albums/7542594/videos';
-$response = $client->request('/albums/7542594/videos',['background' => 1, 'sort' => 'manual'], 'GET');
+$response = $client->request('/albums/7542594/videos',['background' => 1, 'sort' => 'date'], 'GET');
 ?>
 
 
@@ -30,6 +30,59 @@ $response = $client->request('/albums/7542594/videos',['background' => 1, 'sort'
                   </div>
               </div>
             </div>
+        </div>
+        <p class="showcase-title">Vídeos mais recentes</p>
+        <div class="row showcase">
+    		<?php $vimeo_name = array_column($response['body']['data'], 'name') ?>
+			<?php foreach($recentVideos as $key => $video): ?>
+				<?php $vimeo_key = array_search($key, $vimeo_name) ?>
+				<?php if($vimeo_key!==false): ?>
+					<?php $vimeo_video = $response['body']['data'][$vimeo_key] ?>
+					<div id="<?=$key?>" class="thumbvideo col-xs-4 col-sm-3 col-lg-2">
+						<div class="thumbvideo-frame">
+								<?= $vimeo_video['embed']['html'] ?>
+						</div>
+						<input type="hidden" name="title" value="<?= key($video) ?>">
+						<input type="hidden" name="description" value="<?= current($video) ?>">
+						<?php if(isset($video_themes[$key]) && isset($video_courses[$key])): ?>
+								<?php foreach(@$video_themes[$key] as $theme => $theme_name): ?>
+									<input type="hidden" name="themes[]" value="<?= $theme ?>">
+								<?php endforeach ?>
+								<?php foreach(@$video_courses[$key] as $course => $course_name): ?>
+									<input type="hidden" name="courses[]" value="<?= $course ?>">
+								<?php endforeach ?>
+						<?php endif ?>
+						<div class="thumbvideo-framebtn"></div>
+						<div class="thumbvideo-buttons">
+								<button class="play-pause-btn"><i class="fa fa-play"></i></button>
+								<button class="mute-btn" ><i class="fa fa-volume-off"></i></button>
+								<button class="rate-btn"><i class="fa fa-thumbs-up"></i><i class="fa fa-thumbs-down fa-flip-horizontal"></i></button>
+								<div class="rate-panel" id="rate-panel-<?=$key?>">
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+									<i class="fa fa-star"></i>
+								</div>
+						</div>
+					</div>
+				<?php endif ?>
+			<?php endforeach ?>	
+    		<div id="0" class="showcase-scroll scroll-left hide">
+    			<button>
+    				<i class="fa fa-angle-left"></i>
+    			</button>
+    		</div>
+    		<div id="0" class="showcase-scroll scroll-right">
+    			<button>
+    				<i class="fa fa-angle-right"></i>
+    			</button>
+    		</div>
         </div>
     	<?php foreach($video_courses2 as $course => $name): ?>
 	        <p class="showcase-title"><?=trim($name)?></p>
@@ -86,60 +139,6 @@ $response = $client->request('/albums/7542594/videos',['background' => 1, 'sort'
 	    		</div>
 	        </div>
     	<?php endforeach ?>
-
-    	<p class="showcase-title">Todos os vídeos</p>
-        <div class="row showcase">
-    		<?php $vimeo_name = array_column($response['body']['data'], 'name') ?>
-			<?php foreach($videos as $key => $video): ?>
-				<?php $vimeo_key = array_search($key, $vimeo_name) ?>
-				<?php if($vimeo_key!==false): ?>
-					<?php $vimeo_video = $response['body']['data'][$vimeo_key] ?>
-					<div id="<?=$key?>" class="thumbvideo col-xs-4 col-sm-3 col-lg-2">
-						<div class="thumbvideo-frame">
-								<?= $vimeo_video['embed']['html'] ?>
-						</div>
-						<input type="hidden" name="title" value="<?= key($video) ?>">
-						<input type="hidden" name="description" value="<?= current($video) ?>">
-						<?php if(isset($video_themes[$key]) && isset($video_courses[$key])): ?>
-								<?php foreach(@$video_themes[$key] as $theme => $theme_name): ?>
-									<input type="hidden" name="themes[]" value="<?= $theme ?>">
-								<?php endforeach ?>
-								<?php foreach(@$video_courses[$key] as $course => $course_name): ?>
-									<input type="hidden" name="courses[]" value="<?= $course ?>">
-								<?php endforeach ?>
-						<?php endif ?>
-						<div class="thumbvideo-framebtn"></div>
-						<div class="thumbvideo-buttons">
-								<button class="play-pause-btn"><i class="fa fa-play"></i></button>
-								<button class="mute-btn" ><i class="fa fa-volume-off"></i></button>
-								<button class="rate-btn"><i class="fa fa-thumbs-up"></i><i class="fa fa-thumbs-down fa-flip-horizontal"></i></button>
-								<div class="rate-panel" id="rate-panel-<?=$key?>">
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-									<i class="fa fa-star"></i>
-								</div>
-						</div>
-					</div>
-				<?php endif ?>
-			<?php endforeach ?>	
-    		<div id="0" class="showcase-scroll scroll-left hide">
-    			<button>
-    				<i class="fa fa-angle-left"></i>
-    			</button>
-    		</div>
-    		<div id="0" class="showcase-scroll scroll-right">
-    			<button>
-    				<i class="fa fa-angle-right"></i>
-    			</button>
-    		</div>
-        </div>
     </div>
 </section>
 
@@ -797,16 +796,12 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
     	checkpoints = [10000, 1183, 751, -1];
     	limits = [6, 4, 3];
     	it = 0;
-    	console.log($(this).width());
     	for(it=0; it<3; it++)
     	{
 	        if($(this).width() < checkpoints[it] && $(this).width() > checkpoints[it+1]) {
 	            $('.row.showcase').each(function(index) {
 	            	course_scroll = $(this).children('.showcase-scroll').attr('id').match(/\d+/)[0];
 	            	thumblength = $(this).children('.thumbvideo').length; 
-	            	console.log(page[course_scroll] + 1);
-	            	console.log('thumblength: ' + thumblength);
-	            	console.log('limits[it]: ' + limits[it]);
 	            	if( thumblength <= limits[it])
 	            		$(this).children('.showcase-scroll').hide();
 	            	else {
@@ -844,7 +839,6 @@ div.thumbvideo .rate-panel .fa-star:hover ~ .fa-star{
 	}
 
 	$(document).ready(function(){
-		console.log('ready');
 		$('div.thumbvideo iframe').each(function(){
 			$(this).attr('src', $(this).attr('src') + '&autoplay=0');
 		});
