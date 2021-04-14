@@ -749,7 +749,7 @@ class ReservedController extends AppController
             'valueField' => 'groups_courses_id'
         ])->toArray();
 
-        if(in_array(15, $courses) || in_array(16, $courses)){
+        if(in_array(15, $courses) || in_array(16, $courses) || in_array(1, $courses)){
         	
         	$exams = $this->loadModel('Exams')->find('all', [
                 'conditions' => [
