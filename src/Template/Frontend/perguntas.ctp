@@ -14,7 +14,12 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
   <div class="container text-center">
     <span class='prelabel'>EKOS - Formar para a especialidade</span>
     <h1>A plataforma ideal para o teu treino</h1>
-    <span class='prelabel'>Lançamento a 1 de Novembro</span>
+    <p class='prelabel'>Inscreve-te já!</p>
+    <?php if(!isset($Auth['id'])): ?>
+      <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCRIÇÃO</button>
+    <?php else: ?>
+      <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 1]) ?>"'>INSCRIÇÃO</button>
+    <?php endif; ?>
 
   </div>
 </header>
@@ -113,24 +118,6 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
             <p>O EKOS Studio dá-te acesso à nossa plataforma digital construída para te ajudar a preparar e estudar para a prova. Uma ferramente assente em 4 pilares, constituída por <b>vídeos curtos e interativos</b>, uma base de <b>perguntas-tipo em modelo de caso-clínico</b> (formato do exame), um extenso conjunto de <b><em>flashcards</em> para revisão e treino</b> dos conteúdos previamente estudados e um <b>fórum de dúvidas</b>. A plataforma traz-te uma abordagem nova e interativa com ênfase na personalização das tuas preferências, desde a dificuldade das perguntas à selecão dos teus conteúdos favoritos.</p>
             <p> À data de lançamento, a <b>1 de Novembro de 2020</b>, existirão 1000 perguntas, incluindo a anterior PNA e prova-piloto, 2400 flashcards e mais de uma dezena de vídeos. Novos conteúdos serão ainda adicionados ao longo do ano e durante o decorrer dos módulos.</p>
             <p> A inscrição terá <b>validade até à data da prova nacional de acesso de 2021</b>. A inscrição pode ser realizada através do botão 'Inscrever' no final desta página, encontrando-se o procedimento de inscrição descrito na página Informações.</p>
-            <p> A inscrição no <b>EKOS Studio é gratuita para todos os alunos da EKOS</b> inscritos no curso anual.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="recruting" class='bg-light text-center'>
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8 col-md-offset-2">
-            <h1>Inscrição EKOS Studio.</h1>
-            <p>O lançamento da plataforma terá lugar no dia 1 de Novembro, encontrando-se aberto o período de pré-inscrições!<br> A inscrição no EKOS Studio tem o valor de 150€.</p>
-            <?php if(!isset($Auth['id'])): ?>
-                <button class="btn btn-black" data-toggle="modal" data-target="#login" >INSCRIÇÃO</button>
-            <?php else: ?>
-                <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'inscription', 1]) ?>"'>INSCRIÇÃO</button>
-            <?php endif; ?>
-    
           </div>
         </div>
       </div>
@@ -157,6 +144,11 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
   @media(max-width:991px){
     div.col-sm-6.bibliography_box{
       padding: 15px;
+    }
+  }
+  @media(min-width:992px){
+    header#trailer iframe{
+      min-height: 500px;
     }
   }
   div.row.is-flex div.col-sm-6:first-child{
@@ -208,6 +200,13 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
       background: white!important;
       color: #152133!important;
     }
+  }
+  .btn-black{
+    background-color: #FEB000;
+    color: #152335;
+  }
+  .btn-black:hover{
+    background-color: #152335;
   }
   
 </style>
