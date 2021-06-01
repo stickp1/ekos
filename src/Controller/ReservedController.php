@@ -2164,6 +2164,7 @@ class ReservedController extends AppController
         {
             $themes = array(0 => 41, 1 => 42, 2 => 43);
             $session->write('flash_themes', $themes);
+            $session->write('flash_wrong', 0);
             $session->write('trial', 1);
             return $this->redirect(['action' => 'flashcards']);
         } 
