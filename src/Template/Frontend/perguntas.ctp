@@ -7,6 +7,7 @@ $client = new Vimeo("0af46bd862c619713814e571961d0c3f276fb58c", "I1w+gCaPsU49Wpy
 $uri = 'http://api.vimeo.com/me/albums/7542594/videos';
 $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'autoplay' => 1], 'GET');
 
+$demo = $client->request('/videos/547440347',['muted' => 1, 'title' => 0, 'autoplay' => 0], 'GET');
 ?>
 
 <!-- Header -->
@@ -67,6 +68,7 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
           <div class="col-sm-6 bibliography_box" style="background:#fefefe; color:#152133">
               <h2>Perguntas.</h2>
               <p>Pratica e simula o que te espera na prova com as centenas de perguntas e casos clínicos que temos para ti!<br> São mais de 1000 perguntas, incluindo perguntas das provas, exames de simulação da EKOS e centenas de perguntas originais organizadas por módulos e temas da matriz.</p>
+              <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'trial', 0]) ?>"'>Experimenta aqui!</button>
           </div>
       </div>
     </section>
@@ -77,6 +79,7 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
               <h2>Flashcards.</h2>
               <p>O nosso deck de 2400 flashcards tem como objetivo ajudar-te a testares e reforçares o teu conhecimento!<br> Podes também criar os teus próprios flashcards, organizados por módulo e tema, para construires o teu banco personalizado de flashcards.
               </p>
+              <button class="btn btn-black" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'trial', 1]) ?>"'>Experimenta aqui!</button>
           </div>
           <div class="col-sm-6 studio studioR" style='background-image: url("<?= $url?>/img/Flashcards.jpg?>");'>
             
@@ -93,6 +96,7 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
               <h2>Vídeos.</h2>
               <p>Assiste aos nossos vídeos curtos dirigidos a temas chave que te vão permitir aprender e rever a matéria de forma sucinta e eficaz antes de mergulhares de cabeça nas centenas de casos clínicos que temos para ti!
               </p>
+              <button id="show-video" class="btn btn-black">Experimenta aqui!</button>
           </div>
       </div>
     </section>
@@ -117,11 +121,118 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
             <h1 style='text-align:center'>Informações</h1>
             <p>O EKOS Studio dá-te acesso à nossa plataforma digital construída para te ajudar a preparar e estudar para a prova. Uma ferramente assente em 4 pilares, constituída por <b>vídeos curtos e interativos</b>, uma base de <b>perguntas-tipo em modelo de caso-clínico</b> (formato do exame), um extenso conjunto de <b><em>flashcards</em> para revisão e treino</b> dos conteúdos previamente estudados e um <b>fórum de dúvidas</b>. A plataforma traz-te uma abordagem nova e interativa com ênfase na personalização das tuas preferências, desde a dificuldade das perguntas à selecão dos teus conteúdos favoritos.</p>
             <p> À data de lançamento, a <b>1 de Novembro de 2020</b>, existirão 1000 perguntas, incluindo a anterior PNA e prova-piloto, 2400 flashcards e mais de uma dezena de vídeos. Novos conteúdos serão ainda adicionados ao longo do ano e durante o decorrer dos módulos.</p>
-            <p> A inscrição terá <b>validade até à data da prova nacional de acesso de 2021</b>. A inscrição pode ser realizada através do botão 'Inscrever' no final desta página, encontrando-se o procedimento de inscrição descrito na página Informações.</p>
+            <p> A inscrição terá <b>validade até à data da prova nacional de acesso de 2021</b>. A inscrição pode ser realizada através do botão 'Inscrever' no início desta página, encontrando-se o procedimento de inscrição descrito na página Informações.</p>
           </div>
         </div>
       </div>
     </section>
+
+<div class="modal fade" id="fullvideo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            <div id="fullvideo-frame">
+                <?= $demo['body']['embed']['html'] ?>
+            </div>
+              <h1 class="modal-title">Demências</h1>
+              <p id="fullvideo-description">Demências</p>
+          </div>
+          <div class="modal-body">
+                  <div id="fullvideo-related">
+                    <div class="row" style="border-top: 1px solid #152133">
+                      <div class="col-xs-12">
+                        Perguntas sobre este assunto
+                      </div>
+                    </div>
+                    <div class="row" id="q_options">
+                      <div id="qbank">
+                            <div class="col-xs-4"> 
+                                <div class="well well-sm options" id="difficulty">
+                                    <div>Dificuldade</div>
+                                    <div>
+                                        <input type="checkbox" name="difficulty[]" value="1" checked>Fácil
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="difficulty[]" value="2" checked> Intermédio
+                                    </div>
+                                    <div> 
+                                        <input type="checkbox" name="difficulty[]" value="3" checked> Difícil
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">   
+                                <div class="well well-sm options" id="filter">
+                                    <div>Perguntas</div>
+                                    <div>
+                                        <input type="checkbox" name="filter[]" class="filter-q" value="0">Novas
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="filter[]" class="filter-q" value="1">Incorretas
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="filter[]" class="filter-q" value="2">Favoritas
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="filter[]" class="all-q" value="3" checked>Todas
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">   
+                                <div class="well well-sm options" id="time">
+                                    <div>Temporizador</div>
+                                      <div>
+                                          <input type="radio" name="timer" id="chronometer" value="0"> Cronómetro
+                                      </div>
+                                      <div>
+                                          <input type="radio" name="timer" class="timer" id="no-lim" value="1">
+                                      </div>
+                                      <div id="tempo_input">
+                                          <input type="text" name="time-lim" class="timer" value="60"> min
+                                      </div>
+                                      <hr id="separator">
+                                      <div>
+                                        <button id="questionGo" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'trial', 0]) ?>"'>Iniciar</button>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    <div class="row" style="border-top: 1px solid #152133">
+                      <div class="col-xs-12">
+                        Flashcards sobre este assunto
+                      </div>
+                    </div>
+                    <div class="row" id="f_options">
+                      <div id="fbank">
+                          <div class="col-12"> 
+                                <div class="well well-sm options" id="f_difficulty">
+                                    <div>Perguntas</div>
+                                    <div>
+                                        <input type="radio" name="wrong" value="0" checked>Todas
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="wrong" value="1"> Incorretas
+                                    </div>
+                                    <div> 
+                                        <input type="radio" name="wrong" value="2"> Favoritas
+                                    </div>
+                                <button id="flashcardGo" onClick='window.location.href = "<?= $this->Url->build(["controller" => 'reserved', 'action' => 'trial', 1]) ?>"'>Iniciar</button> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer row">
+                      <div class="col-sm-6 col-sm-offset-6 col-xs-12 text-sm-right text-center">
+                      </div> 
+                  </div>
+          </div>
+        </div>
+    </div>
+</div>
 
 
 <style>
@@ -202,13 +313,223 @@ $response = $client->request('/videos/462578115',['muted' => 1, 'title' => 0, 'a
     }
   }
   .btn-black{
-    background-color: #FEB000;
-    color: #152335;
+    background-color: #FEB000!important;
+    color: #152335!important;
+    margin: auto;
+    margin-top: 20px;
   }
   .btn-black:hover{
-    background-color: #152335;
+    background-color: !#152335!important;
+    color: white!important;
   }
   
+  /* VIDEO DEMO */
+
+  .modal-header{
+  height:  fit-content;
+  padding: 0;
+  border-bottom: none;
+}
+.modal-header button.close{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #ffdf80;
+}
+#fullvideo-frame{
+  height: 340px;
+  border: 1px solid black;
+}
+@media(max-width:767px){
+  #fullvideo-frame{
+    height: calc(53vw);
+  }
+}
+#fullvideo-frame iframe{
+  height: 100%;
+  width: 100%;
+}
+.modal-title{
+  font-size: 1.8em;
+  padding-top: 10px;
+  padding-left: 15px;
+}
+#fullvideo-description{
+  font-size: 1em;
+  padding-top: 10px;
+  padding-left: 15px;
+}
+.modal-content{
+  border-radius: 10px;
+  background: #FFDF80;
+}
+
+.modal-footer{
+  border: none;
+}
+
+
+#fullvideo .modal-content{
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#fullvideo input[type='checkbox'], #fullvideo input[type="radio"], #fullvideo input[type="text"]{
+        -webkit-appearance: none;
+        outline: none;
+        border: 2px solid gray;
+        margin-left: 3px
+}
+#fullvideo input[type='checkbox']:before, #fullvideo input[type="radio"]:before{
+        content: '';
+        display: block;
+        width: 50%;
+        height: 50%;
+        margin: 25% auto;
+}
+#fullvideo input[type="checkbox"]:checked:before, #fullvideo input[type="radio"]:checked:before{
+        background: #FEB000;
+}
+#fullvideo input[type='checkbox']:checked, #fullvideo input[type="radio"]:checked{
+    border: 2px solid #152335;
+}
+#fullvideo input[type='checkbox']:disabled, #fullvideo input[type="text"]:disabled{
+    border: 2px solid grey;
+    background: grey!important;
+}
+.options{
+    padding-top: 45px;
+    position:relative;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    height:90%;
+    font-size:12pt;
+    margin-top:10px;
+    text-align: left;
+    border: 2.2px solid #152335;
+    border-radius: 10px;
+}
+.options#time{
+  padding-bottom: 35px;
+}
+.options input[type='checkbox'], .options input[type='radio']{
+    width:20px; 
+    height:20px; 
+    position:relative; 
+    top:5px;
+    margin-right: 5px;
+}
+.options input[type='text']{
+    width:35px; 
+    height:auto; 
+    text-align: center;
+    position:relative; 
+    background-color: transparent;
+}
+.options #tempo_input{
+    text-align:center;
+    margin-top:-22px;
+}
+.options div:first-child{
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    text-align: center;
+    left:0;
+    right:0;
+}
+#fullvideo hr#separator{
+    margin: 18px 0 10px 0;
+    border: 0.5px solid black;
+    background: black;
+}
+#fullvideo .row#q_options{
+    display: block;
+}
+@media(min-width: 1200px){
+    .row#q_options{
+        display: flex;
+    }
+}
+@media(max-width: 768px){
+    .row#q_options>.col-lg-3:nth-child(odd) .options{
+        float:right;
+    }
+    .row#q_options>.col-lg-3:nth-child(even) .options{
+        float:left;
+    }
+}
+.row#q_options::before{
+    display: block;
+}
+#fbank .options{
+  padding-bottom: 50px;
+}
+@media(max-width: 500px){
+    .options{
+        width:100%;
+    }
+    .col-xs-6{
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+    #questionGo{
+      bottom: 8px;
+    }
+    .options#time{
+    padding-bottom: 45px;
+    margin-bottom: 15px;
+  }
+}
+#questionGo, #flashcardGo{
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  background: #ffdf80;
+  border-radius: 5px;
+  width: 60%;
+}
+#fbank .options{
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+@media(max-width:590px){
+  #qbank .col-xs-4{
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+@media(max-width:506px){
+  #qbank .col-xs-4{
+    width:100%;
+  }
+  #qbank .options{
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  hr#separator{
+    display:none;
+  }
+  #qbank #tempo_input{
+    margin-top: 5px;
+    margin-left: -30px;
+  }
+}
+@media(max-width:360px){
+  #qbank .options{
+    flex-direction: column;
+  }
+  #qbank #tempo_input{
+    margin-top: -23px;
+    margin-left: -90px;
+  }
+}
+#login input{
+  background: #ffdf80;
+}
+
 </style>
 <script>
 $('.primary').on('click', function(){
@@ -224,6 +545,10 @@ $('.primary').on('click', function(){
   }
   
 })
+
+$('#show-video').click(function(){
+    $('#fullvideo').modal('show');
+  });
 
 <?php if(isset($_GET['c'])): ?>
 $('.dependency.d<?= $_GET['c'] ?>').removeClass('closed');

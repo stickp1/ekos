@@ -1010,8 +1010,13 @@ class ReservedController extends AppController
 
         $user_id = $this->Auth->user('id');
         $session = $this->getRequest()->getSession();
-        if(!isset($user_id))   
+        if($session->read('trial') !== 1 && !isset($user_id))   
                 return $this->redirect(['controller' => '/']);
+        elseif(!isset($user_id))
+        {
+            $trial = $session->read('trial');
+            $this->set(compact('trial'));
+        }
         $this->isStudio($user_id);
 
         $this->loadModel('Questions');
@@ -1057,14 +1062,14 @@ class ReservedController extends AppController
             $wans = 0;  
             $nans = 0;
             foreach($questions as $question){
-                if($question['course_id']!=17 && empty(array_intersect([$question['course_id'], 14, 1], $courses)))
+                if($session->read('trial') !== 1 && $question['course_id']!=17 && empty(array_intersect([$question['course_id'], 14, 1], $courses)))
                     return $this->redirect(['action' => 'index']);
                 $ans = $question_list[$pointer][$question['id']]['answer'];
                 if($question['correct'] == $ans)    $cans++;
                 elseif($ans == 0)   $nans++;
                 else   $wans++;
             }
-
+            
             if($timer == -1){
                 $user_data = [];
                 foreach($questions as $k => $v){
@@ -1075,8 +1080,10 @@ class ReservedController extends AppController
                     $user_data[$k]['last_time'] = Time::now();
                     $v['a'.$answer]++;
                 }
-                $user_data = $this->Questions->UsersQuestions->newEntities($user_data);
-                $user_data = $this->Questions->UsersQuestions->saveMany($user_data);
+                if($session->read('trial') !== 1) {
+                    $user_data = $this->Questions->UsersQuestions->newEntities($user_data);
+                    $user_data = $this->Questions->UsersQuestions->saveMany($user_data);
+                }
                 $this->set(compact('user_data'));
             }
 
@@ -1205,10 +1212,18 @@ class ReservedController extends AppController
     public function flashcards()
     {
         $user_id = $this->Auth->user('id');
-        if(!isset($user_id))   return $this->redirect(['controller' => '/']);
+        $session = $this->getRequest()->getSession();
+        
+        if($session->read('trial') !== 1 && !isset($user_id))   
+            return $this->redirect(['controller' => '/']);
+        elseif(!isset($user_id))
+        {
+            $trial = $session->read('trial');
+            $this->set(compact('trial'));
+        }
+
         $this->isStudio($user_id);
 
-        $session = $this->getRequest()->getSession();
         $themes = $session->read('flash_themes');
         $wrong = $session->read('flash_wrong');
 
@@ -2081,6 +2096,78 @@ class ReservedController extends AppController
             if(!$this->Videos->save($video) || !$this->Videos->VotesVideos->save($video->VotesVideos))
                 $this->Flash->error('Alguma coisa correu mal ao votar...');    
         }
+    }
+
+    public function trial($mode = 0)
+    {
+        $this->autoRender = false;
+        $session = $this->getRequest()->getSession();
+        if($mode == 0)                                                      // questions
+        {
+            $question_stat = $this->loadModel('Questions')->find('all', [
+                'fields' => [
+                    'id', 
+                    'correct', 
+                    'a1', 'a2', 'a3', 'a4', 'a5'
+                ]
+            ])->toArray();
+            
+            foreach ($question_stat as $value) {
+                $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
+                if($tot > 50 ) $statistics[$value['id']] = $value['a'.$value['correct']] / $tot;
+            }
+
+            $stat25 = $this->get_percentile(25, $statistics);
+            $stat75 = $this->get_percentile(75, $statistics);  
+
+            $questions_ = $this->Questions->find('all', [
+                'contain' => [
+                    'Themes'
+                ],
+                'fields' => [
+                    'id',
+                    'a1', 'a2', 'a3', 'a4', 'a5',
+                    'correct',
+                    'theme_id',
+                    'course_id'
+                ],
+                'conditions'=> [
+                    'Questions.active' => 1,
+                    'Questions.theme_id like \'%41,42%\''
+                ]
+            ]);
+
+            $question_list = array();
+            foreach ($questions_ as $value) {
+
+                $tot = $value['a1']+$value['a2']+$value['a3']+$value['a4']+$value['a5'];
+                if($tot > 50)
+                    $corr = $value['a'.$value['correct']] / $tot; 
+                else 
+                    $corr = 9999; 
+                    
+                $question_list[$value['id']]['fav'] = 0;
+                $question_list[$value['id']]['answer'] = 0;
+                $question_list[$value['id']]['corr'] = ($corr == 9999 ? 0 : (($corr >= $stat75) ? 1 : ($corr >= $stat25 ? 2 : 3)));
+            }
+            $question_number = 5; 
+            $question_list = array_chunk(array_slice($question_list, 0, 1000, true), $question_number, true);
+            $pointer = 0;
+            $timer = isset($timer) ? ($timer == 1 ? $this->request->getData('time-lim') : 0) : null;
+            $session->write('question_list', $question_list);
+            $session->write('question_pointer', $pointer);
+            $session->write('question_timer', $timer);
+            $session->write('trial', 1);
+            return $this->redirect(['action' => 'question', empty($question_list) ? null : $pointer, $timer]);
+        }
+        elseif ($mode == 1)                                                // flashcards
+        {
+            $themes = array(0 => 41, 1 => 42, 2 => 43);
+            $session->write('flash_themes', $themes);
+            $session->write('trial', 1);
+            return $this->redirect(['action' => 'flashcards']);
+        } 
+        return $this->redirect(['controller' => 'frontend', 'action' => 'index']);
     }
 
     /**

@@ -245,6 +245,7 @@ a.pointer{
           <div class="col-md-20">
             <div class="panel with-nav-tabs panel-default" style='background:transparent'>
                 <div class="panel-heading">
+                    <?php if(!isset($trial)): ?>
                     <ul class="nav nav-tabs" id='submenu'>
                         <li <?=  @$this->request->params['action'] == 'index' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "index"]) ?>">Cursos</a></li>
                         <li <?=  @$this->request->params['action'] == 'qbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "qbank"]) ?>">Perguntas</a></li>
@@ -254,6 +255,7 @@ a.pointer{
                         <?php if(in_array(16, $courses) || in_array(15, $courses) || in_array(1, $courses)): ?> <li <?=  @$this->request->params['action'] == 'ebank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "ebank"]) ?>">Exames</a></li> <?php endif; ?>
                         <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>   
                     </ul>
+                    <?php endif ?>
                 </div>
               </div>
           </div>

@@ -9,6 +9,7 @@
           <div class="col-md-20">
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading">
+                        <?php if(!isset($trial)): ?>
                         <ul class="nav nav-tabs" id='submenu'>
                             <li <?=  @$this->request->params['action'] == 'index' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "index"]) ?>">Cursos</a></li>
                             <li <?=  @$this->request->params['action'] == 'qbank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "qbank"]) ?>">Perguntas</a></li>
@@ -18,6 +19,7 @@
                             <?php if(in_array(16, $courses) || in_array(15, $courses) || in_array(1, $courses)): ?> <li <?=  @$this->request->params['action'] == 'ebank' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "ebank"]) ?>">Exames</a></li> <?php endif; ?>
                             <li <?=  @$this->request->params['action'] == 'payments' ? 'class="active"': ''?>><a href="<?= $this->Url->build(["prefix" => false, "controller" => 'reserved', "action" => "payments"]) ?>">Pagamentos</a></li>                     
                         </ul>
+                        <?php endif ?>
                 </div>
               </div>
           </div>
@@ -149,11 +151,15 @@ function favorite(){
       fav[flashcards[selected]['id']] = 0; 
     else
       fav[flashcards[selected]['id']] = 1;
+
+    <?php if(isset($Auth['id'])): ?>
     
     $.post( "<?= $url?>/reserved/flash-fav", { 
       id: flashcards[selected]['id'], 
       answer: fav[flashcards[selected]['id']]
     }).done(function( data ) {});
+
+    <?php endif ?>
 }
 
 
@@ -180,12 +186,16 @@ function flashWarning(){
     else
       less[flashcards[selected]['id']] = 1;
     
+    <?php if(isset($Auth['id'])): ?>
+    
     $.post( "<?= $url?>/reserved/flash-warning", { 
       id: flashcards[selected]['id'],
       name: <?= $Auth['id']; ?>,
       identidade: "<?= $Auth['first_name']." ".$Auth['last_name']; ?>", 
       answer: less[flashcards[selected]['id']]
     }).done(function( data ) {});
+    
+    <?php endif ?>
 }
 
 function correct(){
