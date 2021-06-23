@@ -2016,7 +2016,7 @@ class ReservedController extends AppController
         //IS IN COURSE 1
         $is1 = $this->loadModel('UsersGroups')->exists([
                 'users_id' => $user_id,
-                'groups_courses_id in ' => [1,2,3,4,5,6,7,8,9,10,11,12,13]
+                'groups_id' => 200
         ]);
 
         if(!$is1)
